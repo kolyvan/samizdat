@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'samlib' target in the 'samlib' project
+//
+
+#ifdef __OBJC__
+    #import <Foundation/Foundation.h>
+#endif

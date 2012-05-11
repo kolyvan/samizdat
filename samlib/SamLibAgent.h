@@ -1,0 +1,55 @@
+//
+//  SamLibAgent.h
+//  samlib
+//
+//  Created by Kolyvan on 07.05.12.
+//  Copyright (c) 2012 Konstantin Boukreev. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+#import "SamLib.h"
+
+
+typedef void (^AsyncResultBlock)(SamLibStatus status, NSString *data, NSString *lastModified);
+
+typedef struct {
+
+    void (*initialize)();
+    void (*cleanup)();
+    
+    NSString * (*samlibURL)();        
+    NSString * (*authorsPath)();
+    NSString * (*textsPath)();    
+    NSString * (*commentsPath)();
+    //NSString * (*settingsPath)();    
+    
+    NSMutableDictionary * (*settings)();
+   
+    void (*fetchData)(NSString *path, 
+                      NSString *lastModified, 
+                      BOOL handleCookies,
+                      NSString *referer,                            
+                      AsyncResultBlock block);
+    
+    void (*postData)(NSString *path, 
+                     NSString *referer, 
+                     NSDictionary * parameters,
+                     AsyncResultBlock block);
+    
+    /*
+    void (*loginSamizdat)(NSString *name,
+                          NSString *pass,
+                          AsyncResultBlock block);
+    
+    void (*logoutSamizdat)(AsyncResultBlock block);
+     */
+    
+    NSArray* (*authors)();
+    void (*removeAuthor)(NSString *path);
+    
+    
+    
+} SamLibAgent_t;
+
+extern SamLibAgent_t SamLibAgent;
