@@ -1,4 +1,4 @@
-Samizdat Sowtfare for Mac OS X
+Samizdat Software for Mac OS X
 ==============================
 
 (early beta)
