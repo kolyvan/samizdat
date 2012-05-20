@@ -7,4 +7,9 @@ Samizdat is an application for keep track of changes on [Самиздат](http:
 
 This beta version requires Mac OS X 10.7.
 
-Visit the [forum](http://samlib.ru/editors/k/kolywan/samizdat_osx.shtml) for feedback.
+Visit the [forum](http://samlib.ru/comment/k/kolywan/samizdat_osx) for feedback.
+
+Screenshots:
+
+![main view](http://dl.dropbox.com/u/80472203/samizdat-main.png "Main View")
+
