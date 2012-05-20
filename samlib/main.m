@@ -18,15 +18,38 @@
 #import "NSString+Kolyvan.h"
 #import "SamLibComments.h"
 #import "SamLibUser.h"
+#import "DDLog.h"
+#import "DDTTYLogger.h"
+#import "DDFileLogger.h"
 
 #import "test.h"
 
+
+//static int ddLogLevel = LOG_LEVEL_WARN;
+//static int ddLogLevel = LOG_LEVEL_VERBOSE;
+int ddLogLevel = LOG_LEVEL_INFO;
+
+
 void test()
+{     
+}
+
+void initLogger()
 {
-//    SamLibUser *user = [SamLibUser currentUser];
-//    user.pass = @"meg11xxx!";
-//    KxConsole.printlnf(@"pass: %@", user.pass);
-      
+    NSNumber *logLevel = [[NSUserDefaults standardUserDefaults] objectForKey:@"logLevel"];
+    if (logLevel)
+        ddLogLevel = [logLevel intValue];    
+    
+#ifdef DEBUG
+    [DDLog addLogger:[DDTTYLogger sharedInstance]];    
+#else    
+    DDFileLogger *fileLogger;    
+    fileLogger = [[DDFileLogger alloc] init];
+    fileLogger.rollingFrequency = 60 * 60 * 24;
+    fileLogger.logFileManager.maximumNumberOfLogFiles = 7;    
+    [DDLog addLogger:fileLogger];
+    [fileLogger release];    
+#endif
 }
 
 int main(int argc, const char * argv[])
@@ -36,9 +59,14 @@ int main(int argc, const char * argv[])
         
         KxConsole.println(@"hi, starting ..");        
         
+        initLogger();
         SamLibAgent.initialize();
         
-        //test();
+        test();
+        
+        // ******************
+        // test purpose only !
+        // ******************
         
         //test_parser_page();
         //test_fetch_comments();        
@@ -46,7 +74,7 @@ int main(int argc, const char * argv[])
         //test_fetch_textdata2();
         //test_fetch_and_parse_textpage();
         //test_parse_comments();
-        test_fetch_comments2();
+        //test_fetch_comments2();
         //test_post_comment();
         //test_login_logout();
         //test_login_logout2();

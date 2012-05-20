@@ -18,16 +18,13 @@
 #import "AFHTTPClient+Kolyvan.h"
 #import "AFHTTPRequestOperation.h"
 #import "DDLog.h"
-#import "DDTTYLogger.h"
-#import "DDFileLogger.h"
 #import "JSONKit.h"
 
-//static int ddLogLevel = LOG_LEVEL_VERBOSE;
-int ddLogLevel = LOG_LEVEL_INFO;
-//static int ddLogLevel = LOG_LEVEL_WARN;
+extern int ddLogLevel;
 
-
-#define _DEVELOPMENT_MODE_
+#ifdef DEBUG
+//#define _DEVELOPMENT_MODE_
+#endif
 
 //#pragma mark - defaults
 
@@ -135,10 +132,10 @@ NSMutableDictionary * _settings(BOOL save)
         
         if (!dict) {
             
-            NSDictionary *d = loadDictionary(settingsPath());
+            dict = (NSMutableDictionary *)loadDictionaryEx(settingsPath(), NO);
             
-            if (d) {
-                dict = [d mutableCopy];
+            if (dict) {
+                //dict = [d mutableCopy];
                 digest = [[dict description] md5];
                 DDLogCVerbose(@"load settings: %ld", dict.count);
             }
@@ -314,29 +311,13 @@ static void postData(NSString *path,
     client.stringEncoding = stringEncoding; 
 }
 
-/*
-static void loginSamizdat(NSString *name, 
-                          NSString *pass,
-                          AsyncResultBlock block)
+static void cancelAll()
 {
-    NSMutableDictionary * d = [NSMutableDictionary dictionary];
-    
-    [d setValue:@"login" forKey:@"OPERATION"];    
-    [d setValue:@"http://samlib.ru/" forKey:@"BACK"];        
-    [d setValue:name forKey:@"DATA0"];
-    [d setValue:pass forKey:@"DATA1"];    
-    
-    postData(@"/cgi-bin/login", @"http://samlib.ru/cgi-bin/login", d, block); 
+    AFHTTPClient *client = httpClient(NO);
+    [client cancelAll];
 }
 
-static void logoutSamizdat(AsyncResultBlock block)
-{
-    postData(@"/cgi-bin/logout", @"http://samlib.ru/", nil, block);
-}
-*/
-///
-
-static NSArray* authors()
+static NSArray* loadAuthors()
 {    
     NSMutableArray * authors = [NSMutableArray array];
     NSFileManager *fm = [[NSFileManager alloc] init];
@@ -355,10 +336,13 @@ static NSArray* authors()
                 
                 if ([[attr get:NSFileType] isEqualTo: NSFileTypeRegular]) {
                     
-                    SamLibAuthor *author = [SamLibAuthor fromFile: filename];
+                    SamLibAuthor *author = [SamLibAuthor fromFile: fullpath];
                     if (author) {
                         DDLogCVerbose(@"loaded author: %@", author.path);
                         [authors push: author];
+                    }
+                    else {
+                        DDLogCWarn(@"unable load author: %@", filename);                        
                     }
                 }
             }
@@ -388,23 +372,7 @@ static void removeAuthor(NSString *path)
 
 
 static void initialize ()
-{
-    NSNumber *logLevel = [[NSUserDefaults standardUserDefaults] objectForKey:@"logLevel"];
-    if (logLevel)
-        ddLogLevel = [logLevel intValue];    
-    
-#ifdef DEBUG
-    [DDLog addLogger:[DDTTYLogger sharedInstance]];    
-#else    
-    DDFileLogger *fileLogger;    
-    fileLogger = [[DDFileLogger alloc] init];
-    fileLogger.rollingFrequency = 60 * 60 * 24;
-    fileLogger.logFileManager.maximumNumberOfLogFiles = 7;    
-    [DDLog addLogger:fileLogger];
-    [fileLogger release];    
-#endif
-    
-    
+{   
 }
 
 static void cleanup ()
@@ -428,9 +396,8 @@ SamLibAgent_t SamLibAgent = {
     
     fetchData,
     postData,
-    //loginSamizdat,
-    //logoutSamizdat,
+    cancelAll,
     
-    authors,
+    loadAuthors,
     removeAuthor,
 };

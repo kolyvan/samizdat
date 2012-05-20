@@ -13,13 +13,7 @@ typedef void (^LoginBlock)(SamLibStatus status, NSString *error);
 
 @interface SamLibUser : NSObject
 
-//@property (readwrite, nonatomic, KX_PROP_STRONG) NSString *name;
-//@property (readwrite, nonatomic, KX_PROP_STRONG) NSString *login;
-//@property (readwrite, nonatomic, KX_PROP_STRONG) NSString *pass;
-//@property (readwrite, nonatomic, KX_PROP_STRONG) NSString *email;
-//@property (readwrite, nonatomic, KX_PROP_STRONG) NSString *url;
-//@property (readonly, nonatomic) NSString *homePage; //only if logged
-//@property (readonly, nonatomic) BOOL isLogin;
++  (void) setKeychainService: (NSString *) name;
 
 - (NSString *) name;
 - (void) setName:(NSString *)name;
@@ -35,6 +29,10 @@ typedef void (^LoginBlock)(SamLibStatus status, NSString *error);
 - (BOOL) isLogin;
 
 + (SamLibUser *) currentUser;
+
+- (void) loginSamizdat: (NSString *) login 
+                  pass: (NSString *) pass 
+                 block: (LoginBlock) block;
 
 - (void) loginSamizdat: (LoginBlock) block;
 - (void) logoutSamizdat: (LoginBlock) block;;

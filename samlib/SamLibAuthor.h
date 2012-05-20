@@ -23,6 +23,7 @@ typedef void (^UpdateAuthorBlock)(SamLibAuthor *author, SamLibStatus status, NSS
     NSString * _email;   
     NSString * _lastModified;
     NSString * _digest;
+    NSString * _about;    
     NSArray * _texts;
     BOOL _changed;
     // BOOL _ignored;    
@@ -40,8 +41,11 @@ typedef void (^UpdateAuthorBlock)(SamLibAuthor *author, SamLibStatus status, NSS
 @property (readonly, nonatomic) NSString * email;
 @property (readonly, nonatomic) NSString * lastModified;
 @property (readonly, nonatomic) NSString * digest;
+@property (readonly, nonatomic) NSString * about;
 @property (readonly, nonatomic) NSArray * texts;
 //@property (readwrite, nonatomic) BOOL ignored;
+
+@property (readonly, nonatomic) float ratingFloat;
 
 @property (readonly, nonatomic) BOOL isDirty;
 

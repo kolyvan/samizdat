@@ -64,7 +64,7 @@ NSHTTPCookie * deleteSamLibCookie(NSString *name)
     return nil;
 }
 
-NSDictionary * loadDictionary(NSString *filepath)
+NSDictionary * loadDictionaryEx(NSString *filepath, BOOL immutable)
 {
     NSFileManager * fm = [[NSFileManager alloc] init];    
     BOOL r = [fm isReadableFileAtPath:filepath];    
@@ -79,10 +79,19 @@ NSDictionary * loadDictionary(NSString *filepath)
         if (data) {
             
             if ([data length] == 0) 
-                return [NSDictionary dictionary];
+                if (immutable)
+                    return [NSDictionary dictionary];
+                else
+                    return [NSMutableDictionary dictionary];
             
-            id obj = [data objectFromJSONDataWithParseOptions: JKParseOptionNone
-                                                        error: &error];
+            id obj;
+            if (immutable)                
+                obj = [data objectFromJSONDataWithParseOptions: JKParseOptionNone
+                                                         error: &error];
+            else
+                obj = [data mutableObjectFromJSONDataWithParseOptions: JKParseOptionNone
+                                                                error: &error];
+                
             if (obj) {
                 
                 if ([obj isKindOfClass:[NSDictionary class]])     
@@ -99,9 +108,18 @@ NSDictionary * loadDictionary(NSString *filepath)
             DDLogCError(locString(@"file error: %@"), 
                         KxUtils.completeErrorMessage(error));         
         }
-    } 
+    } else {
+        
+        DDLogCWarn(locString(@"file not found: %@"), filepath);         
+        
+    }
     
     return nil;
+}
+
+NSDictionary * loadDictionary(NSString *filepath)
+{
+    return loadDictionaryEx(filepath, YES);
 }
 
 BOOL saveDictionary(NSDictionary *dict, NSString * filepath)
@@ -127,6 +145,38 @@ BOOL saveDictionary(NSDictionary *dict, NSString * filepath)
         return NO;
     }    
     return YES;
+}
+
+NSString * mkHTMLPage(NSString *data,
+                      NSString *head,
+                      NSString *cssLink, 
+                      NSString *jsLink)
+{
+    NSMutableString *bb = [[NSMutableString alloc] init];
+    
+    [bb appendString: @"<!DOCTYPE html>\n"];
+    [bb appendString: @"<html lang=\"en\">\n"];
+    [bb appendString: @"<head>\n"];
+    [bb appendString: @"<meta charset=\"utf-8\">\n"];    
+    [bb appendString: @"<title>samlib</title>\n"];    
+    if (cssLink.nonEmpty)
+        [bb appendFormat: @"<link rel=\"stylesheet\" href=\"%@\">\n", cssLink];    
+    if (jsLink.nonEmpty)
+        [bb appendFormat: @"<script src=\"%@\"></script>\n"];        
+    if (head.nonEmpty)
+        [bb appendString: head];
+    [bb appendString: @"</head>\n"];    
+    [bb appendString: @"<body>\n"];   
+    [bb appendString: @"<div class='main'>\n"];    
+    
+    [bb appendString: data];
+    [bb appendString: @"\n"];    
+    
+    [bb appendString: @"</div>\n"];           
+    [bb appendString: @"</body>\n"];        
+    [bb appendString: @"</html>\n"];
+    
+    return KX_AUTORELEASE(bb);
 }
 
 /////

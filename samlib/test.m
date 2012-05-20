@@ -182,9 +182,9 @@ void test_parse_comments()
 void test_fetch_author()
 {
     __block BOOL finished = NO;
-    //SamLibAuthor *author = KX_AUTORELEASE([[SamLibAuthor alloc] initWithPath: @"iwanow475_i_i"]);
-    NSString *filepath = [SamLibAgent.authorsPath() stringByAppendingPathComponent: @"iwanow475_i_i"];
-    SamLibAuthor *author = [SamLibAuthor fromFile: filepath];
+    SamLibAuthor *author = KX_AUTORELEASE([[SamLibAuthor alloc] initWithPath: @"iwanow475_i_i"]);
+    //NSString *filepath = [SamLibAgent.authorsPath() stringByAppendingPathComponent: @"iwanow475_i_i"];
+    //SamLibAuthor *author = [SamLibAuthor fromFile: filepath];
     
     [author update:^(SamLibAuthor *author, SamLibStatus status, NSString *error) {
 

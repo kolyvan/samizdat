@@ -10,6 +10,7 @@
 #import "SamLibAuthor.h"
 #import "SamLibAgent.h"
 #import "SamLibParser.h"
+#import "SamLibComments.h"
 #import "NSDictionary+Kolyvan.h"
 #import "NSArray+Kolyvan.h"
 #import "NSDate+Kolyvan.h"
@@ -82,6 +83,8 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 @property (readwrite, nonatomic) NSString * lastModified;
 @property (readwrite, nonatomic) NSString * diffResult;
 @property (readwrite, nonatomic) NSDate * filetime;
+@property (readwrite, nonatomic) NSString * dateModified;
+//@property (readwrite, nonatomic) char groupMark;
 
 - (void) updateFromDictionary: (NSDictionary *) dict
                    setChanged: (BOOL) setChanged
@@ -102,11 +105,21 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 @synthesize rating = _rating;
 @synthesize changedFlag = _changedFlag;
 @synthesize flagNew = _flagNew;
-//@synthesize favorited = _favorited;
 @synthesize author = _author;
 @synthesize lastModified = _lastModified;
 @synthesize diffResult = _diffResult;
 @synthesize filetime = _filetime;
+@synthesize dateModified = _dateModified;
+//@synthesize groupMark = _groupMark;
+
+@synthesize deltaSize = _deltaSize;
+@synthesize deltaComments = _deltaComments;
+@synthesize deltaRating = _deltaRating;
+
+@dynamic sizeInt;
+@dynamic commentsInt;
+@dynamic ratingFloat;
+@dynamic groupEx;
 
 @dynamic key;
 
@@ -151,6 +164,61 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 {
     return KxUtils.format(@"%@.%@", _author.path, [_path stringByDeletingPathExtension]);    
 }
+
+/*
+- (NSString *) commentsValue
+{
+    if (_comments.nonEmpty) {
+        NSRange r = [_comments rangeOfString:@" ("];
+        if (r.location != NSNotFound)
+            return [_comments take: r.location];
+    }
+    return @"";
+    
+}
+
+- (NSString *) ratingValue
+{
+    if (_rating.nonEmpty) {
+        NSRange r = [_rating rangeOfString:@"*"];
+        if (r.location != NSNotFound)
+            return [_rating take: r.location];
+    }
+    return @"";
+}
+*/
+ - (NSInteger) sizeInt
+{
+    return [_size.butlast integerValue];
+}
+
+- (NSInteger) commentsInt
+{
+    if (_comments.nonEmpty) {
+        NSRange r = [_comments rangeOfString:@" ("];
+        if (r.location != NSNotFound)
+            return [[_comments take: r.location] integerValue];
+    }
+    return 0;
+}
+
+- (float) ratingFloat
+{
+    if (_rating.nonEmpty) {
+        NSRange r = [_rating rangeOfString:@"*"];
+        if (r.location != NSNotFound)
+            return [[_rating take: r.location] floatValue];
+    }
+    return 0;    
+}
+
+- (NSString *) groupEx
+{
+    if (_group.first == '@' || _group.first == '*') 
+        return _group.tail;
+    return _group;
+}
+
 
 + (id) fromDictionary: (NSDictionary *) dict
            withAuthor: (SamLibAuthor *) author;
@@ -211,6 +279,8 @@ static NSString * prettyHtml (NSMutableArray *diffs)
     KX_RELEASE(_lastModified);
     KX_RELEASE(_diffResult);
     KX_RELEASE(_filetime);
+    KX_RELEASE(_dateModified);
+    KX_RELEASE(_commentsObject);
     KX_SUPER_DEALLOC();
 }
 
@@ -229,6 +299,8 @@ static NSString * prettyHtml (NSMutableArray *diffs)
     NSString *rating     = getStringFromDict(dict, @"rating", _path);
     
     self.flagNew = getStringFromDict(dict, @"flagNew", _path); 
+    self.dateModified = getStringFromDict(dict, @"dateModified", _path);     
+    //self.groupMark =  [[dict get:@"groupMark" orElse:[NSNumber numberWithChar:0]] charValue];
     
     SamLibTextChanged s = SamLibTextChangedNone;
     
@@ -236,9 +308,14 @@ static NSString * prettyHtml (NSMutableArray *diffs)
         _size != size && 
         ![_size isEqualToString:size]) {
         
+        NSInteger oldSize;
+        if (setChanged)
+            oldSize = self.sizeInt;
         self.size = size;
-        if (setChanged)        
+        if (setChanged) {        
+            _deltaSize = self.sizeInt - oldSize;
             s |= SamLibTextChangedSize;
+        }
     }
     
     if ((note != nil || allowNil) &&
@@ -253,19 +330,29 @@ static NSString * prettyHtml (NSMutableArray *diffs)
     if ((comments != nil || allowNil) &&
         _comments != comments && 
         ![_comments isEqualToString:comments]) {
-        
-        self.comments = comments;        
+
+        NSInteger oldComments;
         if (setChanged)        
+            oldComments = self.commentsInt;
+        self.comments = comments;        
+        if (setChanged)  {      
+            _deltaComments = self.commentsInt - oldComments;
             s |= SamLibTextChangedComments;
+        }
     }   
     
     if ((rating != nil || allowNil) &&
         _rating != rating && 
         ![_rating isEqualToString:rating]) {
         
+        float oldRating;
+        if (setChanged) 
+            oldRating = self.ratingFloat;
         self.rating = rating;        
-        if (setChanged)        
+        if (setChanged) {
+            _deltaRating = self.ratingFloat - oldRating;
             s |= SamLibTextChangedRating;
+        }
     }    
     
     if ((copyright != nil || allowNil) &&
@@ -330,7 +417,7 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 
 - (NSDictionary *) toDictionary
 {
-    NSMutableDictionary * dict = [NSMutableDictionary dictionaryWithCapacity:14];
+    NSMutableDictionary * dict = [NSMutableDictionary dictionaryWithCapacity:17];
     
     [dict updateOnly: @"path" valueNotNil: _path];
     [dict updateOnly: @"copyright" valueNotNil: _copyright];    
@@ -343,12 +430,14 @@ static NSString * prettyHtml (NSMutableArray *diffs)
     [dict updateOnly: @"type" valueNotNil: _type];            
     [dict updateOnly: @"rating" valueNotNil: _rating];
     [dict updateOnly: @"timestamp" valueNotNil: [_timestamp iso8601Formatted]];    
-    [dict updateOnly: @"rating" valueNotNil: _flagNew];
-    //if (_favorited)
-    //    [dict update: @"favorited" value: [NSNumber numberWithBool:YES]];    
+    [dict updateOnly: @"flagNew" valueNotNil: _flagNew];
+    [dict updateOnly: @"dateModified" valueNotNil: _dateModified];
     [dict updateOnly: @"lastModified" valueNotNil: _lastModified];
     [dict updateOnly: @"diffResult" valueNotNil: _diffResult];
     [dict updateOnly: @"filetime" valueNotNil: [_filetime iso8601Formatted]];
+    
+    //if (_groupMark != 0)
+    //    [dict update: @"groupMark" value: [NSNumber numberWithChar:_groupMark]];
     
     return dict;
 }
@@ -359,8 +448,7 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 
 - (BOOL) canUpdate
 {
-    return (self.htmlFile == nil) || 
-        (NSOrderedAscending == [_filetime compare:_timestamp]);
+    return (self.htmlFile == nil) || [_filetime isLessThan:_timestamp];
 }
 
 - (NSString *) htmlPath
@@ -372,7 +460,7 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 - (NSString *) diffPath
 {
     NSString *s = [SamLibAgent.textsPath() stringByAppendingPathComponent:_path];
-    return [s stringByAppendingPathExtension:@"diff"];
+    return [s stringByAppendingPathExtension:@"diff.html"];
 }
 
 - (NSString *) rawPath
@@ -560,8 +648,10 @@ static NSString * prettyHtml (NSMutableArray *diffs)
     SamLibText *this = self;
 #endif        
     
+    NSString * lastModified = self.htmlFile.nonEmpty ? _lastModified : nil;
+    
     SamLibAgent.fetchData(self.relativeUrl, 
-                          _lastModified, 
+                          lastModified, 
                           NO,
                           nil,
                           ^(SamLibStatus status, NSString *data, NSString *lastModified) {
@@ -585,6 +675,45 @@ static NSString * prettyHtml (NSMutableArray *diffs)
                               block(this, status, data);         
                           });
     
+}
+
+
+- (SamLibComments *) commentsObject: (BOOL) forceLoad
+{
+    if (!_commentsObject && forceLoad) {
+        NSString *path;
+        path = [SamLibAgent.commentsPath() stringByAppendingPathComponent: self.key];
+        path = [path stringByAppendingPathExtension: @"comments"];
+        _commentsObject = KX_RETAIN([SamLibComments fromFile: path withText: self]); 
+    }
+    return _commentsObject;
+}
+
+- (NSString *) sizeWithDelta: (NSString *)sep
+{
+    if (self.changedSize && _deltaSize > 0)
+        return KxUtils.format(@"%@%@%+ld", _size, sep, _deltaSize);    
+    return self.size;
+}
+
+- (NSString *) commentsWithDelta: (NSString *)sep
+{
+    NSInteger i = self.commentsInt;
+    if (self.changedComments && _deltaComments > 0)
+        return KxUtils.format(@"%ld%@%+ld", i, sep, _deltaComments);    
+    if (i)
+        return KxUtils.format(@"%ld", i);
+    return @"";
+}
+
+- (NSString *) ratingWithDelta: (NSString *)sep
+{
+    float f = self.ratingFloat;
+    if (self.changedRating && _deltaRating > 0)
+        return KxUtils.format(@"%.2f%@%+.2f", f, sep, _deltaComments);    
+    if (f > 0)
+        return KxUtils.format(@"%.2f", f);
+    return @"";
 }
 
 @end

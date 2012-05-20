@@ -54,8 +54,8 @@
     if (referer)
         [request addValue:referer forHTTPHeaderField:@"Referer"];
     
-    // this is for Samizdat site 
-    // code-monkeys cannot into content-type charset
+    // this is for samlib.ru site 
+    // unfortunately theirs coders cannot into content-type charset
     [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];    
     
 	AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithRequest:request success:success failure:failure];

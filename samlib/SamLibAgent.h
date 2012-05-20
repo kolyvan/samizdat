@@ -22,7 +22,6 @@ typedef struct {
     NSString * (*authorsPath)();
     NSString * (*textsPath)();    
     NSString * (*commentsPath)();
-    //NSString * (*settingsPath)();    
     
     NSMutableDictionary * (*settings)();
    
@@ -37,17 +36,10 @@ typedef struct {
                      NSDictionary * parameters,
                      AsyncResultBlock block);
     
-    /*
-    void (*loginSamizdat)(NSString *name,
-                          NSString *pass,
-                          AsyncResultBlock block);
-    
-    void (*logoutSamizdat)(AsyncResultBlock block);
-     */
-    
-    NSArray* (*authors)();
+    void (*cancelAll)();    
+       
+    NSArray* (*loadAuthors)();
     void (*removeAuthor)(NSString *path);
-    
     
     
 } SamLibAgent_t;

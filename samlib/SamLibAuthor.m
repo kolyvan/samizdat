@@ -32,6 +32,7 @@ extern int ddLogLevel;
 @property (readwrite, nonatomic) NSString * www;
 @property (readwrite, nonatomic) NSString * email;
 @property (readwrite, nonatomic) NSString * lastModified;
+@property (readwrite, nonatomic) NSString * about;
 @property (readwrite, nonatomic) NSArray * texts;
 
 - (void) updateFromDictionary: (NSDictionary *) dict;
@@ -51,10 +52,12 @@ extern int ddLogLevel;
 @synthesize lastModified = _lastModified;
 @synthesize digest = _digest;
 @synthesize texts = _texts;
+@synthesize about = _about;
 //@synthesize ignored = _ignored;
 //@synthesize isDirty = _isDirty;
 @dynamic isDirty;
 @synthesize changed = _changed;
+@dynamic ratingFloat;
 
 - (NSString *) relativeUrl 
 {
@@ -71,6 +74,16 @@ extern int ddLogLevel;
         KX_RELEASE(_digest);
         _digest = KX_RETAIN(digest);
     }
+}
+
+- (float) ratingFloat
+{
+    if (_rating.nonEmpty) {
+        NSRange r = [_rating rangeOfString:@"*"];
+        if (r.location != NSNotFound)
+            return [[_rating take: r.location] floatValue];
+    }
+    return 0;    
 }
 
 /*
@@ -154,6 +167,7 @@ extern int ddLogLevel;
     self.visitors = getStringFromDict(dict, @"visitors", _path);
     self.www      = getStringFromDict(dict, @"www", _path);
     self.email    = getStringFromDict(dict, @"email", _path);
+    self.about    = getStringFromDict(dict, @"about", _path);   
     
     id t = [dict get:@"texts"];
     if (t) {
@@ -199,6 +213,7 @@ extern int ddLogLevel;
     [dict updateOnly: @"digest" valueNotNil: _digest];    
     [dict updateOnly: @"timestamp" valueNotNil: [_timestamp iso8601Formatted]];    
     [dict updateOnly: @"texts" valueNotNil: textsAsDict];    
+    [dict updateOnly: @"about" valueNotNil: _about];        
     
     //if (_ignored)
     //    [dict update: @"ignored" value: [NSNumber numberWithBool:YES]];

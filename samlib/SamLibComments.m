@@ -359,7 +359,17 @@ static NSDate* mkDateFromComment(NSString *dt)
 }
 
 - (void) post:(NSString *)message
-        block: (UpdateCommentsBlock) block;
+        block: (UpdateCommentsBlock) block
+{
+    [self post:message
+       replyto: nil
+         block:block];
+}
+
+
+- (void) post: (NSString *) message 
+      replyto: (NSString *) msgid
+        block: (UpdateCommentsBlock) block
 {
     SamLibUser *user = [SamLibUser currentUser];
     
@@ -368,15 +378,22 @@ static NSDate* mkDateFromComment(NSString *dt)
     // /i/iwanow475_i_i/zaratustra
     NSString *url = [_text.relativeUrl stringByDeletingPathExtension];
     
+    message = [message stringByReplacingOccurrencesOfString:@"\n" 
+                                                 withString:@"\r"];
+    
     [d update:@"FILE" value:url];
     [d update:@"TEXT" value:message];        
     [d update:@"NAME" value:user.name];
     [d update:@"EMAIL"value:user.email];
     [d update:@"URL"  value:user.isLogin ? user.homePage : user.url];     
-    
-    // todo: reply with store_reply
-    [d update:@"OPERATION" value:@"store_new" ];
-    [d update:@"MSGID" value:@""];     
+
+    if (msgid.nonEmpty) {
+        [d update:@"OPERATION" value:@"store_reply" ];
+        [d update:@"MSGID" value:msgid];     
+    } else {
+        [d update:@"OPERATION" value:@"store_new" ];
+        [d update:@"MSGID" value:@""];     
+    }
         
     SamLibAgent.postData(@"/cgi-bin/comment",  
                          KxUtils.format(@"http://samlib.ru/cgi-bin/comment?COMMENT=%@", url), 

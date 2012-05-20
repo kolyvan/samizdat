@@ -1,0 +1,110 @@
+.main {
+    font-family: Lucida Grande, sans-serif;
+}
+
+.comment {
+	margin-left: 1em;
+  	margin-right: 1em;
+	margin-top: 2em;
+	padding-bottom: 1em;    
+	border-top: 1px solid #555;
+}
+
+.comment .title {
+	background-color: #d3d7cf;
+	padding: 4px;
+}
+
+.comment .title .name {
+	color: #2e34ff;	
+	font-weight: bold;
+	font-size: 1.0em;		
+}
+
+.comment .title .red {
+	color: red;		
+}
+
+.comment .title .brown {
+	color: brown;		
+}
+
+.comment .title .num {
+	font-size: 0.9em;	
+} 
+
+.comment .title .date {
+    float: right;
+    font-size: 0.9em;
+}
+
+.comment .deleted {    
+	font-size: 0.9em;	    
+	font-style: italic;    
+}
+
+.comment .replyto {
+	font-style: italic;
+	font-size: 0.9em;	
+	color: gray;
+	padding-left: 1em;
+	margin-top: 1em;		
+}
+
+.comment .replyto span {
+	display: block;
+}
+
+.comment .message {
+	margin-top: 1em;		
+	font-size: 1.1em;		    
+}
+
+.comment .message span {
+	display: block;
+}
+
+.info .title {
+	text-align:center;
+	padding: 0em 1em 0em 1em;		
+}
+
+.info .title .copyright {	
+	font-size: 1.4em;
+	font-weight: bold;		
+}
+
+.info .title .name {	
+	font-size: 1.4em;
+	font-weight: bold;		
+}
+
+.info .subinfo {
+	font-size: 0.8em;
+	color:black;
+	padding: 2em 1em 0em 1em;
+}
+
+.info .subinfo .stat span {
+	color:#00008B;
+}
+
+.info .subinfo .menu {
+
+}
+
+a.replylink {
+	display: block;
+    background: url(reply.png) 100% 100% no-repeat;
+    height: 16px;
+    width: 16px;    
+    float: right;    
+}
+
+span.new {
+	display: inline-block;
+    background: url(new.png) 100% 100% no-repeat;
+    height: 16px;
+    width: 16px;
+}
+

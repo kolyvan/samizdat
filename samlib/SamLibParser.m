@@ -131,7 +131,7 @@ static NSString* parseIsNew(NSString *s)
             NSString *color = scanUpToTag(scanner, @"size=-2>");
             
             if ([scanner scanString: @"New</font>" intoString:nil]) {
-                return color;
+                return [color trimmed];
             }
         } 
         
@@ -169,6 +169,7 @@ static void parseRatingGroupGenreComments(NSScanner *scanner, NSMutableDictionar
         scanner.scanLocation = 0;
     
     NSString *group = nextTag(scanner, @"\"", @"\"");
+    //NSNumber *groupMark = nil;
     
     if (group.nonEmpty) {                 
 
@@ -179,8 +180,10 @@ static void parseRatingGroupGenreComments(NSScanner *scanner, NSMutableDictionar
             
         } else {
             
-            if (group.first == '@' || group.first == '*')
-                group = group.tail;
+            //if (group.first == '@' || group.first == '*') {
+            //    group = group.tail;
+            //    groupMark = [NSNumber numberWithChar:group.first];;
+            //}
         }
         
         scanLoc = scanner.scanLocation;         
@@ -192,6 +195,7 @@ static void parseRatingGroupGenreComments(NSScanner *scanner, NSMutableDictionar
     
     [dict updateOnly: @"rating" valueNotNil: rating];
     [dict updateOnly: @"group" valueNotNil: group];  
+    //[dict updateOnly: @"groupMark" valueNotNil: groupMark];      
     [dict updateOnly: @"genre" valueNotNil: genre];            
     [dict updateOnly: @"comments" valueNotNil: comments];
 }
@@ -389,8 +393,8 @@ static NSDictionary * parseComment(NSString *html)
         for (NSString * line in [s lines]) { 
             if ([line hasPrefix:@"&gt;<b>"]) {
                 
-                NSString * t = parseCommentReplyLine([line substringFromIndex:@"&gt;<b>".length]);                
-                [replyto appendString:t];
+                NSString * t = parseCommentReplyLine([line substringFromIndex:@"&gt;<b>".length]);                                 
+                [replyto appendString:[t stringByReplacingOccurrencesOfString: @"</b>&gt;<b>" withString:@""]];
                 [replyto appendString:@"\n"];                
             }            
             else {
@@ -452,6 +456,19 @@ static NSDictionary * scanAuthorInfo(NSString *html)
         return nil;
     }
     
+    //parse about
+    
+    // 
+    NSString *about = nextTag(scanner, 
+                   @"<b><font color=#393939>Об авторе:</font></b><i>", 
+                   @"</i>");  
+    
+    if (about.nonEmpty) {
+        about = [about stringByReplacingOccurrencesOfString:@"<dd>" withString:@"\n"];
+        about = [about stringByReplacingOccurrencesOfString:@"&nbsp;" withString:@""];        
+        [dict update:@"about" value:about];
+    }
+        
     // parse title
     scanner = [NSScanner scannerWithString: nametitle];
     
@@ -674,7 +691,7 @@ static NSDictionary * scanTextPage(NSString *html)
         }]; 
         
         [dict updateOnce:@"size" with:^id{
-            // <li>Размещен: 21/03/2012, изменен: 21/03/2012. 12k. <a href=stat.shtml
+            // <li>Размещен: 21/03/2012, изменен: 21/03/2012. 12k. <a href=stat.shtml            
             NSString *s = substringFromPattern(line, @"<li>Размещен: ");
             if (s.nonEmpty) {
                 s = substringFromPattern(s, @". ");
@@ -686,6 +703,17 @@ static NSDictionary * scanTextPage(NSString *html)
             }
             return nil;
         }]; 
+        
+        [dict updateOnce:@"dateModified" with:^id{
+            // <li>Размещен: 21/03/2012, изменен: 21/03/2012. 12k. <a href=stat.shtml            
+            NSString *s = substringFromPattern(line, @"<li>Размещен: ");
+            if (s.nonEmpty) {                        
+                NSScanner *scanner1 = [NSScanner scannerWithString: s];
+                return nextTag(scanner1, @"изменен: ", @". ");                 
+            }
+            return nil;
+        }]; 
+ 
         
         [dict updateOnce:@"type" with:^id{
             // <a href=/type/index_type_5-1.shtml>Статья</a>:             
@@ -736,13 +764,7 @@ static NSDictionary * scanTextPage(NSString *html)
         NSString *note = nextTag(scanner, @"<i>", @"</i></font");
         [dict updateOnly:@"note" valueNotNil:note];
     }
-    
-   // if ([dict contains:@"type"] &&
-   //     ![dict contains:@"group"]) {
-   //     
-   //     [dict update: @"group" value: [dict get:@"type"]];
-   // }
-    
+        
     return dict;
 }
 

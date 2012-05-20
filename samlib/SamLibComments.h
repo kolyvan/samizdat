@@ -11,7 +11,7 @@
 
 @class SamLibComments;
 
-typedef void (^UpdateCommentsBlock)(SamLibComments *author, 
+typedef void (^UpdateCommentsBlock)(SamLibComments *comments, 
                                     SamLibStatus status,                                    
                                     NSString *error);
 
@@ -68,6 +68,10 @@ typedef void (^UpdateCommentsBlock)(SamLibComments *author,
 - (void) save: (NSString *)folder;
 
 - (void) post: (NSString *) message 
+        block: (UpdateCommentsBlock) block;
+
+- (void) post: (NSString *) message 
+      replyto: (NSString *) msgid
         block: (UpdateCommentsBlock) block;
 
 

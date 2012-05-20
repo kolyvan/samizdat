@@ -24,16 +24,16 @@ extern int ddLogLevel;
 ///
 
 static SamLibUser * gUser = nil;
+static NSString * gKeychainService = @"ru.kolyvan.samlib";
+
 
 @implementation SamLibUser
 
-//@dynamic name;
-//@dynamic login;
-//@dynamic pass;
-//@dynamic email;
-//@dynamic url;
-//@dynamic homePage;
-//@dynamic isLogin;
++  (void) setKeychainService: (NSString *) name
+{
+    KX_RELEASE(gKeychainService);
+    gKeychainService = [name copy];
+}
 
 - (NSString *) name
 {
@@ -67,7 +67,7 @@ static SamLibUser * gUser = nil;
     if (login.nonEmpty) {
 
         NSError *error = nil;
-        pass = [SSKeychain passwordForService:@"ru.kolyvan.samlib" 
+        pass = [SSKeychain passwordForService:gKeychainService
                                                 account:login 
                                                   error:&error];
         if (!pass) {
@@ -86,20 +86,27 @@ static SamLibUser * gUser = nil;
 }
 
 - (void) setPass:(NSString *)pass
-{
-    NSAssert(pass != nil, @"nil password");
-    
+{    
     NSString *login = self.login;
     if (login.nonEmpty) {
-    
+ 
         NSError *error = nil;
-        if (![SSKeychain setPassword:pass 
-                          forService:@"ru.kolyvan.samlib"  
-                             account:login
-                               error:&error]) {
-            
-            DDLogCWarn(locString(@"keychain failure: %@"), 
-                       KxUtils.completeErrorMessage(error));
+        if (pass.nonEmpty) {
+                        
+           // or use KxUtils.appBundleID() for service name?
+            if (![SSKeychain setPassword:pass 
+                              forService:gKeychainService
+                                 account:login
+                                   error:&error]) {
+                
+                DDLogCWarn(locString(@"keychain failure: %@"), 
+                           KxUtils.completeErrorMessage(error));
+            }
+        } else {
+        
+            [SSKeychain deletePasswordForService:gKeychainService
+                                         account:pass];
+        
         }
     } else {
     
@@ -134,8 +141,9 @@ static SamLibUser * gUser = nil;
 
 + (void) initialize
 {    
-    if(!gUser) 
-        gUser = [[SamLibUser alloc] init];
+    if(!gUser) {
+        gUser = [[SamLibUser alloc] init];        
+    }
 }
 
 + (SamLibUser *) currentUser
@@ -163,12 +171,19 @@ static SamLibUser * gUser = nil;
 
 - (void) loginSamizdat:(LoginBlock) block
 {
+    [self loginSamizdat:self.login pass:self.pass block:block];
+}
+- (void) loginSamizdat: (NSString *) login 
+                  pass: (NSString *) pass 
+                 block: (LoginBlock) block;
+
+{
     NSMutableDictionary * d = [NSMutableDictionary dictionary];
     
     [d setValue:@"login" forKey:@"OPERATION"];    
     [d setValue:@"http://samlib.ru/" forKey:@"BACK"];        
-    [d setValue:self.login forKey:@"DATA0"];
-    [d setValue:self.pass forKey:@"DATA1"];    
+    [d setValue:login forKey:@"DATA0"];
+    [d setValue:pass forKey:@"DATA1"];    
     
     SamLibAgent.postData(@"/cgi-bin/login", 
                          @"http://samlib.ru/cgi-bin/login", 

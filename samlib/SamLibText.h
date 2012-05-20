@@ -46,12 +46,17 @@ typedef enum {
     NSString * _flagNew;
     NSString * _lastModified;
     NSString * _diffResult;
-    NSDate * _filetime;    
-
+    NSDate * _filetime;
+    NSString *_dateModified;
+    //char groupMark;
+    
     SamLibTextChanged _changedFlag;        
-    //BOOL _favorited;    
+    NSInteger _deltaSize;
+    NSInteger _deltaComments;    
+    float _deltaRating;
     
     KX_WEAK SamLibAuthor * _author;
+    SamLibComments * _commentsObject;
 }
 
 @property (readonly, nonatomic) NSString * copyright;
@@ -64,7 +69,15 @@ typedef enum {
 @property (readonly, nonatomic) NSString * type;
 @property (readonly, nonatomic) NSString * rating;
 @property (readonly, nonatomic) NSString * flagNew;
-//@property (readonly, nonatomic) BOOL favorited;
+@property (readonly, nonatomic) NSString * dateModified;
+//@property (readonly, nonatomic) char groupMark;
+
+@property (readonly, nonatomic) NSInteger sizeInt;
+@property (readonly, nonatomic) NSInteger commentsInt;
+@property (readonly, nonatomic) float ratingFloat;
+@property (readonly, nonatomic) NSInteger deltaSize;
+@property (readonly, nonatomic) NSInteger deltaComments;
+@property (readonly, nonatomic) float deltaRating;
 
 @property (readonly, nonatomic) SamLibTextChanged changedFlag;
 @property (readonly) BOOL changedSize;
@@ -89,6 +102,7 @@ typedef enum {
 @property (readonly, nonatomic) BOOL canUpdate;
 @property (readonly, nonatomic) BOOL canMakeDiff;
 
+@property (readonly, nonatomic) NSString * groupEx;
 
 // comments
 
@@ -109,6 +123,13 @@ typedef enum {
       formatter: (NSString *(^)(NSString *)) formatter;
 
 - (void) makeDiff: (NSString *(^)(NSString *)) formatter;
+
+
+- (SamLibComments *) commentsObject: (BOOL) forceLoad;
+
+- (NSString *) sizeWithDelta: (NSString *)sep;
+- (NSString *) commentsWithDelta: (NSString *)sep;;
+- (NSString *) ratingWithDelta: (NSString *)sep;
 
 
 @end

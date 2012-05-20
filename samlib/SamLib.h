@@ -29,7 +29,9 @@ extern NSDate * getDateFromDict(NSDictionary * dict, NSString *name, NSString *p
 extern NSHTTPCookie * searchSamLibCookie(NSString *name);
 extern NSHTTPCookie * deleteSamLibCookie(NSString *name);
 extern NSDictionary * loadDictionary(NSString *filepath);
+extern NSDictionary * loadDictionaryEx(NSString *filepath, BOOL immutable);
 extern BOOL saveDictionary(NSDictionary *dict, NSString * filepath);
+extern NSString * mkHTMLPage(NSString *data, NSString *head, NSString *cssLink, NSString *jsLink);
 ////
 
 @interface SamLibBase : NSObject {
