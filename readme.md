@@ -13,3 +13,6 @@ Screenshots:
 
 ![main view](http://dl.dropbox.com/u/80472203/samizdat-main.png "Main View")
 
+
+Download [.dmg](http://dl.dropbox.com/u/80472203/samizdat.dmg)
+
