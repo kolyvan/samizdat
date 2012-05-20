@@ -241,32 +241,29 @@ static NSDate* mkDateFromComment(NSString *dt)
     NSArray *result = [fetchedComments map:^id(id elem) {
         return [SamLibComment fromDictionary:elem];  
     }];
-    
+        
     if (_all.nonEmpty) {        
 
-        SamLibComment *first = _all.first;
-        
+        SamLibComment *first = _all.first;        
         result = [result filter:^BOOL(id elem) {
             return [first isLessThan: elem];            
         }];
-        
-        if (result.nonEmpty) {
-                                
-            NSInteger count = MAX(0, MAX_COMMENTS - result.count);
-            if (count > 0) {         
-                NSArray *t = [_all take: MAX(_all.count, count)];
-                result = [result mutableCopy];
-                [(NSMutableArray *)result appendAll:t];
-            }
-        } 
-    } 
+    }
     
     if (result.nonEmpty) {
     
-        _isDirty = YES;
-        _numberOfNew = result.count - _all.count;      
-        self.timestamp = [NSDate date];                                           
+        _numberOfNew = result.count;      
+                
+        NSInteger count = MAX(0, MAX_COMMENTS - result.count);
+        if (count > 0) {
+            NSArray *old = [_all take: MIN(_all.count, count)];
+            result = [result mutableCopy];
+            [(NSMutableArray *)result appendAll:old];
+        }
+        
         self.all = result;     
+        self.timestamp = [NSDate date];        
+        _isDirty = YES;
     }
 }
 
