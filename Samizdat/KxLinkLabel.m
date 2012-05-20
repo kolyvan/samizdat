@@ -5,6 +5,10 @@
 //  Created by Konstantin Boukreev on 19.04.12.
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
+//  https://github.com/kolyvan/samizdat
+//  this file is part of Samizdat
+//  Samizdat is licenced under the LGPL v3, see lgpl-3.0.txt
+
 
 #import "KxLinkLabel.h"
 #import "KxArc.h"

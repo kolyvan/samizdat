@@ -1,3 +1,8 @@
+//  https://github.com/kolyvan/samizdat
+//  this file is part of Samizdat
+//  Samizdat is licenced under the LGPL v3, see lgpl-3.0.txt
+
+
 
 #import "SamLib.h"
 #import "SamLibAgent.h"
