@@ -35,6 +35,7 @@
 		872E58B71563D9A700EFBF33 /* TextsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 872E58B51563D9A700EFBF33 /* TextsViewController.m */; };
 		872E58BC1563DA7E00EFBF33 /* TextCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 872E58BB1563DA7E00EFBF33 /* TextCellView.m */; };
 		872E58BF1563E04200EFBF33 /* FavoritesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 872E58BE1563E04200EFBF33 /* FavoritesViewController.m */; };
+		87410B5915690F8900A4353D /* DiffMatchPatch.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 87E2FED5155A6851009C4DA9 /* DiffMatchPatch.framework */; };
 		875A5DAC1566176A00AEE39F /* AuthorInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 875A5DAA1566176A00AEE39F /* AuthorInfoViewController.m */; };
 		875A5DB1156624AB00AEE39F /* KxLinkLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 875A5DB0156624AB00AEE39F /* KxLinkLabel.m */; };
 		8771A69D1558FAA2001BB718 /* KxCast.m in Sources */ = {isa = PBXBuildFile; fileRef = 8771A6871558FAA2001BB718 /* KxCast.m */; };
@@ -141,6 +142,16 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		87410B5815690F8100A4353D /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				87410B5915690F8900A4353D /* DiffMatchPatch.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		87D33F5B1557C3C300784BB2 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 12;
@@ -670,6 +681,7 @@
 				87163EA4155D1889001D4818 /* Sources */,
 				87163EA5155D1889001D4818 /* Frameworks */,
 				87163EA6155D1889001D4818 /* Resources */,
+				87410B5815690F8100A4353D /* CopyFiles */,
 			);
 			buildRules = (
 			);
