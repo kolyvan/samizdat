@@ -313,7 +313,9 @@ static NSString * parseCommentReplyLine(NSString *line)
     
     if (findTag(scanner, @"<font color") &&
         findTag(scanner, @">")) {
-        return scanUpToTag(scanner, @"</font>");
+        NSString *s = scanUpToTag(scanner, @"</font>");
+        if (s.nonEmpty)
+            return s;
     }
     
     if ([line hasSuffix:@"</b>"])
@@ -405,9 +407,11 @@ static NSDictionary * parseComment(NSString *html)
         for (NSString * line in [s lines]) { 
             if ([line hasPrefix:@"&gt;<b>"]) {
                 
-                NSString * t = parseCommentReplyLine([line substringFromIndex:@"&gt;<b>".length]);                                 
-                [replyto appendString:[t stringByReplacingOccurrencesOfString: @"</b>&gt;<b>" withString:@""]];
-                [replyto appendString:@"\n"];                
+                NSString * t = parseCommentReplyLine([line substringFromIndex:@"&gt;<b>".length]);   
+                if (t.nonEmpty) {
+                    [replyto appendString:[t stringByReplacingOccurrencesOfString: @"</b>&gt;<b>" withString:@""]];
+                    [replyto appendString:@"\n"];                
+                }
             }            
             else {
                 [message appendString:line];
