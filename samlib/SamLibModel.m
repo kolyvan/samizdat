@@ -108,6 +108,14 @@ extern int ddLogLevel;
     self.version += 1;  
 }
 
+- (SamLibAuthor *) findAuthor: (NSString *) byPath
+{
+    return [_authors find:^BOOL(id elem) {
+        SamLibAuthor * author = elem;
+        return [author.path isEqualToString:byPath];
+    }];
+}
+
 - (SamLibText *) findTextByKey: (NSString *)key
 {
     NSArray *a = [key split:@"."];
@@ -115,11 +123,7 @@ extern int ddLogLevel;
     if (a.count == 2) {
         
         NSString *path = [a objectAtIndex:0];        
-        SamLibAuthor *author = [_authors find:^BOOL(id elem) {
-            SamLibAuthor * author = elem;
-            return [author.path isEqualToString:path];
-        }];
-        
+        SamLibAuthor *author = [self findAuthor: path];        
         if (author) {
             //return [author findText:path];            
             return [author.texts find: ^(id elem) { 

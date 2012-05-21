@@ -29,6 +29,7 @@
 - (void) addAuthor: (SamLibAuthor *) author;
 - (void) deleteAuthor: (SamLibAuthor *) author;
 
+- (SamLibAuthor *) findAuthor: (NSString *) byPath;
 - (SamLibText *) findTextByKey: (NSString *)key;
 
 @end

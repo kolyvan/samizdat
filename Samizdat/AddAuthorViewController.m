@@ -19,6 +19,7 @@
 #import "KxUtils.h"
 #import "NSObject+Kolyvan.h"
 #import "NSString+Kolyvan.h"
+#import "SamLibModel.h"
 
 @interface AddAuthorViewController() {
 
@@ -132,86 +133,97 @@
     
     [_fetchedInfo setHidden:NO];
     
-    if (url.nonEmpty && 
-        ![url contains: @"."] &&
-        ![url contains: @"/"]) {
-        
-        _name.stringValue = @"";
-        _subtitle.stringValue = @"";
-        _www.stringValue = @"";
-        _email.stringValue = @"";
-        _updated.stringValue = @"";
-        _size.stringValue = @"";
-        _rating.stringValue = @"";
-        _visitors.stringValue = @"";            
-
-        NSString *message = KxUtils.format(locString(@"fetching %@"), url);
-        
-        AppDelegate *app = [NSApp delegate];    
-        if ([app startReload:self 
-                 withMessage:message]) {
-        
-            _fetchedInfo.stringValue = message;
-            _fetchedInfo.textColor = [NSColor textColor];
+    if (!url.nonEmpty || 
+        [url contains: @"."] ||
+        [url contains: @"/"]) {
             
-            [_url setEnabled:NO];
-            [_infoBox setHidden:YES];
-            [_btnAdd setEnabled:NO];
-            
-            KX_RELEASE(_author);
-            _author = KX_RETAIN([[SamLibAuthor alloc] initWithPath:url]);
-            
-            [_author update:^(SamLibAuthor *author, SamLibStatus status, NSString *error) {
-                
-                [app finishReload:status 
-                      withMessage:nil];    
-                
-                if (self.view.isHidden)
-                    return;
-                
-                [_url setEnabled:YES];
-                
-                if (status == SamLibStatusFailure) {
-                    
-                    _fetchedInfo.stringValue = error;
-                    _fetchedInfo.textColor = [NSColor redColor];
-                }
-                else {
-                    
-                    _url.stringValue = author.url;                
-                    
-                    if (author.name.nonEmpty)
-                        _name.stringValue = author.name;
-                    if (author.title.nonEmpty)
-                        _subtitle.stringValue = author.title ;
-                    if (author.www.nonEmpty)
-                        _www.stringValue = author.www;
-                    if (author.email.nonEmpty)
-                        _email.stringValue = author.email;
-                    if (author.updated.nonEmpty)
-                        _updated.stringValue = author.updated;
-                    if (author.size.nonEmpty)
-                        _size.stringValue = author.size;
-                    if (author.rating.nonEmpty)                
-                        _rating.stringValue = author.rating;
-                    if (author.visitors.nonEmpty)            
-                        _visitors.stringValue = author.visitors;            
-                    
-                    _fetchedInfo.stringValue = locString(@"author's information");
-                    _fetchedInfo.textColor = [NSColor blueColor];   
-                    
-                    [_infoBox setHidden:NO];                
-                    [_btnAdd setEnabled:YES]; 
-                }
-                
-            }];     
-        }
-            
-    } else {
-      
         [_fetchedInfo setStringValue: KxUtils.format(locString(@"invalid URL: %@"), url)];        
         [_fetchedInfo setTextColor:[NSColor redColor]];        
+        return;
     }
+    
+    SamLibAuthor *author = [[SamLibModel shared] findAuthor: url];
+    if (author) {
+        
+        [_fetchedInfo setStringValue: KxUtils.format(locString(@"already exists: %@"), author.name)];        
+        [_fetchedInfo setTextColor:[NSColor redColor]];   
+        return;
+    }
+        
+    //if (url.nonEmpty && 
+    //    ![url contains: @"."] &&
+    //    ![url contains: @"/"]) 
+        
+    _name.stringValue = @"";
+    _subtitle.stringValue = @"";
+    _www.stringValue = @"";
+    _email.stringValue = @"";
+    _updated.stringValue = @"";
+    _size.stringValue = @"";
+    _rating.stringValue = @"";
+    _visitors.stringValue = @"";            
+    
+    NSString *message = KxUtils.format(locString(@"fetching %@"), url);
+    
+    AppDelegate *app = [NSApp delegate];    
+    if ([app startReload:self 
+             withMessage:message]) {
+        
+        _fetchedInfo.stringValue = message;
+        _fetchedInfo.textColor = [NSColor textColor];
+        
+        [_url setEnabled:NO];
+        [_infoBox setHidden:YES];
+        [_btnAdd setEnabled:NO];
+        
+        KX_RELEASE(_author);
+        _author = KX_RETAIN([[SamLibAuthor alloc] initWithPath:url]);
+        
+        [_author update:^(SamLibAuthor *author, SamLibStatus status, NSString *error) {
+            
+            [app finishReload:status 
+                  withMessage:nil];    
+            
+            if (self.view.isHidden)
+                return;
+            
+            [_url setEnabled:YES];
+            
+            if (status == SamLibStatusFailure) {
+                
+                _fetchedInfo.stringValue = error;
+                _fetchedInfo.textColor = [NSColor redColor];
+            }
+            else {
+                
+                _url.stringValue = author.url;                
+                
+                if (author.name.nonEmpty)
+                    _name.stringValue = author.name;
+                if (author.title.nonEmpty)
+                    _subtitle.stringValue = author.title ;
+                if (author.www.nonEmpty)
+                    _www.stringValue = author.www;
+                if (author.email.nonEmpty)
+                    _email.stringValue = author.email;
+                if (author.updated.nonEmpty)
+                    _updated.stringValue = author.updated;
+                if (author.size.nonEmpty)
+                    _size.stringValue = author.size;
+                if (author.rating.nonEmpty)                
+                    _rating.stringValue = author.rating;
+                if (author.visitors.nonEmpty)            
+                    _visitors.stringValue = author.visitors;            
+                
+                _fetchedInfo.stringValue = locString(@"author's information");
+                _fetchedInfo.textColor = [NSColor blueColor];   
+                
+                [_infoBox setHidden:NO];                
+                [_btnAdd setEnabled:YES]; 
+            }
+            
+        }];     
+    }    
 }
 
 - (IBAction) addAuthor: (id) sender
