@@ -46,7 +46,7 @@
 					<bool key="EncodedWithXMLCoder">YES</bool>
 					<object class="NSButton" id="329765210">
 						<reference key="NSNextResponder" ref="1005"/>
-						<int key="NSvFlags">268</int>
+						<int key="NSvFlags">265</int>
 						<string key="NSFrame">{{348, 482}, {39, 38}}</string>
 						<reference key="NSSuperview" ref="1005"/>
 						<reference key="NSWindow"/>
@@ -746,12 +746,12 @@
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<reference ref="229126676"/>
-							<reference ref="555507369"/>
 							<reference ref="1023622289"/>
 							<reference ref="389106186"/>
 							<reference ref="688365873"/>
 							<reference ref="907342640"/>
 							<reference ref="329765210"/>
+							<reference ref="555507369"/>
 						</object>
 						<reference key="parent" ref="0"/>
 					</object>
