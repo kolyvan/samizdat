@@ -19,8 +19,9 @@
 #import "KxMacros.h"
 #import "KxUtils.h"
 #import "NSString+Kolyvan.h"
+#import "NSDictionary+Kolyvan.h"
 #import "KxLinkLabel.h"
-
+#import "SamLibAgent.h"
 
 @interface AuthorInfoViewController () {
     IBOutlet KxLinkLabel * _nameField;
@@ -80,6 +81,7 @@
     _visitorsField.stringValue = _author.visitors.nonEmpty ? _author.visitors : @"-";   
     _aboutField.stringValue = _author.about.nonEmpty ? _author.about : @"";   ;
     _ratingIndicator.floatValue = _author.ratingFloat;
+    [_ignoreButton setState:_author.ignored ? NSOnState : NSOffState];
     
     [super activate];
 }
@@ -91,6 +93,8 @@
 
 - (IBAction)ignoreAuthor:(id)sender
 {
+    _author.ignored = !_author.ignored;
+    [sender setState:_author.ignored ? NSOnState : NSOffState];
 }
 
 - (IBAction)goBack:(id)sender

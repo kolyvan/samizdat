@@ -160,7 +160,6 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 
 - (NSString *) relativeUrl
 {
-//    return [NSString stringWithFormat:@"/%c/%@/%@", _author.path.first, _author.path, _path];
     return [_author.relativeUrl stringByAppendingPathComponent:_path];
 }
 
@@ -169,28 +168,6 @@ static NSString * prettyHtml (NSMutableArray *diffs)
     return KxUtils.format(@"%@.%@", _author.path, [_path stringByDeletingPathExtension]);    
 }
 
-/*
-- (NSString *) commentsValue
-{
-    if (_comments.nonEmpty) {
-        NSRange r = [_comments rangeOfString:@" ("];
-        if (r.location != NSNotFound)
-            return [_comments take: r.location];
-    }
-    return @"";
-    
-}
-
-- (NSString *) ratingValue
-{
-    if (_rating.nonEmpty) {
-        NSRange r = [_rating rangeOfString:@"*"];
-        if (r.location != NSNotFound)
-            return [_rating take: r.location];
-    }
-    return @"";
-}
-*/
  - (NSInteger) sizeInt
 {
     return [_size.butlast integerValue];
@@ -223,6 +200,26 @@ static NSString * prettyHtml (NSMutableArray *diffs)
     return _group;
 }
 
+- (BOOL) favorited
+{
+    NSArray * favorites = [SamLibAgent.settings() get: @"favorites"];    
+    return [favorites containsObject:self.key];    
+}
+
+- (void) setFavorited:(BOOL)favorited
+{
+    NSMutableArray * favorites = [SamLibAgent.settings() get: @"favorites" 
+                                                       orSet:^id{
+                                                           return [NSMutableArray array];
+                                                       }];
+    
+    BOOL containts = [favorites containsObject:self.key];
+    
+    if (containts && !favorited)
+        [favorites removeObject:self.key];
+    else if (!containts && favorited)
+        [favorites addObject:self.key];
+}
 
 + (id) fromDictionary: (NSDictionary *) dict
            withAuthor: (SamLibAuthor *) author;

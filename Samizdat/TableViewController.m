@@ -121,30 +121,33 @@ extern int ddLogLevel;
                         
         for (SamLibAuthor *author in authors) {
             
-            [author update:^(SamLibAuthor *author, SamLibStatus status, NSString *error) {
-                
-                if (status == SamLibStatusSuccess) {
-                    reloadStatus = SamLibStatusSuccess;
-                    [self reloadTableView];
-                }
-                
-                if (status == SamLibStatusFailure &&
-                    ![error isEqualToString: lastError]) {
+            if (author.ignored)                
+                --count;
+            else    
+                [author update:^(SamLibAuthor *author, SamLibStatus status, NSString *error) {
                     
-                    [app hudWarning:KxUtils.format(@"reload failure\n%@", error)];
-                    KX_RELEASE(lastError);
-                    lastError = KX_RETAIN(error);
-                }
-                
-                if (--count == 0) {
-                                        
-                    [app finishReload:reloadStatus 
-                          withMessage:message]; 
+                    if (status == SamLibStatusSuccess) {
+                        reloadStatus = SamLibStatusSuccess;
+                        [self reloadTableView];
+                    }
                     
-                    KX_RELEASE(lastError);
-                    lastError = nil;
-                }
-            }];    
+                    if (status == SamLibStatusFailure &&
+                        ![error isEqualToString: lastError]) {
+                        
+                        [app hudWarning:KxUtils.format(@"reload failure\n%@", error)];
+                        KX_RELEASE(lastError);
+                        lastError = KX_RETAIN(error);
+                    }
+                    
+                    if (--count == 0) {
+                        
+                        [app finishReload:reloadStatus 
+                              withMessage:message]; 
+                        
+                        KX_RELEASE(lastError);
+                        lastError = nil;
+                    }
+                }];    
         }     
     }
 }

@@ -39,9 +39,26 @@ extern int ddLogLevel;
 
 - (NSArray *) loadContent
 {   
-    NSMutableArray * ma = [NSMutableArray array];        
-    for (SamLibAuthor *author in [SamLibModel shared].authors) {            
-        [ma push:author];            
+    NSArray *authors = [[SamLibModel shared].authors sortWith:^NSComparisonResult(id obj1, id obj2){
+        
+        SamLibAuthor *l = obj1;
+        SamLibAuthor *r = obj2;        
+        
+        BOOL li = l.ignored;
+        BOOL ri = r.ignored;        
+        
+        if (li == ri)
+            return [l.name compare:r.name];
+        else if (li) 
+            return NSOrderedDescending;
+        else
+            return NSOrderedAscending;        
+        
+    }];
+    
+    NSMutableArray * ma = [NSMutableArray array];            
+    for (SamLibAuthor *author in authors) {            
+        [ma push:author];    
         for (SamLibText *text in author.texts)
             if (text.changedSize)
                 [ma push:text];
@@ -97,6 +114,7 @@ extern int ddLogLevel;
         cellView.goButton.target = self;
         cellView.goButton.action = @selector(select:);
         cellView.goButton.tag = row;   
+        cellView.textField.textColor = author.ignored ? [NSColor grayColor] : [NSColor textColor];
         
         return cellView;        
     }

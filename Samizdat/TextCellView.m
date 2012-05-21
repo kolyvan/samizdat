@@ -53,9 +53,7 @@
     NSImage *image = nil;
     NSImage *altImage = nil;
     
-    BOOL isFav = [[SamLibAgent.settings() get: @"favorites"] containsObject:text.key];
-    
-    if (isFav) {
+    if (text.favorited) {
         image = [NSImage imageNamed: @"bookmark-on.png"];  
         altImage = [NSImage imageNamed: @"bookmark-off.png"];        
     }

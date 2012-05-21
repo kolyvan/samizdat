@@ -11,7 +11,6 @@
 
 #import "TextsViewController.h"
 #import "TextCellView.h"
-//#import "KxArc.h"
 #import "NSDictionary+Kolyvan.h"
 #import "SamLibText.h"
 #import "AppDelegate.h"
@@ -88,24 +87,13 @@
         
         SamLibText * text = obj;
         
-        NSMutableArray * favorites = [SamLibAgent.settings() get: @"favorites" 
-                                                           orSet:^id{
-                                                               return [NSMutableArray array];
-                                                           }];
-        
-        BOOL isFav = [favorites containsObject:text.key];
-        if (isFav)
-            [favorites removeObject:text.key];
-        else
-            [favorites addObject:text.key];
-        
-        //[sender setImage: [NSImage imageNamed: isFav ? @"bookmark-on.png" : @"bookmark-off.png"]];  
+        BOOL isFav = text.favorited;
+        text.favorited = !text.favorited;
+                
         [sender setImage: [NSImage imageNamed: isFav ? @"bookmark-on.png" : nil]];  
-
-        
+                 
         [_tableView reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:row] 
                               columnIndexes:[NSIndexSet indexSetWithIndex:0]];
-        
     }    
 }
 

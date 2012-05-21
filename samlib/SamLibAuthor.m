@@ -57,8 +57,6 @@ extern int ddLogLevel;
 @synthesize digest = _digest;
 @synthesize texts = _texts;
 @synthesize about = _about;
-//@synthesize ignored = _ignored;
-//@synthesize isDirty = _isDirty;
 @dynamic isDirty;
 @synthesize changed = _changed;
 @dynamic ratingFloat;
@@ -90,15 +88,27 @@ extern int ddLogLevel;
     return 0;    
 }
 
-/*
+
+- (BOOL) ignored
+{    
+    NSArray * array = [SamLibAgent.settings() get: @"ignored"];
+    return [array containsObject:_path];
+}
+
 - (void) setIgnored:(BOOL)ignored
 {
-    if (_ignored != ignored) {
-        _isDirty = YES;
-        _ignored = ignored;
-    }
+    NSMutableArray * array = [SamLibAgent.settings() get: @"ignored" 
+                                                   orSet:^id{
+                                                       return [NSMutableArray array];
+                                                   }];
+
+    BOOL contains = [array containsObject:_path];
+    if (contains && !ignored)
+        [array removeObject:_path];
+    else if (!contains && ignored)
+        [array addObject:_path];
 }
-*/
+
 
 - (NSString *) computeVersion 
 {
