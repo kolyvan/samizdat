@@ -34,6 +34,7 @@
     IBOutlet NSTextField * _rating;            
     IBOutlet NSTextField * _visitors;
     IBOutlet NSButton * _btnAdd;
+    IBOutlet NSButton * _btnFetch;
     
     SamLibAuthor * _author;    
 }
@@ -57,8 +58,15 @@
     KX_SUPER_DEALLOC();
 }
 
+- (void) awakeFromNib
+{
+    [super awakeFromNib];
+    
+    _url.delegate = self;
+}
+
 - (void) activate
-{    
+{   
     _url.stringValue = @"";
     _fetchedInfo.stringValue = @"";
     
@@ -67,6 +75,16 @@
     [_btnAdd setEnabled:NO];
     
     [super activate];
+}
+
+- (IBAction)controlTextDidChange:(NSNotification *)aNotification
+{
+    [_btnFetch setEnabled:_url.stringValue.nonEmpty];
+}
+
+- (IBAction) fetchPressed:(id)sender
+{
+    [self urlChanged:_url];
 }
 
 - (IBAction) urlChanged: (id) sender

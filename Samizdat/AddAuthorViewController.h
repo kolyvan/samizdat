@@ -14,8 +14,9 @@
 
 @class SamLibAuthor;
 
-@interface AddAuthorViewController : KxViewController
+@interface AddAuthorViewController : KxViewController<NSTextFieldDelegate>
 
+- (IBAction) fetchPressed:(id)sender;
 - (IBAction) urlChanged: (id) sender;
 - (IBAction) addAuthor: (id) sender;
 - (IBAction) cancel: (id) sender;
