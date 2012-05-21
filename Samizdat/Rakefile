@@ -2,6 +2,8 @@
 require "pathname"
 require 'set'
 
+APP_NAME = 'Samizdat'
+
 SRC_FOLDERS= [
 	'.',
 	'samlib',
@@ -92,3 +94,34 @@ task :localizeXib do |t|
 		system_or_exit "ibtool --strings-file #{ruStrings} #{enXib} --write #{ruXib}"	
 	end	
 end	
+
+# 
+desc 'create .dmg with app'
+task :dmg do |t|
+	folder = Pathname.new '../tmp'
+	srcPath = folder + 'osx'
+	dmgPath = folder + "#{APP_NAME}.dmg"
+	ro_dmgPath = folder + "#{APP_NAME}_ro.dmg"
+	dmgPath.delete if dmgPath.exist?
+	system_or_exit "hdiutil create -ov -srcfolder #{srcPath} -format UDRW -volname \"#{APP_NAME} Image\" #{dmgPath}"	
+	system_or_exit "hdiutil convert #{dmgPath} -format UDZO -imagekey zlib-level=9 -o #{ro_dmgPath}"
+	dmgPath.delete
+	ro_dmgPath.rename dmgPath
+end	
+
+
+#PROJECT_NAME = 'samlib'
+#TARGET_NAME = 'Samizdat'
+#CONFIGURATION = "Release"
+
+#desc "Clean"
+#task :clean do
+#	buildDir = Pathname.new 'tmp/build'	
+#  	system_or_exit "xcodebuild -project ../#{PROJECT_NAME}.xcodeproj -target #{TARGET_NAME} -configuration #{CONFIGURATION} clean SYMROOT=#{buildDir}"
+#end
+
+#desc "Build"
+#task :build do
+#	buildDir = Pathname.new 'tmp/build'		
+#	system_or_exit "xcodebuild -project ../#{PROJECT_NAME}.xcodeproj -target #{TARGET_NAME} -configuration #{CONFIGURATION} build TEST_AFTER_BUILD=NO SYMROOT=#{buildDir}"
+#end
