@@ -1012,6 +1012,7 @@
 				GCC_PREFIX_HEADER = "Samizdat/Samizdat-Prefix.pch";
 				INFOPLIST_FILE = "Samizdat/Samizdat-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = NO;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

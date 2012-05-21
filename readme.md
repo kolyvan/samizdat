@@ -15,4 +15,3 @@ Screenshots:
 
 
 Download [.dmg](http://dl.dropbox.com/u/80472203/samizdat.dmg)
-
