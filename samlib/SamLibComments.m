@@ -43,6 +43,7 @@ static NSDate* mkDateFromComment(NSString *dt)
 @interface SamLibComment() {
     NSDictionary * _dict;
     NSDate * _timestamp;
+    NSInteger _msgidNumber;
 }
 @end
 
@@ -61,6 +62,14 @@ static NSDate* mkDateFromComment(NSString *dt)
 - (NSString *) replyto      { return [_dict get: @"replyto"]; }
 - (NSString *) message      { return [_dict get: @"message"]; }
 - (BOOL) isSamizdat         { return [_dict contains:@"samizdat"]; }
+- (BOOL) canEdit            { return [[_dict get:@"canEdit"] boolValue]; }
+- (BOOL) canDelete          { return [[_dict get:@"canDelete"] boolValue]; }
+
+- (NSInteger) msgidNumber {
+    if (!_msgidNumber)
+        _msgidNumber = [self.msgid integerValue];
+    return _msgidNumber; 
+}
 
 + (id) fromDictionary: (NSDictionary *) dict
 { 
@@ -94,21 +103,30 @@ static NSDate* mkDateFromComment(NSString *dt)
     KX_SUPER_DEALLOC();
 }
 
+- (NSString *) description
+{
+    return KxUtils.format(@"<%@ %ld %ld %@>", 
+                          self.className, 
+                          self.number,
+                          self.msgidNumber, 
+                          self.timestamp);
+}
+
 - (NSComparisonResult) compare: (SamLibComment *) other
 {
-    if (_timestamp != nil && other.timestamp != nil) {
-        NSComparisonResult res = [_timestamp compare:other.timestamp];
-        if (res != NSOrderedSame)
-            return res;
-    }
-    
-    NSInteger l = self.number;
-    NSInteger r = other.number;
-    if (l < r)
+    if (self.number < other.number)
         return NSOrderedAscending;
-    if (l > r)
+    if (self.number > other.number)            
         return NSOrderedDescending;
-    return NSOrderedSame;
+    
+    return [self.timestamp compare:other.timestamp];           
+}
+
+- (BOOL) isEqualToComment:(SamLibComment *)other 
+{
+    if (self == other)
+        return YES;    
+    return  self.number == other.number;    
 }
 
 @end
@@ -124,7 +142,6 @@ static NSDate* mkDateFromComment(NSString *dt)
 
 @synthesize text = _text;
 @synthesize all = _all;
-//@synthesize subscribed = _subscribed;
 @synthesize lastModified = _lastModified;
 @synthesize isDirty = _isDirty;
 @synthesize numberOfNew = _numberOfNew;
@@ -146,16 +163,6 @@ static NSDate* mkDateFromComment(NSString *dt)
 {
     return _numberOfNew > 0;
 }
-
-/*
-- (void) setSubscribed:(BOOL)subscribed
-{
-    if (_subscribed != subscribed) {
-        _isDirty = YES;
-        _subscribed = subscribed;
-    }
-}
- */
 
 + (id) fromDictionary: (NSDictionary *)dict 
              withText: (SamLibText *) text
@@ -241,37 +248,64 @@ static NSDate* mkDateFromComment(NSString *dt)
     NSArray *result = [fetchedComments map:^id(id elem) {
         return [SamLibComment fromDictionary:elem];  
     }];
+            
+    if (_all.nonEmpty) {  
+          
+        NSMutableArray *ma = [result mutableCopy];
         
-    if (_all.nonEmpty) {        
-
-        SamLibComment *first = _all.first;        
-        result = [result filter:^BOOL(id elem) {
-            return [first isLessThan: elem];            
-        }];
-    }
-    
-    if (result.nonEmpty) {
-    
-        _numberOfNew = result.count;      
+        // add all old comments not found in new 
+        for (SamLibComment * p in _all) {
+            
+            if (![result exists:^BOOL(id elem) {
+                return [p isEqualToComment: elem];
+            }]) {
                 
-        NSInteger count = MAX(0, MAX_COMMENTS - result.count);
-        if (count > 0) {
-            NSArray *old = [_all take: MIN(_all.count, count)];
-            result = [result mutableCopy];
-            [(NSMutableArray *)result appendAll:old];
+                [ma push:p];
+            }            
         }
         
-        self.all = result;     
+        NSArray *final = [[ma sorted] reverse];            
+        final = [final take: MIN(final.count, MAX_COMMENTS)];
+                
+        // count new
+        _numberOfNew = 0;        
+        for (SamLibComment * p in final) {
+            if (![_all exists:^BOOL(id elem) {
+                SamLibComment * p2 = elem;
+                return [p isEqualToComment: p2] && 
+                    [p.timestamp isEqualToDate: p2.timestamp] &&
+                    p.msgidNumber == p2.msgidNumber;
+            }]) {
+                DDLogInfo(@"new %@", p);
+                ++_numberOfNew;
+            } 
+        }
+        
+        if (_numberOfNew > 0) {
+            self.all = final;
+            _isDirty = YES;
+        }
+        
+        
+    } else {        
+
+        _numberOfNew = result.count;          
+        self.all = result;        
+        _isDirty = YES;        
+    }    
+    
+    if (_isDirty)
         self.timestamp = [NSDate date];        
-        _isDirty = YES;
-    }
+    
 }
 
-- (void) update: (UpdateCommentsBlock) block 
+- (void) update: (NSString *)path
+     parameters:  (NSDictionary *) parameters                      
            page: (NSInteger) page
          buffer: (NSMutableArray*)buffer
+          force: (BOOL) force
+          block: (UpdateCommentsBlock) block 
 {
-    NSString *path = self.relativeUrl;
     if (page > 0) {
         path = [path stringByAppendingFormat:@"?PAGE=%ld", page + 1];
     }
@@ -279,7 +313,8 @@ static NSDate* mkDateFromComment(NSString *dt)
     SamLibAgent.fetchData(path, 
                           page ? nil : _lastModified, 
                           YES,
-                          nil,
+                          [@"http://" stringByAppendingString: self.url],
+                          parameters,
                           ^(SamLibStatus status, NSString *data, NSString *lastModified) {
                               
                               if (status == SamLibStatusSuccess) {
@@ -290,25 +325,29 @@ static NSDate* mkDateFromComment(NSString *dt)
                                       if (lastModified.nonEmpty)
                                           self.lastModified = lastModified;
                                       
-                                      // DDLogVerbose(@"fetched %ld comments", comments.count);
+                                      //DDLogVerbose(@"fetched %ld comments", comments.count);
                                       
                                       [buffer appendAll:comments];
                                       
-                                      if (buffer.count < MAX_COMMENTS)
+                                      if (page >= 0 &&
+                                          buffer.count < MAX_COMMENTS)
                                       {                                           
                                           BOOL isContinue = YES;
                                           
-                                          if (_all.nonEmpty) {
+                                          if (_all.nonEmpty && !force) {
                                              
                                               SamLibComment *first = _all.first;                                              
                                               SamLibComment *last = [SamLibComment fromDictionary: buffer.last];                                                                                                
-                                              isContinue = [first isLessThan: last];
+                                              isContinue = [first isLessThan: last];                                              
                                           }
                                           
                                           if (isContinue) {
-                                              [self update:block 
+                                              [self update:path
+                                                parameters:parameters
                                                       page:page + 1 
-                                                    buffer:buffer];
+                                                    buffer:buffer 
+                                                     force:force
+                                                     block:block];
                                               return;                                           
                                           }
                                       }
@@ -326,10 +365,31 @@ static NSDate* mkDateFromComment(NSString *dt)
                           });
 }
 
-- (void) update: (UpdateCommentsBlock) block
-{
-    _numberOfNew = 0;
-    [self update:block page:0 buffer:[NSMutableArray array]];
+- (void) update: (BOOL) force 
+          block: (UpdateCommentsBlock) block
+{   
+    _numberOfNew = 0;            
+    [self update:self.relativeUrl 
+     parameters:nil
+            page:0 
+          buffer:[NSMutableArray array] 
+           force:force
+           block:block];
+}
+
+- (void) deleteComment: (NSString *) msgid 
+                 block: (UpdateCommentsBlock) block
+{   
+
+    _numberOfNew = 0;            
+    NSDictionary *parameters = [NSDictionary dictionaryWithObjectsAndKeys:
+                                @"delete", @"OPERATION", msgid, @"MSGID", nil];
+    [self update:self.relativeUrl 
+      parameters:parameters
+            page:-1 
+          buffer:[NSMutableArray array] 
+           force:NO
+           block:block];
 }
 
 + (id) fromFile: (NSString *) filepath 
@@ -363,13 +423,14 @@ static NSDate* mkDateFromComment(NSString *dt)
         block: (UpdateCommentsBlock) block
 {
     [self post:message
-       replyto: nil
+         msgid:nil
+       isReply:NO
          block:block];
 }
 
-
 - (void) post: (NSString *) message 
-      replyto: (NSString *) msgid
+        msgid: (NSString *) msgid        
+      isReply: (BOOL) isReply
         block: (UpdateCommentsBlock) block
 {
     SamLibUser *user = [SamLibUser currentUser];
@@ -389,13 +450,16 @@ static NSDate* mkDateFromComment(NSString *dt)
     [d update:@"URL"  value:user.isLogin ? user.homePage : user.url];     
 
     if (msgid.nonEmpty) {
-        [d update:@"OPERATION" value:@"store_reply" ];
+        if (isReply)
+            [d update:@"OPERATION" value:@"store_reply"];
+        else
+            [d update:@"OPERATION" value:@"store_edit"];
         [d update:@"MSGID" value:msgid];     
     } else {
         [d update:@"OPERATION" value:@"store_new" ];
         [d update:@"MSGID" value:@""];     
     }
-        
+   
     SamLibAgent.postData(@"/cgi-bin/comment",  
                          KxUtils.format(@"http://samlib.ru/cgi-bin/comment?COMMENT=%@", url), 
                          d,

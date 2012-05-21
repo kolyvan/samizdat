@@ -22,6 +22,14 @@
          success:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
          failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure ;
 
+- (void) getPath:(NSString *)path
+      ifModified:(NSString *)ifModified
+   handleCookies:(BOOL) handleCookies
+         referer:(NSString *)referer
+      parameters:(NSDictionary *)parameters 
+         success:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
+         failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure ;
+
 - (void)postPath:(NSString *)path
           referer:(NSString *)referer
        parameters:(NSDictionary *)parameters 

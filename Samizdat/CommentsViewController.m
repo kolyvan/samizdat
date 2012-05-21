@@ -97,25 +97,27 @@ static NSString * mkHTML(SamLibComments * comments)
         if (!link) link = @"";        
         if (!color) color = @"";
         if (!name) name = @"";
-        if (!msgid) msgid = @"";        
+        if (!msgid) msgid = @"";     
                
         [sb appendFormat:templateComment, 
          comment.number,
          comment.isSamizdat ? @"" : @"hidden",         
-         link.nonEmpty ? @"" : @"hidden",
          link,
-         color,
+         link.nonEmpty ? color : @"hidden",
          name,
-         link.nonEmpty ? @"hidden" : @"",
-         color,
-         name,
+         link.nonEmpty ? @"hidden" : color,
+         name,         
          comment.timestamp ? [comment.timestamp shortRelativeFormatted] : @"",
          deleteMsg.nonEmpty ? KxUtils.format(@"- Удалено %@", comment.deleteMsg) : @"",
          numberOfNew-- > 0 ? @"new" : @"",
+         msgid,
+         comment.canDelete ? @"deletelink" : @"hidden",         
+         msgid,
+         comment.canEdit ? @"editlink" : @"hidden",
          replyto,
          message,
-         deleteMsg.nonEmpty ? @"hidden" : @"",
-         msgid
+         msgid,
+         deleteMsg.nonEmpty ? @"hidden" : @"replylink"         
          ];
 
     }
@@ -137,7 +139,8 @@ static NSString * mkHTML(SamLibComments * comments)
     IBOutlet NSBox * _replyBox;
     
     BOOL _toggleReply;
-    NSString * _msgidReply;
+    NSString * _msgid;
+    BOOL _isReply;
 }
 
 @property (readonly, nonatomic) NSTextField * nameField;
@@ -161,7 +164,7 @@ static NSString * mkHTML(SamLibComments * comments)
 - (void) dealloc 
 {
     KX_RELEASE(_comments);
-    KX_RELEASE(_msgidReply);
+    KX_RELEASE(_msgid);
     KX_SUPER_DEALLOC();
 }
 
@@ -213,7 +216,8 @@ static NSString * mkHTML(SamLibComments * comments)
     if ([app startReload:self 
              withMessage:KxUtils.format(locString(@"comments to %@"), _comments.text.title)]) {
         
-        [_comments update:^(SamLibComments *comments, SamLibStatus status, NSString *error) {
+        [_comments update:NO 
+                    block:^(SamLibComments *comments, SamLibStatus status, NSString *error) {
             
             [self handleReload: status error: error]; 
             
@@ -225,10 +229,10 @@ static NSString * mkHTML(SamLibComments * comments)
 {
     NSString *html = mkHTML(_comments);
     
-   // [html writeToFile:[@"~/tmp/xcomments.html" stringByExpandingTildeInPath]
-   //        atomically:NO 
-   //          encoding:NSUTF8StringEncoding 
-   //             error:nil];
+    //[html writeToFile:[@"~/tmp/comments.html" stringByExpandingTildeInPath]
+    //       atomically:NO 
+    //         encoding:NSUTF8StringEncoding 
+    //            error:nil];
     
     [self loadWebViewFromHTML:html
                      withPath:@"file://comments"];
@@ -262,9 +266,20 @@ static NSString * mkHTML(SamLibComments * comments)
     }
     
     if ([s hasPrefix:@"file://comments/reply"]) {
-        [self reply: [url lastPathComponent]];
+        [self replyToComment: [url lastPathComponent]];
         return NO;
     }
+    
+    if ([s hasPrefix:@"file://comments/delete"]) {
+        [self deleteComment: [url lastPathComponent]];
+        return NO;
+    }
+
+    if ([s hasPrefix:@"file://comments/edit"]) {
+        [self editComment: [url lastPathComponent]];
+        return NO;
+    }
+
     
     [[NSWorkspace sharedWorkspace] openURL:url];
     
@@ -304,45 +319,19 @@ static NSString * mkHTML(SamLibComments * comments)
 
 }
 
-- (void) reply: (NSString *) msgid 
-{    
-     KX_RELEASE(_msgidReply);
-    _msgidReply = nil;
-    [_textView setString:@""];
+- (void) showReply: (NSString *)msgid 
+       withMessage: (NSString *) message
+{
+    KX_RELEASE(_msgid);
+    _msgid = KX_RETAIN(msgid);                
     
-    if (msgid) {
-    
-        for (SamLibComment * comment in _comments.all) {
-            if ([comment.msgid isEqualToString:msgid]) {
-                               
-                NSString * msg = comment.message;
-                
-                NSMutableString * ms = [NSMutableString string];
-                
-                [ms appendFormat: @"> > [%ld.%@]\n", comment.number, comment.name];
-                
-                for (NSString * s in [msg lines]) {
-                    if (s.nonEmpty) {
-                        [ms appendString:@">"];
-                        [ms appendString:s];
-                        [ms appendString:@"\n"];
-                    }
-                }
-                
-                [_textView setString:ms];
-                _msgidReply = KX_RETAIN(msgid);            
-                break;
-            }
-        }
-    } 
-    
-     SamLibUser *user = [SamLibUser currentUser];
+    SamLibUser *user = [SamLibUser currentUser];
     
     _nameField.stringValue = user.name;
     [_postButton setEnabled: _nameField.stringValue.nonEmpty];
     
     if (user.isLogin) {
-
+        
         [_urlField setEditable:NO];
         _urlField.stringValue = KxUtils.format(locString(@"logged as %@"), user.login);
         
@@ -351,10 +340,77 @@ static NSString * mkHTML(SamLibComments * comments)
         [_urlField setEditable:YES];
         _urlField.stringValue = user.url;    
     }
-        
+    
     
     if (_toggleReply)
-        [self toggleReplyWithAnimation: YES];     
+        [self toggleReplyWithAnimation: YES]; 
+    
+    [_textView setString:message]; 
+}
+
+- (void) replyToComment: (NSString *) msgid 
+{        
+    NSString *message = @"";
+    
+    if (msgid) {
+    
+        for (SamLibComment * comment in _comments.all) {
+            if ([comment.msgid isEqualToString:msgid]) {
+                
+                NSMutableString * ms = [NSMutableString string];
+                
+                [ms appendFormat: @"> > [%ld.%@]\n", comment.number, comment.name];
+                
+                for (NSString * s in [comment.message lines]) {
+                    if (s.nonEmpty) {
+                        [ms appendString:@">"];
+                        [ms appendString:s];
+                        [ms appendString:@"\n"];
+                    }
+                }
+
+                message = ms;
+                break;
+            }
+        }
+    } 
+    
+    _isReply = YES;
+    [self showReply: msgid withMessage: message];    
+}
+
+- (void) deleteComment: (NSString *) msgid
+{
+    DDLogInfo(@"deleteComment %@", msgid);
+    AppDelegate *app = [NSApp delegate];    
+    
+    if ([app startReload:self 
+             withMessage:locString(@"delete comment")]) {
+        
+        [_comments deleteComment:msgid 
+                           block:^(SamLibComments *comments, SamLibStatus status, NSString *error) {
+            
+            [self handleReload: status error: error]; 
+            
+        }];
+    }
+    
+}
+
+- (void) editComment: (NSString *) msgid
+{        
+    if (!msgid.nonEmpty)
+        return;
+    
+    NSString *message = @"";
+    for (SamLibComment * comment in _comments.all)
+        if ([comment.msgid isEqualToString:msgid]) {
+            message = comment.message;
+            break;
+        }
+           
+    _isReply = NO;
+    [self showReply: msgid withMessage:message];
 }
 
 - (void) toggleReplyWithAnimation: (BOOL) animated
@@ -430,7 +486,8 @@ static NSString * mkHTML(SamLibComments * comments)
         }
         
         [_comments post:message
-                replyto:_msgidReply
+                msgid:_msgid
+                isReply:_isReply
                   block:^(SamLibComments *comments, SamLibStatus status, NSString *error) {
             
                      [self handleReload: status error: error]; 

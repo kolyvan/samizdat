@@ -269,6 +269,7 @@ static void fetchData(NSString *path,
                       NSString *lastModified, 
                       BOOL handleCookies,
                       NSString *referer, 
+                      NSDictionary * parameters,
                       AsyncResultBlock block)
 {
     AFHTTPClient *client = httpClient(NO);
@@ -277,6 +278,7 @@ static void fetchData(NSString *path,
          ifModified: lastModified
       handleCookies: handleCookies
             referer: referer
+         parameters: parameters
             success:^(AFHTTPRequestOperation *operation, id responseObject) {                  
                 
                 handleSuccess(operation, responseObject, block);

@@ -655,6 +655,7 @@ static NSString * prettyHtml (NSMutableArray *diffs)
                           lastModified, 
                           NO,
                           nil,
+                          nil,
                           ^(SamLibStatus status, NSString *data, NSString *lastModified) {
                               
                               if (!this)

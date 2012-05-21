@@ -33,7 +33,9 @@ typedef struct {
                       NSString *lastModified, 
                       BOOL handleCookies,
                       NSString *referer,                            
+                      NSDictionary * parameters,                      
                       AsyncResultBlock block);
+    
     
     void (*postData)(NSString *path, 
                      NSString *referer, 

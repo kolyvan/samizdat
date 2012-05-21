@@ -316,6 +316,7 @@ extern int ddLogLevel;
                           self.lastModified, 
                           NO,
                           nil,
+                          nil,
                           ^(SamLibStatus status, NSString *data, NSString *lastModified) {
                               
                               if (!this)

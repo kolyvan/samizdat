@@ -41,6 +41,5 @@ typedef void (^LoginBlock)(SamLibStatus status, NSString *error);
 - (void) loginSamizdat: (LoginBlock) block;
 - (void) logoutSamizdat: (LoginBlock) block;;
 
-- (void) clearCookies;
 
 @end

@@ -223,11 +223,4 @@ static NSString * gKeychainService = @"ru.kolyvan.samlib";
                          });
 }
 
-- (void) clearCookies
-{
-    deleteSamLibCookie(@"COMMENT");
-    deleteSamLibCookie(@"ZUI");
-}
-
-
 @end

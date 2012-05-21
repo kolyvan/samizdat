@@ -445,6 +445,8 @@ int ddLogLevel = LOG_LEVEL_WARN;
 
 - (IBAction) clearCookie:(id)sender
 {
+    deleteSamLibCookie(@"COMMENT");
+    deleteSamLibCookie(@"ZUI");    
 }
 
 - (IBAction) deleteAuthor:(id)sender

@@ -16,13 +16,30 @@
 - (void) getPath:(NSString *)path
       ifModified:(NSString *)ifModified
    handleCookies:(BOOL) handleCookies
+         referer:(NSString *)referer 
+         success:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
+         failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure 
+{
+    [self getPath:path 
+       ifModified:ifModified 
+    handleCookies:handleCookies 
+          referer:referer 
+       parameters:nil
+          success:success 
+          failure:failure];
+}
+
+- (void) getPath:(NSString *)path
+      ifModified:(NSString *)ifModified
+   handleCookies:(BOOL) handleCookies
          referer:(NSString *)referer
+      parameters:(NSDictionary *)parameters 
          success:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
          failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure 
 {
     NSAssert(path != nil && path.length > 0, @"empty path");
     
-    NSMutableURLRequest *request = [self requestWithMethod:@"GET" path:path parameters:nil];
+    NSMutableURLRequest *request = [self requestWithMethod:@"GET" path:path parameters:parameters];
     
     [request setHTTPShouldHandleCookies: handleCookies];            
     

@@ -31,6 +31,9 @@ typedef void (^UpdateCommentsBlock)(SamLibComments *comments,
 @property (readonly, nonatomic) NSString * message;
 @property (readonly, nonatomic) NSDate * timestamp;
 @property (readonly, nonatomic) BOOL isSamizdat;
+@property (readonly, nonatomic) BOOL canEdit;
+@property (readonly, nonatomic) BOOL canDelete;
+@property (readonly, nonatomic) NSInteger msgidNumber;
 
 + (id) fromDictionary: (NSDictionary *) dict;
 
@@ -46,7 +49,6 @@ typedef void (^UpdateCommentsBlock)(SamLibComments *comments,
 
     KX_WEAK SamLibText * _text;    
     NSArray * _all;
-    //BOOL _subscribed;
     NSString *_lastModified;
     BOOL _isDirty;
     NSInteger _numberOfNew;
@@ -67,7 +69,12 @@ typedef void (^UpdateCommentsBlock)(SamLibComments *comments,
 
 - (NSDictionary *) toDictionary;
 
-- (void) update: (UpdateCommentsBlock) block;
+- (void) update: (BOOL) force 
+          block: (UpdateCommentsBlock) block;
+
+- (void) deleteComment: (NSString *) msgid
+                 block: (UpdateCommentsBlock) block;
+
 
 - (void) save: (NSString *)folder;
 
@@ -75,8 +82,10 @@ typedef void (^UpdateCommentsBlock)(SamLibComments *comments,
         block: (UpdateCommentsBlock) block;
 
 - (void) post: (NSString *) message 
-      replyto: (NSString *) msgid
+        msgid: (NSString *) msgid        
+      isReply: (BOOL) isReply
         block: (UpdateCommentsBlock) block;
+
 
 
 @end

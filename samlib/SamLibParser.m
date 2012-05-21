@@ -344,16 +344,14 @@ static NSDictionary * parseComment(NSString *html)
     
     if ([scanner scanString:@"<small><i>Удалено" intoString:nil]) {
         
-        // <small><i>Удалено написавшим. 2012/04/28 12:47 </i></small>
+        // <small><i>Удалено написавшим. 2012/04/28 12:47 
         
-        NSString *deleteMsg = scanUpToTag(scanner, @"</i>");
+        NSString *deleteMsg = scanUpToTag(scanner, @". ");
         [dict update: @"deleteMsg" value: deleteMsg.nonEmpty ? deleteMsg : @""];
 
-        NSRange range = [deleteMsg rangeOfString: @". "];
-        if (range.location != NSNotFound) {
-            [dict updateOnly:@"date" 
-                 valueNotNil:[[deleteMsg drop: range.location + 2] trimmed]];
-        }        
+        [dict updateOnly:@"date" 
+                 valueNotNil:[html substringWithRange:NSMakeRange(scanner.scanLocation, 16)]];
+                
         return dict;
     }
     
@@ -374,6 +372,16 @@ static NSDictionary * parseComment(NSString *html)
     
     //[dict updateOnly:@"timestamp" valueNotNil:timestamp];             
     [dict updateOnly:@"date" valueNotNil:[date trimmed]];             
+    
+    int scanLoc = scanner.scanLocation;    
+    
+    if (findTag(scanner, @"?OPERATION=edit&MSGID="))
+        [dict update:@"canEdit" value: [NSNumber numberWithBool:YES]];             
+    scanner.scanLocation = scanLoc;
+    
+    if (findTag(scanner, @"?OPERATION=delete&MSGID="))
+        [dict update:@"canDelete" value: [NSNumber numberWithBool:YES]];             
+    scanner.scanLocation = scanLoc;
         
     // MSGID=13354318951378"    
     if (findTag(scanner, @"MSGID=")) {

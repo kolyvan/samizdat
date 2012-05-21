@@ -108,3 +108,25 @@ span.new {
     width: 16px;
 }
 
+a.deletelink {
+	display: inline-block;
+    background: url(cross.png) 100% 100% no-repeat;
+    height: 16px;
+    width: 16px;
+    float: right;
+    margin-right: 4px;    
+}
+
+a.editlink {
+	display: inline-block;
+    background: url(comment-edit.png) 100% 100% no-repeat;
+    height: 16px;
+    width: 16px;
+    float: right;
+    margin-right: 4px;    
+}
+
+.hidden {
+    display: none;
+}
+
