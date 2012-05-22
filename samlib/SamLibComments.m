@@ -44,12 +44,14 @@ static NSDate* mkDateFromComment(NSString *dt)
     NSDictionary * _dict;
     NSDate * _timestamp;
     NSInteger _msgidNumber;
+    BOOL _isNew;
 }
 @end
 
 @implementation SamLibComment
 
 @synthesize timestamp = _timestamp;
+@synthesize isNew = _isNew;
 
 @dynamic number, deleteMsg, name, link, color, msgid, replyto, message, isSamizdat;
 
@@ -243,39 +245,54 @@ static NSDate* mkDateFromComment(NSString *dt)
     return dict;
 }
 
-- (void) updateComments: (NSArray *) fetchedComments
-{  
-    NSArray *result = [fetchedComments map:^id(id elem) {
-        return [SamLibComment fromDictionary:elem];  
-    }];
-            
+- (void) updateComments: (NSArray *) result
+{           
     if (_all.nonEmpty) {  
           
         NSMutableArray *ma = [result mutableCopy];
         
         // add all old comments not found in new 
-        for (SamLibComment * p in _all) {
-            
-            if (![result exists:^BOOL(id elem) {
+        for (SamLibComment * p in _all) {            
+            BOOL exists = [result exists:^(id elem) { 
                 return [p isEqualToComment: elem];
-            }]) {
-                
-                [ma push:p];
-            }            
+            }];
+            if (!exists)
+                [ma push:p]; 
         }
         
-        NSArray *final = [[ma sorted] reverse];            
-        final = [final take: MIN(final.count, MAX_COMMENTS)];
+        // two-stage sorting, in reverse order
+        
+        // 1. sort by timestamp
+        // allow lift edited and deleted comments
+        NSArray *final = [ma sortWith:^(id obj1, id obj2) {
+            SamLibComment *l = obj1, *r = obj2;
+            return [r.timestamp compare:l.timestamp]; 
+        }];
                 
-        // count new
+        final = [final take: MIN(final.count, MAX_COMMENTS)]; 
+        
+        // 2. sort newest comments by number 
+        final = [final sortWith:^NSComparisonResult(id obj1, id obj2) {
+            SamLibComment *l = obj1, *r = obj2;        
+            if (r.number < l.number)
+                return NSOrderedAscending;
+            if (r.number > l.number)            
+                return NSOrderedDescending;
+            return NSOrderedSame;
+        }];
+                
+        // determine and count new
         _numberOfNew = 0;        
         for (SamLibComment * p in final) {
-            if (![_all exists:^BOOL(id elem) {
+            
+            p.isNew = ![_all exists:^BOOL(id elem) {
                 SamLibComment * p2 = elem;
-                return [p isEqualToComment: p2] && 
+                return p.number == p2.number && 
                     [p.timestamp isEqualToDate: p2.timestamp] &&
                     p.msgidNumber == p2.msgidNumber;
-            }]) {
+            }];
+            
+            if (p.isNew) {
                 DDLogInfo(@"new %@", p);
                 ++_numberOfNew;
             } 
@@ -326,20 +343,37 @@ static NSDate* mkDateFromComment(NSString *dt)
                                           self.lastModified = lastModified;
                                       
                                       //DDLogVerbose(@"fetched %ld comments", comments.count);
+                                     
+                                      NSArray *result = [comments map:^id(id elem) {
+                                          return [SamLibComment fromDictionary:elem];  
+                                      }];
                                       
-                                      [buffer appendAll:comments];
+                                      [buffer appendAll: result];
                                       
-                                      if (page >= 0 &&
+                                      if (!parameters && // parameters != nil on deleteComment call
                                           buffer.count < MAX_COMMENTS)
                                       {                                           
-                                          BOOL isContinue = YES;
+                                          BOOL isContinue;
                                           
-                                          if (_all.nonEmpty && !force) {
-                                             
-                                              SamLibComment *first = _all.first;                                              
-                                              SamLibComment *last = [SamLibComment fromDictionary: buffer.last];                                                                                                
-                                              isContinue = [first isLessThan: last];                                              
+                                          if (!force && _all.nonEmpty) {
+                                              
+                                              isContinue = NO;
+                                              for (SamLibComment *p in result) {
+                                                  
+                                                  BOOL exists = [_all exists:^(id p2) {
+                                                      return [p isEqualToComment: p2];
+                                                  }];
+                                                  if (!exists) {
+                                                      // found new comment, continue fetch
+                                                      isContinue = YES;
+                                                      break;
+                                                  }
+                                              }
+                                              
+                                          } else {
+                                              isContinue = YES;
                                           }
+                                       
                                           
                                           if (isContinue) {
                                               [self update:path
@@ -386,7 +420,7 @@ static NSDate* mkDateFromComment(NSString *dt)
                                 @"delete", @"OPERATION", msgid, @"MSGID", nil];
     [self update:self.relativeUrl 
       parameters:parameters
-            page:-1 
+            page:0 
           buffer:[NSMutableArray array] 
            force:NO
            block:block];
@@ -473,8 +507,11 @@ static NSDate* mkDateFromComment(NSString *dt)
                                      if (comments.nonEmpty) {
                                          
                                          if (lastModified.nonEmpty)
-                                             self.lastModified = lastModified;                                            
-                                         [self updateComments: comments];
+                                             self.lastModified = lastModified;
+
+                                         [self updateComments: [comments map:^id(id elem) {
+                                             return [SamLibComment fromDictionary:elem];  
+                                         }]];
                                      }
                                                                       
                                  } else {

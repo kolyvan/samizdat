@@ -55,7 +55,7 @@ static NSString * mkHTML(SamLibComments * comments)
     
     NSMutableString * sb = [NSMutableString string];
     
-    NSInteger numberOfNew = comments.numberOfNew;
+    //NSInteger numberOfNew = comments.numberOfNew;
     
     for (SamLibComment * comment in comments.all) {
         
@@ -109,7 +109,8 @@ static NSString * mkHTML(SamLibComments * comments)
          name,         
          comment.timestamp ? [comment.timestamp shortRelativeFormatted] : @"",
          deleteMsg.nonEmpty ? KxUtils.format(@"- Удалено %@", comment.deleteMsg) : @"",
-         numberOfNew-- > 0 ? @"new" : @"",
+         //numberOfNew-- > 0 ? @"new" : @"",
+         comment.isNew ? @"new" : @"",
          msgid,
          comment.canDelete ? @"deletelink" : @"hidden",         
          msgid,
