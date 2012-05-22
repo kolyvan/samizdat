@@ -214,18 +214,17 @@ int ddLogLevel = LOG_LEVEL_WARN;
 
 - (void) hudInfo: (NSString *) message
 {
-    [_hudView message: message color: [NSColor lightGrayColor] interval: 3];    
+    [_hudView message: message color: [NSColor lightGrayColor] interval: 4];    
 }
 
 - (void) hudSuccess: (NSString *) message
 {
-    [_hudView message: message color: [NSColor greenColor] interval: 3];    
+    [_hudView message: message color: [NSColor greenColor] interval: 4];    
 }
 
 - (void) hudWarning: (NSString *) message
 {
-    id<KxHUDRow> r = [_hudView message: message color: [NSColor yellowColor] interval: 3];        
-    r.isPinned = YES;
+    [_hudView message: message color: [NSColor yellowColor] interval: 8];
 }
 
 - (IBAction) showTestView: (id) sender
