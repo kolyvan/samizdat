@@ -115,7 +115,7 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 @synthesize dateModified = _dateModified;
 
 @synthesize deltaSize = _deltaSize;
-@synthesize deltaComments = _deltaComments;
+//@synthesize deltaComments = _deltaComments;
 @synthesize deltaRating = _deltaRating;
 
 @dynamic sizeInt;
@@ -159,7 +159,10 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 
 - (id) version
 {
-    return [NSNumber numberWithInt:_version];
+    NSInteger r =_version;
+    if (_commentsObject)
+        r += [_commentsObject.version integerValue];
+    return [NSNumber numberWithInt:r];
 }
 
 - (NSString *) relativeUrl
@@ -179,12 +182,29 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 
 - (NSInteger) commentsInt
 {
+    if (_commentsObject &&
+        [_commentsObject.timestamp isGreaterThan:_timestamp]) {
+        NSArray *comments = _commentsObject.all;
+        if (comments.nonEmpty) {
+            SamLibComment* first = comments.first;
+            return first.number;
+        }
+    }
+        
     if (_comments.nonEmpty) {
         NSRange r = [_comments rangeOfString:@" ("];
         if (r.location != NSNotFound)
             return [[_comments take: r.location] integerValue];
     }
     return 0;
+}
+
+- (NSInteger) deltaComments
+{
+    if (_commentsObject &&
+        [_commentsObject.timestamp isGreaterThan:_timestamp])
+        return _commentsObject.numberOfNew;   
+    return _deltaComments;
 }
 
 - (float) ratingFloat
@@ -701,8 +721,10 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 - (NSString *) commentsWithDelta: (NSString *)sep
 {
     NSInteger i = self.commentsInt;
-    if (self.changedComments && _deltaComments > 0)
-        return KxUtils.format(@"%ld%@%+ld", i, sep, _deltaComments);    
+    NSInteger delta = self.deltaComments;
+    //if (self.changedComments && _deltaComments > 0)
+    if (delta > 0)
+        return KxUtils.format(@"%ld%@%+ld", i, sep, delta);    
     if (i)
         return KxUtils.format(@"%ld", i);
     return @"";

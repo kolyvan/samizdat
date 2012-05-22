@@ -85,7 +85,9 @@
     self.sizeField.textColor = text.changedSize ? [NSColor blueColor] : [NSColor textColor];
     
     self.commentsField.stringValue = [text commentsWithDelta: @"\n"];    
-    self.commentsField.textColor = text.changedComments ? [NSColor blueColor] : [NSColor textColor];
+    //self.commentsField.textColor = text.changedComments ? [NSColor blueColor] : [NSColor textColor];
+    BOOL commentsChanged = (text.changedComments || text.deltaComments > 0);
+    self.commentsField.textColor = commentsChanged  ? [NSColor blueColor] : [NSColor textColor];
     self.commentsButton.action = @selector(showComments:);
     self.commentsButton.target = target;
     self.commentsButton.tag = tag;

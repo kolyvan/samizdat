@@ -53,7 +53,7 @@ static NSString * mkHTML(NSString * html)
     id _version;
 }
 
-@property (readwrite, nonatomic) id  version;
+@property (readwrite, nonatomic, copy) id  version;
 
 @end
 

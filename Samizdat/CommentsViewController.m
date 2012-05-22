@@ -147,7 +147,7 @@ static NSString * mkHTML(SamLibComments * comments)
 }
 
 @property (readonly, nonatomic) NSTextField * nameField;
-@property (readwrite, nonatomic) id version;
+@property (readwrite, nonatomic, copy) id version;
 
 @end
 

@@ -49,8 +49,10 @@
         for (NSString *key in favorites) {        
             
             SamLibText *text = [model findTextByKey:key];
-            if (text)
+            if (text) {
+                [text commentsObject:YES]; // force to load comments from disk
                 [ma push:text];
+            }
         }   
         
         NSArray *texts = [ma sortWith:^(id obj1, id obj2) {        
