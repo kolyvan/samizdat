@@ -52,7 +52,6 @@ typedef enum {
     NSString * _diffResult;
     NSDate * _filetime;
     NSString *_dateModified;
-    //char groupMark;
     
     SamLibTextChanged _changedFlag;        
     NSInteger _deltaSize;
@@ -74,7 +73,6 @@ typedef enum {
 @property (readonly, nonatomic) NSString * rating;
 @property (readonly, nonatomic) NSString * flagNew;
 @property (readonly, nonatomic) NSString * dateModified;
-//@property (readonly, nonatomic) char groupMark;
 
 @property (readonly, nonatomic) NSInteger sizeInt;
 @property (readonly, nonatomic) NSInteger commentsInt;
@@ -103,14 +101,13 @@ typedef enum {
 @property (readonly, nonatomic) NSString * diffResult;
 @property (readonly, nonatomic) NSString * htmlFile;
 @property (readonly, nonatomic) NSString * diffFile;
+
 @property (readonly, nonatomic) BOOL canUpdate;
 @property (readonly, nonatomic) BOOL canMakeDiff;
 
 @property (readonly, nonatomic) NSString * groupEx;
-
 @property (readwrite, nonatomic) BOOL favorited;
 
-// comments
 
 + (id) fromDictionary: (NSDictionary *) dict 
            withAuthor: (SamLibAuthor *) author;
@@ -130,12 +127,10 @@ typedef enum {
 
 - (void) makeDiff: (NSString *(^)(NSString *)) formatter;
 
-
 - (SamLibComments *) commentsObject: (BOOL) forceLoad;
 
 - (NSString *) sizeWithDelta: (NSString *)sep;
 - (NSString *) commentsWithDelta: (NSString *)sep;;
 - (NSString *) ratingWithDelta: (NSString *)sep;
-
 
 @end

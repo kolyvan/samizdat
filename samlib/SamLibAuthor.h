@@ -30,8 +30,6 @@ typedef void (^UpdateAuthorBlock)(SamLibAuthor *author, SamLibStatus status, NSS
     NSString * _about;    
     NSArray * _texts;
     BOOL _changed;
-    // BOOL _ignored;    
-    //BOOL _isDirty;
     NSString *_version;
 }
 

@@ -88,7 +88,6 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 @property (readwrite, nonatomic) NSString * diffResult;
 @property (readwrite, nonatomic) NSDate * filetime;
 @property (readwrite, nonatomic) NSString * dateModified;
-//@property (readwrite, nonatomic) char groupMark;
 
 - (void) updateFromDictionary: (NSDictionary *) dict
                    setChanged: (BOOL) setChanged
@@ -114,7 +113,6 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 @synthesize diffResult = _diffResult;
 @synthesize filetime = _filetime;
 @synthesize dateModified = _dateModified;
-//@synthesize groupMark = _groupMark;
 
 @synthesize deltaSize = _deltaSize;
 @synthesize deltaComments = _deltaComments;
@@ -301,7 +299,6 @@ static NSString * prettyHtml (NSMutableArray *diffs)
     
     self.flagNew = getStringFromDict(dict, @"flagNew", _path); 
     self.dateModified = getStringFromDict(dict, @"dateModified", _path);     
-    //self.groupMark =  [[dict get:@"groupMark" orElse:[NSNumber numberWithChar:0]] charValue];
     
     SamLibTextChanged s = SamLibTextChangedNone;
     
@@ -418,7 +415,7 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 
 - (NSDictionary *) toDictionary
 {
-    NSMutableDictionary * dict = [NSMutableDictionary dictionaryWithCapacity:17];
+    NSMutableDictionary * dict = [NSMutableDictionary dictionaryWithCapacity:16];
     
     [dict updateOnly: @"path" valueNotNil: _path];
     [dict updateOnly: @"copyright" valueNotNil: _copyright];    
@@ -436,9 +433,6 @@ static NSString * prettyHtml (NSMutableArray *diffs)
     [dict updateOnly: @"lastModified" valueNotNil: _lastModified];
     [dict updateOnly: @"diffResult" valueNotNil: _diffResult];
     [dict updateOnly: @"filetime" valueNotNil: [_filetime iso8601Formatted]];
-    
-    //if (_groupMark != 0)
-    //    [dict update: @"groupMark" value: [NSNumber numberWithChar:_groupMark]];
     
     return dict;
 }

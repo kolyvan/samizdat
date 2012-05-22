@@ -231,9 +231,6 @@ static NSDate* mkDateFromComment(NSString *dt)
 {
     NSMutableDictionary * dict = [NSMutableDictionary dictionaryWithCapacity:3];
     
-    //if (_subscribed)
-    //    [dict update: @"subscribed" value: [NSNumber numberWithBool:YES]];
-    
     [dict updateOnly: @"timestamp" valueNotNil: [_timestamp iso8601Formatted]]; 
     [dict updateOnly: @"lastModified" valueNotNil: _lastModified];    
     

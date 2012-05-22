@@ -144,7 +144,6 @@ extern int ddLogLevel;
         
         _lastModified   = KX_RETAIN(getStringFromDict(dict, @"lastModified", path));
         _digest         = KX_RETAIN(getStringFromDict(dict, @"digest", path));
-        //_ignored        = [[dict get: @"ignored" orElse:[NSNumber numberWithBool:NO]] boolValue]; 
         
         NSDate *dt = getDateFromDict(dict, @"timestamp", path);        
         if (dt) self.timestamp = dt;
@@ -228,9 +227,6 @@ extern int ddLogLevel;
     [dict updateOnly: @"timestamp" valueNotNil: [_timestamp iso8601Formatted]];    
     [dict updateOnly: @"texts" valueNotNil: textsAsDict];    
     [dict updateOnly: @"about" valueNotNil: _about];        
-    
-    //if (_ignored)
-    //    [dict update: @"ignored" value: [NSNumber numberWithBool:YES]];
     
     return dict;
 }
