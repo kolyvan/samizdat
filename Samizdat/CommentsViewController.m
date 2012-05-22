@@ -142,9 +142,12 @@ static NSString * mkHTML(SamLibComments * comments)
     BOOL _toggleReply;
     NSString * _msgid;
     BOOL _isReply;
+    
+    id _version;
 }
 
 @property (readonly, nonatomic) NSTextField * nameField;
+@property (readwrite, nonatomic) id version;
 
 @end
 
@@ -152,7 +155,7 @@ static NSString * mkHTML(SamLibComments * comments)
 @implementation CommentsViewController
 
 @synthesize nameField = _nameField;
-
+@synthesize version = _version;
  
 - (id)init
 {
@@ -166,17 +169,27 @@ static NSString * mkHTML(SamLibComments * comments)
 {
     KX_RELEASE(_comments);
     KX_RELEASE(_msgid);
+    KX_RELEASE(_version);
     KX_SUPER_DEALLOC();
 }
 
 - (void) reset: (id) obj
 {
     NSAssert([obj isKindOfClass: [SamLibComments class]], @"invalid class");
-    if (_comments != obj) {  
-        _needReloadWebView = YES;        
-        KX_RELEASE(_comments);
-        _comments = KX_RETAIN(obj);        
-    } 
+    SamLibComments * comments = obj;    
+    
+    if (_comments == comments &&
+        [comments.version isEqualTo:_version]) {            
+
+            return;  
+    }
+
+    self.version = comments.version;    
+    _needReloadWebView = YES;        
+    KX_RELEASE(_comments);
+    _comments = KX_RETAIN(comments);        
+    
+    DDLogInfo(@"reload comments view %@", _comments.text.path);        
 }
 
 - (void) activate

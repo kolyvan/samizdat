@@ -60,6 +60,8 @@ typedef enum {
     
     KX_WEAK SamLibAuthor * _author;
     SamLibComments * _commentsObject;
+    
+    NSInteger _version;
 }
 
 @property (readonly, nonatomic) NSString * copyright;

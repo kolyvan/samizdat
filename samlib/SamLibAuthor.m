@@ -110,7 +110,7 @@ extern int ddLogLevel;
 }
 
 
-- (NSString *) computeVersion 
+- (NSString *) computeHash 
 {
     NSMutableString *ms = [NSMutableString string];    
     [ms appendString: [self.timestamp description]];
@@ -121,7 +121,12 @@ extern int ddLogLevel;
 
 - (BOOL) isDirty
 {
-    return [[self computeVersion] isNotEqualTo:_version];    
+    return [[self computeHash] isNotEqualTo:_hash];    
+}
+
+- (id) version
+{
+    return [NSNumber numberWithInteger:_version];
 }
 
 + (id) fromDictionary: (NSDictionary *)dict 
@@ -148,7 +153,7 @@ extern int ddLogLevel;
         NSDate *dt = getDateFromDict(dict, @"timestamp", path);        
         if (dt) self.timestamp = dt;
 
-        _version = KX_RETAIN([self computeVersion]);
+        _hash = KX_RETAIN([self computeHash]);
     }
     return self;
 }
@@ -166,7 +171,7 @@ extern int ddLogLevel;
     KX_RELEASE(_lastModified);
     KX_RELEASE(_digest);
     KX_RELEASE(_texts);
-    KX_RELEASE(_version);
+    KX_RELEASE(_hash);
     KX_SUPER_DEALLOC();
 }
 
@@ -294,7 +299,8 @@ extern int ddLogLevel;
         return NO;
   
     self.digest = digest;
-    [self updateTexts: SamLibParser.scanTexts(body)];                                            
+    [self updateTexts: SamLibParser.scanTexts(body)];  
+    _version++;
     return YES;    
 }
 
@@ -340,8 +346,8 @@ extern int ddLogLevel;
                        [folder stringByAppendingPathComponent:_path])) {
  
  
-        KX_RELEASE(_version);
-        _version = KX_RETAIN([self computeVersion]);
+        KX_RELEASE(_hash);
+        _hash = KX_RETAIN([self computeHash]);
     }    
 }
 

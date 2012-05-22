@@ -143,11 +143,32 @@ static NSDate* mkDateFromComment(NSString *dt)
 @implementation SamLibComments
 
 @synthesize text = _text;
-@synthesize all = _all;
+//@synthesize all = _all;
 @synthesize lastModified = _lastModified;
 @synthesize isDirty = _isDirty;
 @synthesize numberOfNew = _numberOfNew;
 @dynamic changed;
+
+- (id) version
+{
+    return [NSNumber numberWithInteger:_version];
+}
+
+- (NSArray *) all
+{
+    return KX_AUTORELEASE(KX_RETAIN(_all));
+}
+
+- (void) setAll:(NSArray *)all
+{
+    if (_all != all) {
+        KX_RELEASE(_all);
+        _all = KX_RETAIN(all);
+        _isDirty = YES;
+        _version++;
+        self.timestamp = [NSDate date];        
+    }
+}
 
 - (NSString *) relativeUrl
 {
@@ -207,9 +228,10 @@ static NSDate* mkDateFromComment(NSString *dt)
                 if ([p isKindOfClass:[NSArray class]]) {
                     
                     NSArray * a = p;
-                    self.all = [a map:^id(id elem) {
+                    a = [a map:^id(id elem) {
                         return [SamLibComment fromDictionary:elem];
                     }];
+                    _all = KX_RETAIN(a);
                     
                 } else {
                     DDLogWarn(locString(@"invalid '%@' in dictionary: %@"), @"all", text.path);
@@ -297,7 +319,7 @@ static NSDate* mkDateFromComment(NSString *dt)
         
         if (_numberOfNew > 0) {
             self.all = final;
-            _isDirty = YES;
+            //_isDirty = YES;
         }
         
         
@@ -305,11 +327,11 @@ static NSDate* mkDateFromComment(NSString *dt)
 
         _numberOfNew = result.count;          
         self.all = result;        
-        _isDirty = YES;        
+        //_isDirty = YES;        
     }    
     
-    if (_isDirty)
-        self.timestamp = [NSDate date];        
+    //if (_isDirty)
+    //    self.timestamp = [NSDate date];        
     
 }
 

@@ -23,6 +23,7 @@
 @interface TableViewController : KxViewController<NSTableViewDataSource,NSTableViewDelegate> {
     IBOutlet NSTableView *_tableView;   
     NSArray * _content;
+    NSArray * _versions;    
 }
 
 - (void) reloadTableView;

@@ -15,6 +15,7 @@
 #import "KxMacros.h"
 #import "KxUtils.h"
 #import "NSDictionary+Kolyvan.h"
+#import "NSArray+Kolyvan.h"
 #import "SamLibText.h"
 #import "AppDelegate.h"
 #import "SamLibAgent.h"
@@ -31,14 +32,6 @@ extern int ddLogLevel;
 {
     if ([event type] == NSKeyUp) {
         
-        /*
-        NSString* characters = [event characters];
-        if (([characters length] > 0) && 
-            (([characters characterAtIndex:0] == NSCarriageReturnCharacter) || 
-             ([characters characterAtIndex:0] == NSEnterCharacter))) {
-        }
-        */
-
         if ([event keyCode] == 36 && 
             self.doubleAction) { 
             
@@ -62,6 +55,7 @@ extern int ddLogLevel;
 - (void) dealloc 
 {
     KX_RELEASE(_content);
+    KX_RELEASE(_versions);
     KX_SUPER_DEALLOC();
 }
 
@@ -90,16 +84,38 @@ extern int ddLogLevel;
     NSAssert(NO, @"abstract method");    
 }
 
+
+- (NSArray *) mkVersions: (NSArray *) content
+{
+    return [content map:^id(id elem) {
+        if ([elem isKindOfClass:[SamLibBase class]]) {
+            SamLibBase * base = elem;
+            return base.version;    
+        }
+        return [NSNull null];
+    }];
+}
+
 - (void) reloadTableView
 {
     NSArray * newContent = [self loadContent];
-    if (![newContent isEqualTo:_content]) {
-        KX_RELEASE(_content);    
-        _content = KX_RETAIN(newContent);
-        [_tableView reloadData];
+    NSArray * newVersions = [self mkVersions: newContent];
+    
+    if ([newContent isEqualToArray:_content] &&
+        [newVersions isEqualToArray:_versions]) {
         
-        DDLogInfo(@"reload table data %@", self.className);
-    }
+        return;
+    }     
+    
+    KX_RELEASE(_versions);    
+    _versions = KX_RETAIN(newVersions); 
+    
+    KX_RELEASE(_content);    
+    _content = KX_RETAIN(newContent);
+    
+    [_tableView reloadData];
+    
+    DDLogInfo(@"reload table data %@", self.className);    
 }
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView 

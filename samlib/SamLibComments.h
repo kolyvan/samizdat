@@ -53,6 +53,7 @@ typedef void (^UpdateCommentsBlock)(SamLibComments *comments,
     NSString *_lastModified;
     BOOL _isDirty;
     NSInteger _numberOfNew;
+    NSInteger _version;
 }
 
 @property (readonly, nonatomic, KX_PROP_WEAK) SamLibText * text;

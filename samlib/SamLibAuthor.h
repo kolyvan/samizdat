@@ -30,7 +30,9 @@ typedef void (^UpdateAuthorBlock)(SamLibAuthor *author, SamLibStatus status, NSS
     NSString * _about;    
     NSArray * _texts;
     BOOL _changed;
-    NSString *_version;
+    
+    NSString *_hash;
+    NSInteger _version;
 }
 
 @property (readonly, nonatomic) NSString * name;

@@ -50,11 +50,17 @@ static NSString * mkHTML(NSString * html)
 
 @interface TextViewController () {    
     SamLibText * _text;
+    id _version;
 }
+
+@property (readwrite, nonatomic) id  version;
+
 @end
 
 @implementation TextViewController
  
+@synthesize version = _version;
+
 - (id)init
 {
     self = [super initWithNibName:@"TextView"];
@@ -66,17 +72,28 @@ static NSString * mkHTML(NSString * html)
 - (void) dealloc 
 {
     KX_RELEASE(_text);
+    KX_RELEASE(_version);
     KX_SUPER_DEALLOC();
 }
 
 - (void) reset: (id) obj
 {
-     NSAssert([obj isKindOfClass: [SamLibText class]], @"invalid class");
-    if (_text != obj) {  
-        _needReloadWebView = YES;        
-        KX_RELEASE(_text);
-        _text = KX_RETAIN(obj);        
-    } 
+    NSAssert([obj isKindOfClass: [SamLibText class]], @"invalid class");
+    SamLibText * text = obj;
+    
+    if (_text == text &&
+        [_version isEqualTo:text.version]) {
+
+        return;  
+    }
+    
+    self.version = text.version;    
+    _needReloadWebView = YES;        
+    KX_RELEASE(_text);
+    _text = KX_RETAIN(text);        
+    
+    DDLogInfo(@"reload text view %@", _text.path);
+    
 }
 
 - (void) prepareHTML: (NSURL *) url

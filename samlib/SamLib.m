@@ -210,6 +210,11 @@ NSString * mkHTMLPage(NSString *data,
     return [SamLibAgent.samlibURL() stringByAppendingPathComponent: self.relativeUrl];
 }
 
+- (id) version
+{
+    return [NSNull null];
+}
+
 - (id) initWithPath: (NSString *)path
 {
     NSAssert(path.nonEmpty, @"empty path");

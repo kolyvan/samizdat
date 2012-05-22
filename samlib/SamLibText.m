@@ -153,7 +153,13 @@ static NSString * prettyHtml (NSMutableArray *diffs)
     if  (changedFlag != _changedFlag) {
         _changedFlag = changedFlag;
         self.timestamp = [NSDate date];
+        ++_version;
     } 
+}
+
+- (id) version
+{
+    return [NSNumber numberWithInt:_version];
 }
 
 - (NSString *) relativeUrl

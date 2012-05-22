@@ -53,6 +53,9 @@ extern NSString * mkHTMLPage(NSString *data, NSString *head, NSString *cssLink, 
 @property (readonly) NSString * url;
 @property (readonly) NSString * relativeUrl;
 
+@property (readonly) id version;
+
 - (id) initWithPath: (NSString *)path;
+
 
 @end
