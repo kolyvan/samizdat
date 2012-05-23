@@ -392,11 +392,8 @@ extern int ddLogLevel;
             float distance = levenshteinDistanceNS(name, authorChars, authorLengtn);
             distance = 1.0 - (distance / MAX(name.length, authorLengtn));
             
-            //NSMutableDictionary * dd = [dict mutableCopy];
-            //[dd update:@"distance" value:[NSNumber numberWithFloat:distance]];
-            
             if (authorLengtn < name.length &&                
-                [name rangeOfString: authorName].location != NSNotFound &&
+                [name hasPrefix: authorName] &&
                 (distance > minDistance1)) {
                 
                 [ma push:[KxTuple2 first:dict 
@@ -425,6 +422,7 @@ extern int ddLogLevel;
                     minDistance2: (float) minDistance2
                                 block: (void(^)(NSArray *result)) block;
 {
+    name = [name capitalizedString];
     NSString *path = SamLibParser.captitalToPath(name.first);
     
     if (!path.nonEmpty) {
