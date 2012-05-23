@@ -25,6 +25,8 @@ typedef struct {
     BOOL (*scanLoginResponse)(NSString * response);
     NSDictionary * (*scanTextPage)(NSString *html);
     NSArray* (*listOfGroups)();
+    NSArray * (*scanAuthors)(NSString *html);
+    NSString * (*captitalToPath)(unichar first);
     
 } SamLibParser_t;
 

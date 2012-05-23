@@ -22,3 +22,5 @@ extern void test_post_comment();
 //extern void test_login_logout();
 extern void test_login_logout2();
 extern void test_post_comment_with_login();
+
+void test_fetch_authors_list();

@@ -67,4 +67,9 @@ typedef void (^UpdateAuthorBlock)(SamLibAuthor *author, SamLibStatus status, NSS
 
 - (void) gcRemovedText;
 
++ (void) fuzzySearchAuthorByName: (NSString *) name 
+                    minDistance1: (float) minDistance1  // 0.2
+                    minDistance2: (float) minDistance2  // 0.4
+                           block: (void(^)(NSArray *result)) block;
+
 @end

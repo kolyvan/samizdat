@@ -19,11 +19,26 @@
 #import "KxUtils.h"
 #import "NSObject+Kolyvan.h"
 #import "NSString+Kolyvan.h"
+#import "NSDictionary+Kolyvan.h"
+#import "NSArray+Kolyvan.h"
 #import "SamLibModel.h"
+
+typedef enum {
+    
+    AddAuthorStateInit,
+    AddAuthorStateFetching,  
+    AddAuthorStateFetchedSuccess,   
+    AddAuthorStateFetchedFailure,       
+    AddAuthorStateSearching,             
+    AddAuthorStateSearchedSuccess,              
+    AddAuthorStateSearchedFailure,                  
+    
+} AddAuthorState;
 
 @interface AddAuthorViewController() {
 
     IBOutlet NSTextField * _url;
+    IBOutlet NSTextField * _search;
     IBOutlet NSTextField * _fetchedInfo;    
     IBOutlet NSBox * _infoBox;
     IBOutlet NSTextField * _name;
@@ -36,8 +51,12 @@
     IBOutlet NSTextField * _visitors;
     IBOutlet NSButton * _btnAdd;
     IBOutlet NSButton * _btnFetch;
+    IBOutlet NSButton * _btnSearch;
+    IBOutlet NSTableView * _tableView;
+    IBOutlet NSScrollView *_scrollView;
     
     SamLibAuthor * _author;    
+    NSArray * _searchResult;
 }
 @end
 
@@ -56,6 +75,7 @@
 - (void)dealloc
 {
     KX_RELEASE(_author);
+    KX_RELEASE(_searchResult);
     KX_SUPER_DEALLOC();
 }
 
@@ -64,28 +84,129 @@
     [super awakeFromNib];
     
     _url.delegate = self;
+    //_search.delegate = self;    
+    [_tableView setDelegate:self];
+    [_tableView setDataSource:self];    
 }
 
 - (void) activate
 {   
-    _url.stringValue = @"";
-    _fetchedInfo.stringValue = @"";
-    
-    [_url setEnabled:YES];
-    [_infoBox setHidden:YES];
-    [_btnAdd setEnabled:NO];
-    
+    [self setState: AddAuthorStateInit withInfo: @""];       
+        
     [super activate];
+}
+
+- (void) setState: (AddAuthorState) state  
+         withInfo: (NSString *) info
+{
+    switch (state) {
+        case AddAuthorStateInit:
+            
+            [_url setEnabled:YES];
+            [_search setEnabled:YES];
+            [_fetchedInfo setHidden:YES];            
+            [_infoBox setHidden:YES];            
+            [_scrollView setHidden:YES]; 
+            [_btnAdd setEnabled:NO];    
+            [_btnSearch setEnabled:NO];
+            [_btnFetch setEnabled:NO]; 
+            
+            _url.stringValue = @"";
+            _search.stringValue = @"";            
+            break;
+            
+        case AddAuthorStateFetching: 
+            
+            [_url setEnabled:NO];
+            [_search setEnabled:NO];
+            [_fetchedInfo setHidden:NO];            
+            [_infoBox setHidden:YES];
+            [_scrollView setHidden:YES];            
+            [_btnAdd setEnabled:NO];
+            [_btnSearch setEnabled:NO];            
+            [_btnFetch setEnabled:NO];                        
+                        
+            _fetchedInfo.stringValue = KxUtils.format(locString(@"fetching %@"), info);
+            _fetchedInfo.textColor = [NSColor textColor];
+            break;
+          
+        case AddAuthorStateFetchedSuccess:
+            
+            [_url setEnabled:YES];
+            [_search setEnabled:YES];
+            [_fetchedInfo setHidden:NO];            
+            [_infoBox setHidden:NO];
+            [_scrollView setHidden:YES];            
+            [_btnAdd setEnabled:YES];
+            [_btnSearch setEnabled:YES];            
+            [_btnFetch setEnabled:YES];  
+             
+            _fetchedInfo.stringValue = locString(@"author's information");
+            _fetchedInfo.textColor = [NSColor blueColor];               
+            break;
+            
+        case AddAuthorStateFetchedFailure:
+        case AddAuthorStateSearchedFailure:    
+            
+            [_url setEnabled:YES];
+            [_search setEnabled:YES];
+            [_fetchedInfo setHidden:NO];            
+            [_infoBox setHidden:YES];
+            [_scrollView setHidden:YES];            
+            [_btnAdd setEnabled:NO];
+            [_btnSearch setEnabled:YES];            
+            [_btnFetch setEnabled:YES];  
+            
+            _fetchedInfo.stringValue = info;
+            _fetchedInfo.textColor = [NSColor redColor];                        
+            break;
+            
+            
+        case AddAuthorStateSearching:
+                       
+            [_url setEnabled:NO];
+            [_search setEnabled:NO];
+            [_fetchedInfo setHidden:NO];            
+            [_infoBox setHidden:YES];
+            [_scrollView setHidden:YES];            
+            [_btnAdd setEnabled:NO];
+            [_btnSearch setEnabled:NO];            
+            [_btnFetch setEnabled:NO];                        
+            
+            _fetchedInfo.stringValue = KxUtils.format(locString(@"searching %@"), info);
+            _fetchedInfo.textColor = [NSColor textColor];            
+            break;
+          
+        case AddAuthorStateSearchedSuccess:
+            
+            [_url setEnabled:YES];
+            [_search setEnabled:YES];
+            [_fetchedInfo setHidden:NO];            
+            [_infoBox setHidden:YES];
+            [_scrollView setHidden:NO];            
+            [_btnAdd setEnabled:NO];
+            [_btnSearch setEnabled:YES];            
+            [_btnFetch setEnabled:YES];  
+            
+            _fetchedInfo.stringValue = KxUtils.format(locString(@"found: %@"), info);
+            _fetchedInfo.textColor = [NSColor blueColor];               
+            break;            
+            
+        default:
+            break;
+    }
 }
 
 - (IBAction)controlTextDidChange:(NSNotification *)aNotification
 {
-    [_btnFetch setEnabled:_url.stringValue.nonEmpty];
+    NSTextField *textField = aNotification.object;
+    [_btnFetch setEnabled:textField.stringValue.nonEmpty];
 }
 
 - (IBAction) fetchPressed:(id)sender
 {
-    [self urlChanged:_url];
+    if (_url.stringValue.nonEmpty)
+        [self urlChanged:_url];
 }
 
 - (IBAction) urlChanged: (id) sender
@@ -150,10 +271,6 @@
         return;
     }
         
-    //if (url.nonEmpty && 
-    //    ![url contains: @"."] &&
-    //    ![url contains: @"/"]) 
-        
     _name.stringValue = @"";
     _subtitle.stringValue = @"";
     _www.stringValue = @"";
@@ -169,12 +286,7 @@
     if ([app startReload:self 
              withMessage:message]) {
         
-        _fetchedInfo.stringValue = message;
-        _fetchedInfo.textColor = [NSColor textColor];
-        
-        [_url setEnabled:NO];
-        [_infoBox setHidden:YES];
-        [_btnAdd setEnabled:NO];
+        [self setState: AddAuthorStateFetching withInfo: url];       
         
         KX_RELEASE(_author);
         _author = KX_RETAIN([[SamLibAuthor alloc] initWithPath:url]);
@@ -187,12 +299,11 @@
             if (self.view.isHidden)
                 return;
             
-            [_url setEnabled:YES];
-            
             if (status == SamLibStatusFailure) {
-                
-                _fetchedInfo.stringValue = error;
-                _fetchedInfo.textColor = [NSColor redColor];
+                                
+                [self setState: AddAuthorStateFetchedFailure 
+                      withInfo: error];                       
+                               
             }
             else {
                 
@@ -215,11 +326,8 @@
                 if (author.visitors.nonEmpty)            
                     _visitors.stringValue = author.visitors;            
                 
-                _fetchedInfo.stringValue = locString(@"author's information");
-                _fetchedInfo.textColor = [NSColor blueColor];   
-                
-                [_infoBox setHidden:NO];                
-                [_btnAdd setEnabled:YES]; 
+                [self setState: AddAuthorStateFetchedSuccess 
+                      withInfo: @""];                       
             }
             
         }];     
@@ -242,5 +350,85 @@
     [[NSApp delegate] showAuthorsView: nil];
 }
 
+- (IBAction) searchPressed:(id)sender
+{
+    if (_search.stringValue.nonEmpty)
+        [self searchChanged:_search];
+}
+
+- (IBAction) searchChanged: (id) sender
+{
+    NSString * name = [sender stringValue];
+    
+    if (!name.nonEmpty)
+        return;    
+    
+    AppDelegate *app = [NSApp delegate];    
+    if ([app startReload:self 
+             withMessage:KxUtils.format(locString(@"searching %@"), name)]) {
+    
+        [self setState: AddAuthorStateSearching 
+              withInfo: name]; 
+        
+        [SamLibAuthor fuzzySearchAuthorByName:name 
+                                 minDistance1:0.2
+                                 minDistance2:0.4 
+                                        block:^(NSArray *result) {
+                                            
+                                            [app finishReload:result.nonEmpty ? SamLibStatusSuccess : SamLibStatusFailure  
+                                                  withMessage:nil];    
+                                            
+                                            if (self.view.isHidden)
+                                                return;
+                                            
+                                            if (result.nonEmpty) {
+                                                
+                                                KX_RELEASE(_searchResult);
+                                                _searchResult = KX_RETAIN(result);
+                                                
+                                                [_tableView reloadData];                                                                                                    
+                                                
+                                                [self setState: AddAuthorStateSearchedSuccess
+                                                      withInfo: KxUtils.format(@"%ld", result.count)]; 
+                                                
+                                            } else {
+                                                
+                                                [self setState: AddAuthorStateSearchedFailure
+                                                      withInfo: @"not found"];
+                                                
+                                            }
+                                            
+                                        }];
+    }
+
+}
+
+- (IBAction) searchSelect: (id) sender
+{
+    NSDictionary *dict = [_searchResult objectAtIndex:_tableView.selectedRow];
+    _url.stringValue = [dict get:@"path"];
+}
+
+- (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView 
+{
+    return _searchResult.count;
+}
+
+- (NSView *)tableView:(NSTableView *)tableView
+   viewForTableColumn:(NSTableColumn *)tableColumn
+                  row:(NSInteger)row {
+    
+    NSDictionary *dict = [_searchResult objectAtIndex:row];
+    
+    
+    NSTableCellView *cellView = [tableView makeViewWithIdentifier:[tableColumn identifier] 
+                                       owner:self];
+
+    cellView.textField.stringValue = KxUtils.format(@"%@ %@", 
+                                                    [dict get:@"name"],
+                                                    [dict get:@"info"]);
+    
+    return cellView;    
+}
 
 @end

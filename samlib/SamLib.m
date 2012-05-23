@@ -69,57 +69,53 @@ NSHTTPCookie * deleteSamLibCookie(NSString *name)
     return nil;
 }
 
-NSDictionary * loadDictionaryEx(NSString *filepath, BOOL immutable)
+id loadObject(NSString *filepath, BOOL immutable)
 {
     NSFileManager * fm = [[NSFileManager alloc] init];    
     BOOL r = [fm isReadableFileAtPath:filepath];    
     KX_RELEASE(fm);    
     
-    if (r) {        
-        
-        NSError * error = nil;    
-        NSData * data = [NSData dataWithContentsOfFile:filepath
-                                               options:0
-                                                 error:&error];
-        if (data) {
-            
-            if ([data length] == 0) 
-                if (immutable)
-                    return [NSDictionary dictionary];
-                else
-                    return [NSMutableDictionary dictionary];
-            
-            id obj;
-            if (immutable)                
-                obj = [data objectFromJSONDataWithParseOptions: JKParseOptionNone
-                                                         error: &error];
-            else
-                obj = [data mutableObjectFromJSONDataWithParseOptions: JKParseOptionNone
-                                                                error: &error];
-                
-            if (obj) {
-                
-                if ([obj isKindOfClass:[NSDictionary class]])     
-                    return obj;                
-                
-                DDLogCError(locString(@"invalid json for file: %@"), filepath);        
-                
-            } else {
-                DDLogCError(locString(@"json error: %@"), 
-                            KxUtils.completeErrorMessage(error));
-            }
-            
-        } else {
-            DDLogCError(locString(@"file error: %@"), 
-                        KxUtils.completeErrorMessage(error));         
-        }
-    } else {
-        
+    if (!r) {        
         DDLogCWarn(locString(@"file not found: %@"), filepath);         
+        return nil;        
+    }         
         
+    NSError * error = nil;    
+    NSData * data = [NSData dataWithContentsOfFile:filepath
+                                           options:0
+                                             error:&error];
+    if (!data) {
+        DDLogCError(locString(@"file error: %@"), 
+                    KxUtils.completeErrorMessage(error));         
+        return nil;
     }
     
-    return nil;
+    if (data.length == 0) 
+        return [NSNull null];
+    
+    id obj;
+    if (immutable)                
+        obj = [data objectFromJSONDataWithParseOptions: JKParseOptionNone
+                                                 error: &error];
+    else
+        obj = [data mutableObjectFromJSONDataWithParseOptions: JKParseOptionNone
+                                                        error: &error];
+    
+    if (!obj) {
+        DDLogCError(locString(@"json error: %@"), 
+                    KxUtils.completeErrorMessage(error));
+    }
+    
+    return obj;
+}
+
+NSDictionary * loadDictionaryEx(NSString *filepath, BOOL immutable)
+{
+    id obj = loadObject(filepath, immutable);
+    if (obj == [NSNull null]) {
+        return immutable ?  [NSDictionary dictionary] : [NSMutableDictionary dictionary];
+    }
+    return obj;
 }
 
 NSDictionary * loadDictionary(NSString *filepath)
@@ -129,8 +125,13 @@ NSDictionary * loadDictionary(NSString *filepath)
 
 BOOL saveDictionary(NSDictionary *dict, NSString * filepath)
 {
+    return saveObject(dict, filepath);
+}
+
+BOOL saveObject(id obj, NSString * filepath)
+{
     NSError * error = nil;    
-    NSData * json = [dict JSONDataWithOptions:JKSerializeOptionPretty 
+    NSData * json = [obj JSONDataWithOptions:JKSerializeOptionPretty 
                                         error:&error];
     if (!json) {
         
@@ -152,36 +153,44 @@ BOOL saveDictionary(NSDictionary *dict, NSString * filepath)
     return YES;
 }
 
-NSString * mkHTMLPage(NSString *data,
-                      NSString *head,
-                      NSString *cssLink, 
-                      NSString *jsLink)
+int levenshteinDistance(unichar* s1, int n, unichar *s2, int m)
+{    
+    int d[n+1][m+1];
+    
+    for (int i = 0; i <= n; i++)
+        d[i][0] = i;
+    
+    for (int i = 0; i <= m; i++)    
+        d[0][i] = i;
+    
+    for (int i = 1; i <= n; i++)
+    {
+        int s1i = s1[i - 1];
+        
+        for (int j = 1; j <= m; j++)
+        {
+            int s2j = s2[j - 1];
+            int cost = s1i == s2j ? 0 : 1;
+            
+            int x = d[i-1][j  ] + 1;
+            int y = d[i  ][j-1] + 1;
+            int z = d[i-1][j-1] + cost;
+            
+            d[i][j] = MIN(MIN(x,y),z);
+        }
+    }
+    return d[n][m];
+}
+
+int levenshteinDistanceNS(NSString* s1, unichar *s2, int m)
 {
-    NSMutableString *bb = [[NSMutableString alloc] init];
+    int n = s1.length;
     
-    [bb appendString: @"<!DOCTYPE html>\n"];
-    [bb appendString: @"<html lang=\"en\">\n"];
-    [bb appendString: @"<head>\n"];
-    [bb appendString: @"<meta charset=\"utf-8\">\n"];    
-    [bb appendString: @"<title>samlib</title>\n"];    
-    if (cssLink.nonEmpty)
-        [bb appendFormat: @"<link rel=\"stylesheet\" href=\"%@\">\n", cssLink];    
-    if (jsLink.nonEmpty)
-        [bb appendFormat: @"<script src=\"%@\"></script>\n"];        
-    if (head.nonEmpty)
-        [bb appendString: head];
-    [bb appendString: @"</head>\n"];    
-    [bb appendString: @"<body>\n"];   
-    [bb appendString: @"<div class='main'>\n"];    
+    unichar buffer1[n];
+    [s1 getCharacters:buffer1 
+                range:NSMakeRange(0, n)];
     
-    [bb appendString: data];
-    [bb appendString: @"\n"];    
-    
-    [bb appendString: @"</div>\n"];           
-    [bb appendString: @"</body>\n"];        
-    [bb appendString: @"</html>\n"];
-    
-    return KX_AUTORELEASE(bb);
+    return levenshteinDistance(buffer1, n, s2, m);
 }
 
 /////

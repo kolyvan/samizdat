@@ -22,6 +22,7 @@
 #import "KxUtils.h"
 #import "DDLog.h"
 #import "JSONKit.h"
+#import "KxTuple2.h"
 
 extern int ddLogLevel;
 
@@ -370,5 +371,119 @@ extern int ddLogLevel;
         return text.isRemoved;
     }]; 
 }
+
++ (NSArray *) fuzzySearchAuthorByName: (NSString *) authorName 
+                         minDistance1: (float) minDistance1
+                         minDistance2: (float) minDistance2
+                              inArray: (NSArray *) array
+{
+    NSInteger authorLengtn = authorName.length;
+    unichar authorChars[authorName.length];
+    [authorName getCharacters:authorChars 
+                        range:NSMakeRange(0, authorLengtn)];
+    
+    NSMutableArray * ma = [NSMutableArray array];
+    
+    for (NSDictionary *dict in array) {
+        
+        NSString *name = [dict get:@"name"];
+        if (name.nonEmpty) {
+            
+            float distance = levenshteinDistanceNS(name, authorChars, authorLengtn);
+            distance = 1.0 - (distance / MAX(name.length, authorLengtn));
+            
+            //NSMutableDictionary * dd = [dict mutableCopy];
+            //[dd update:@"distance" value:[NSNumber numberWithFloat:distance]];
+            
+            if (authorLengtn < name.length &&                
+                [name rangeOfString: authorName].location != NSNotFound &&
+                (distance > minDistance1)) {
+                
+                [ma push:[KxTuple2 first:dict 
+                                  second:[NSNumber numberWithFloat:1.0 + distance]]];
+            }
+            else if (distance > minDistance2) {            
+                [ma push:[KxTuple2 first:dict 
+                                  second:[NSNumber numberWithFloat:distance]]];
+            }
+        }
+    }
+    
+    NSArray *result = [ma sortWith:^(id obj1, id obj2) {
+        KxTuple2 *l = obj1, *r = obj2;
+        return [r.second compare: l.second];
+    }];
+    
+    return [result map:^(id elem) { 
+        return ((KxTuple2 *)elem).first; 
+    }];
+
+}
+
++ (void) fuzzySearchAuthorByName: (NSString *) name
+                    minDistance1: (float) minDistance1
+                    minDistance2: (float) minDistance2
+                                block: (void(^)(NSArray *result)) block;
+{
+    NSString *path = SamLibParser.captitalToPath(name.first);
+    
+    if (!path.nonEmpty) {
+        
+        DDLogWarn(locString(@"invalid author name: %@"), name);
+        block(nil);
+        return;
+    }
+
+    NSString * filepath = [path stringByReplacingOccurrencesOfString:@"/" 
+                                                          withString:@"_"]; 
+    filepath = [SamLibAgent.indexPath() stringByAppendingPathComponent:filepath];    
+    id obj = nil;    
+    if (KxUtils.fileExists(filepath))
+        obj = loadObject(filepath, YES);
+    
+    if ([obj isKindOfClass:[NSArray class]]) {        
+                
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+           
+            NSArray *result = [self fuzzySearchAuthorByName:name
+                                               minDistance1:minDistance1
+                                               minDistance2:minDistance2
+                                                    inArray:obj];
+            
+            dispatch_async(dispatch_get_main_queue(), ^(void) {
+                
+                block(result);
+            });
+            
+        });
+        
+    } else {
+
+        SamLibAgent.fetchData(path, 
+                              nil, 
+                              NO,
+                              nil,
+                              nil,
+                              ^(SamLibStatus status, NSString *data, NSString *lastModified) {                                  
+                                  
+                                  NSArray *result = nil;
+                                  if (status == SamLibStatusSuccess) {
+
+                                      NSArray *authors = SamLibParser.scanAuthors(data); 
+                                      if (authors.nonEmpty) {
+                                          saveObject(authors, filepath);                                        
+                                          result = [self fuzzySearchAuthorByName:name
+                                                                    minDistance1:minDistance1
+                                                                    minDistance2:minDistance2
+                                                                         inArray:authors];
+                                      }
+                                  }
+                                  
+                                  block(result);
+                              });
+    }
+    
+}
+
 
 @end

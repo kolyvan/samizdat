@@ -12,16 +12,18 @@
 #import "SamLibParser.h"
 #import "KxUtils.h"
 #import "KxConsole.h"
+#import "KxTuple2.h"
 #import "NSObject+Kolyvan.h"
 #import "NSDictionary+Kolyvan.h"
 #import "NSArray+Kolyvan.h"
 #import "NSString+Kolyvan.h"
+#import "SamLibAuthor.h"
 #import "SamLibComments.h"
 #import "SamLibUser.h"
 #import "DDLog.h"
 #import "DDTTYLogger.h"
 #import "DDFileLogger.h"
-
+#import "JSONKit.h"
 #import "test.h"
 
 
@@ -29,10 +31,10 @@
 //static int ddLogLevel = LOG_LEVEL_VERBOSE;
 int ddLogLevel = LOG_LEVEL_INFO;
 
-
-void test()
-{     
+void test() 
+{
 }
+
 
 void initLogger()
 {
@@ -79,6 +81,7 @@ int main(int argc, const char * argv[])
         //test_login_logout();
         //test_login_logout2();
         //test_post_comment_with_login();
+        //test_fetch_authors_list();
        
         SamLibAgent.cleanup();        
         

@@ -817,6 +817,105 @@ static NSArray * listOfGroups()
     return array;
 }
 
+static NSArray * scanAuthors(NSString *html)
+{
+    // 
+    // <DL><a href=/a/a_a/>А Аяма</a> "Ситком"(45k,8)</DL>
+    
+    NSScanner *scanner = [NSScanner scannerWithString: html];
+    
+    if (!findTag(scanner, @"</td></tr></table>"))
+        return nil;
+    
+    NSMutableArray *result = [NSMutableArray array];
+    
+    NSString *author = nil;
+    while (!scanner.isAtEnd &&
+           nil != (author = nextTag(scanner, @"<DL><a href=/", @"</DL>"))) {
+
+        NSScanner *scanner1 = [[NSScanner alloc] initWithString: author];
+
+        NSString *path = scanUpToTag(scanner1, @"/>");     
+        if (path.nonEmpty) {
+            NSString *name = scanUpToTag(scanner1, @"</a>");       
+            if (name.nonEmpty) {
+                NSString *info =  [author substringFromIndex:scanner1.scanLocation];
+                if (info.nonEmpty) {
+       
+                    NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
+                                          path, @"path", 
+                                          name, @"name",
+                                          info, @"info",
+                                          nil];
+        
+                    [result push: dict];
+                }
+            }
+        } 
+        
+        KX_RELEASE(scanner1);
+    }
+    
+    return result;
+}
+
+typedef struct {
+    unichar capital;
+    char * path;
+} IndexEntry;
+
+static NSString * captitalToPath(unichar first)
+{   
+    IndexEntry cyrillic [33] = {
+        { 1040, "a" }, // А
+        { 1041, "b" }, // Б  
+        { 1042, "w" }, // В
+        { 1043, "g" }, // Г
+        { 1044, "d" }, // Д
+        { 1045, "e" }, // Е
+        { 1025, "e/index_yo.shtml" }, // Ё
+        { 1046, "z/index_zh.shtml" }, // Ж
+        { 1047, "z" }, // З
+        { 1048, "i" }, // И
+        { 1049, "j/index_ij.shtml" }, // Й
+        { 1050, "k" }, // К
+        { 1051, "l" }, // Л
+        { 1052, "m" }, // М
+        { 1053, "n" }, // Н
+        { 1054, "o" }, // О
+        { 1055, "p" }, // П
+        { 1056, "r" }, // Р
+        { 1057, "s" }, // С
+        { 1058, "r" }, // Т
+        { 1059, "u" }, // У
+        { 1060, "f" }, // Ф
+        { 1061, "h" }, // Х
+        { 1062, "c" }, // Ц        
+        { 1063, "c/index_ch.shtml" }, // Ч
+        { 1064, "s/index_sh.shtml" }, // Ш
+        { 1065, "s/index_sw.shtml" }, // Щ
+        { 1066, "x" }, // Ъ
+        { 1067, "y" }, // Ы
+        { 1068, "z" }, // Ь
+        { 1069, "e/index_ae.shtml" }, // Э
+        { 1070, "j/index_ju.shtml" }, // Ю
+        { 1071, "j/index_ja.shtml" }, // Я
+    };    
+    
+    if ((first > 47 && first < 58) || 
+        (first > 64 && first < 91)) {
+        return KxUtils.format(@"%c/index_%c.shtml", first, first);        
+    }
+         
+    for (int i = 0; i < 33; ++i) {
+        if (cyrillic[i].capital == first)
+            return [NSString stringWithCString:cyrillic[i].path 
+                                      encoding:NSASCIIStringEncoding];
+    }    
+    
+    return nil;
+}
+
 SamLibParser_t SamLibParser = {
     scanAuthorInfo,
     scanBody,
@@ -827,4 +926,6 @@ SamLibParser_t SamLibParser = {
     scanLoginResponse,
     scanTextPage,
     listOfGroups,
+    scanAuthors,
+    captitalToPath,
 };

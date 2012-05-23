@@ -20,6 +20,7 @@
 #import "NSDictionary+Kolyvan.h"
 #import "NSDate+Kolyvan.h"
 #import "SamLibUser.h"
+#import "JSONKit.h"
 
 void test_fetch_page()
 {
@@ -373,36 +374,6 @@ void test_post_comment()
     
 }
 
-/*
-void test_login_logout()
-{
-    __block BOOL finished = NO;
-    
-    SamLibAgent.loginSamizdat(@"xrombrom", 
-                              @"nAk4Uj0f2", 
-                              ^(SamLibStatus status, NSString *data, NSString *_unused) {
-                                  
-                                  if (status == SamLibStatusSuccess) {
-                                  
-                                      BOOL r = SamLibParser.scanLoginResponse(data);
-                                      
-                                      KxConsole.printlnf(@"login %ld", r);
-                                      
-                                  } else {
-                                      KxConsole.println(data);
-                                  }
-                                  
-                                  finished = YES;
-                                  
-    });
-    
-    KxUtils.waitRunLoop(60, 0.5, ^() {
-        
-        return finished;
-    });
-}
-*/
-
 void test_login_logout2()
 {
     __block BOOL finished = NO;
@@ -479,4 +450,50 @@ void test_post_comment_with_login()
         return finished;
     });
     
+}
+
+
+void test_fetch_authors_list()
+{
+    __block BOOL finished = NO;
+        
+    SamLibAgent.fetchData(@"/a/", 
+                          nil, 
+                          NO,
+                          nil,
+                          nil,
+                          ^(SamLibStatus status, NSString *data, NSString *lastModified){
+                              
+                              finished = YES;
+                              
+                              KxConsole.printlnf(@"status: %ld length %ld", status, data.length);
+                              
+                              NSArray *result = SamLibParser.scanAuthors(data); 
+                              
+                              NSError * error = nil;    
+                              NSData * json = [result JSONDataWithOptions:JKSerializeOptionPretty 
+                                                                  error:&error];
+                              if (!json) {
+                                  
+                                  KxConsole.printlnf(@"json error: %@",                                               KxUtils.completeErrorMessage(error));        
+                                 
+                              }
+                              else {
+                                  error = nil;
+                                  if (![json writeToFile:[@"~/tmp/samlib/a_list.json" stringByExpandingTildeInPath]
+                                                 options:0 
+                                                   error:&error]) {
+                                      
+                                      KxConsole.printlnf(@"file error: %@",                                                          
+                                                  KxUtils.completeErrorMessage(error));        
+                                  }    
+                              }
+                              
+                          });
+    
+    KxUtils.waitRunLoop(60, 0.5, ^() {
+        
+        return finished;
+    });
+
 }

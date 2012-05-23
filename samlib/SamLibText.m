@@ -590,8 +590,7 @@ static NSString * prettyHtml (NSMutableArray *diffs)
         formatter: (NSString *(^)(NSString *)) formatter
 {       
     NSError *error;
-   
-
+    
     NSFileManager *fm = [[NSFileManager alloc] init];
     
     BOOL diffExists = [fm fileExistsAtPath:self.diffPath];

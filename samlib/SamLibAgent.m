@@ -95,6 +95,22 @@ static NSString * commentsPath()
     return path;
 }
 
+static NSString * indexPath()
+{
+    static NSString * path = nil;
+    
+    if (!path) {
+#ifdef _DEVELOPMENT_MODE_            
+        path = [@"~/tmp/samlib/index/" stringByExpandingTildeInPath];
+#else
+        path = [KxUtils.cacheDataPath() stringByAppendingPathComponent: @"index"];
+#endif      
+        KxUtils.ensureDirectory(path);                
+    }
+    
+    return path;
+}
+
 static NSString * settingsPath()
 {
     static NSString * path = nil;
@@ -397,6 +413,7 @@ SamLibAgent_t SamLibAgent = {
     authorsPath,
     textsPath,
     commentsPath,
+    indexPath,        
     //settingsPath,
     settings,
     

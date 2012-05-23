@@ -36,7 +36,11 @@ extern NSHTTPCookie * deleteSamLibCookie(NSString *name);
 extern NSDictionary * loadDictionary(NSString *filepath);
 extern NSDictionary * loadDictionaryEx(NSString *filepath, BOOL immutable);
 extern BOOL saveDictionary(NSDictionary *dict, NSString * filepath);
-extern NSString * mkHTMLPage(NSString *data, NSString *head, NSString *cssLink, NSString *jsLink);
+extern BOOL saveObject(id obj, NSString * filepath);
+extern id loadObject(NSString *filepath, BOOL immutable);
+extern int levenshteinDistance(unichar* s1, int n, unichar *s2, int m);
+extern int levenshteinDistanceNS(NSString* s1, unichar *s2, int m);
+
 ////
 
 @interface SamLibBase : NSObject {
