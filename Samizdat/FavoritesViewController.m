@@ -84,8 +84,10 @@
 
 - (void) reload:(id)sender
 {
-    [super reloadAuthors:[SamLibModel shared].authors 
-             withMessage:locString(@"favorites")];
+    if (_authors.nonEmpty) {
+        [super reloadAuthors:_authors
+                 withMessage:locString(@"favorites")];
+    }
 }
 
 @end
