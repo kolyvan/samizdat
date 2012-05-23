@@ -29,6 +29,7 @@ void test_fetch_page()
                           nil, 
                           NO,
                           nil,
+                          nil,
                           ^(SamLibStatus status, NSString *data, NSString *lastModified){
                               
                               finished = YES;
@@ -95,7 +96,8 @@ void test_fetch_textdata()
     SamLibAgent.fetchData(@"http://samlib.ru/i/iwanow475_i_i/metaphysics1.shtml", 
                           nil, 
                           NO,
-                          nil,                               
+                          nil,
+                          nil,
                           ^(SamLibStatus status, NSString *data, NSString *lastModified){
                               
                               finished = YES;
@@ -127,7 +129,8 @@ void test_fetch_comments()
                           //@"http://samlib.ru/comment/i/iwanow475_i_i/metaphysics1",
                           nil, 
                           YES,
-                          @"http://samlib.ru/comment/i/iwanow475_i_i/",                               
+                          @"http://samlib.ru/comment/i/iwanow475_i_i/",  
+                          nil,
                           ^(SamLibStatus status, NSString *data, NSString *lastModified){
                               
                               finished = YES;
@@ -258,6 +261,7 @@ void test_fetch_and_parse_textpage()
                           nil, 
                           NO,
                           nil,
+                          nil,
                           ^(SamLibStatus status, NSString *data, NSString *lastModified){
                               
                               finished = YES;
@@ -299,7 +303,8 @@ void test_fetch_comments2()
     filepath = [filepath stringByAppendingPathExtension: @"comments"];
     SamLibComments *comments = [SamLibComments fromFile: filepath withText:text]; 
     
-    [comments update:^(SamLibComments *comments, SamLibStatus status, NSString *error) {
+    [comments update:NO 
+               block:^(SamLibComments *comments, SamLibStatus status, NSString *error) {
         
         if (status == SamLibStatusSuccess) {
             
@@ -427,7 +432,7 @@ void test_post_comment_with_login()
 {   
     SamLibUser *user = [SamLibUser currentUser];
 
-    [user clearCookies];
+    //[user clearCookies];
 
     test_login_logout2();
     
