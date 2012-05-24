@@ -108,7 +108,7 @@ static NSDate* mkDateFromComment(NSString *dt)
 - (NSString *) description
 {
     return KxUtils.format(@"<%@ %ld %ld %@>", 
-                          self.className, 
+                          NSStringFromClass([self class]), 
                           self.number,
                           self.msgidNumber, 
                           self.timestamp);

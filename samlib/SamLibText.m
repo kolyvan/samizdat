@@ -23,7 +23,10 @@
 #define NSNUMBER_SHORTHAND
 #import "KxMacros.h"
 #import "KxUtils.h"
+
+#ifndef __IPHONE_OS_VERSION_MAX_ALLOWED
 #import <DiffMatchPatch/DiffMatchPatch.h>
+#endif
 
 ////
 
@@ -46,6 +49,7 @@ static NSString * prepareText(NSString * text) {
     }] mkString: @"\n"];
 }
 
+#ifndef __IPHONE_OS_VERSION_MAX_ALLOWED
 static NSString * prettyHtml (NSMutableArray *diffs)
 {
     NSMutableString *html = [NSMutableString string];
@@ -70,7 +74,7 @@ static NSString * prettyHtml (NSMutableArray *diffs)
     
     return html;
 }
-
+#endif
 
 @interface SamLibText()
 
@@ -183,7 +187,7 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 - (NSInteger) commentsInt
 {
     if (_commentsObject &&
-        [_commentsObject.timestamp isGreaterThan:_timestamp]) {
+        [_commentsObject.timestamp isGreater:_timestamp]) {
         NSArray *comments = _commentsObject.all;
         if (comments.nonEmpty) {
             SamLibComment* first = comments.first;
@@ -202,7 +206,7 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 - (NSInteger) deltaComments
 {
     if (_commentsObject &&
-        [_commentsObject.timestamp isGreaterThan:_timestamp])
+        [_commentsObject.timestamp isGreater:_timestamp])
         return _commentsObject.numberOfNew;   
     return _deltaComments;
 }
@@ -469,7 +473,7 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 
 - (BOOL) canUpdate
 {
-    return (self.htmlFile == nil) || [_filetime isLessThan:_timestamp];
+    return (self.htmlFile == nil) || [_filetime isLess:_timestamp];
 }
 
 - (NSString *) htmlPath
@@ -522,7 +526,8 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 }
 
 - (void) makeDiff: (NSString *(^)(NSString *)) formatter
-{   
+{ 
+#ifndef __IPHONE_OS_VERSION_MAX_ALLOWED    
     NSString *old = [NSString stringWithContentsOfFile:self.oldPath
                                               encoding:NSUTF8StringEncoding                                                    
                                                  error:nil]; 
@@ -584,6 +589,7 @@ static NSString * prettyHtml (NSMutableArray *diffs)
     
     DDLogCInfo(@"Diff elapsed time: %.4lf count: %ld dels: %ld ins: %ld", 
                (double)duration, result.count, delDiffs, insDiffs);
+#endif    
 }
 
 - (void) saveHTML: (NSString *) data

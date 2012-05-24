@@ -69,7 +69,7 @@ extern int ddLogLevel;
 
 - (void) setDigest:(NSString *)digest
 {
-    if (![_digest isEqualTo:digest]) {
+    if (![_digest isEqual:digest]) {
         
         //_isDirty = YES;
         _changed = YES;
@@ -122,7 +122,7 @@ extern int ddLogLevel;
 
 - (BOOL) isDirty
 {
-    return [[self computeHash] isNotEqualTo:_hash];    
+    return ![[self computeHash] isEqual:_hash];    
 }
 
 - (id) version

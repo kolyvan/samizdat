@@ -356,7 +356,7 @@ static NSArray* loadAuthors()
                 NSString * fullpath = [authorsPath() stringByAppendingPathComponent:filename];
                 NSDictionary *attr = [fm attributesOfItemAtPath:fullpath error:nil];
                 
-                if ([[attr get:NSFileType] isEqualTo: NSFileTypeRegular]) {
+                if ([[attr get:NSFileType] isEqual: NSFileTypeRegular]) {
                     
                     SamLibAuthor *author = [SamLibAuthor fromFile: fullpath];
                     if (author) {
