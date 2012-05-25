@@ -291,6 +291,7 @@ static NSDate* mkDateFromComment(NSString *dt)
         final = [final take: MIN(final.count, MAX_COMMENTS)]; 
         
         // 2. sort newest comments by number 
+        
         final = [final sortWith:^NSComparisonResult(id obj1, id obj2) {
             SamLibComment *l = obj1, *r = obj2;        
             if (r.number < l.number)
@@ -342,11 +343,8 @@ static NSDate* mkDateFromComment(NSString *dt)
           force: (BOOL) force
           block: (UpdateCommentsBlock) block 
 {
-    if (page > 0) {
-        path = [path stringByAppendingFormat:@"?PAGE=%ld", page + 1];
-    }
     
-    SamLibAgent.fetchData(path, 
+    SamLibAgent.fetchData(page > 0 ? [path stringByAppendingFormat:@"?PAGE=%ld", page + 1] : path, 
                           page ? nil : _lastModified, 
                           YES,
                           [@"http://" stringByAppendingString: self.url],
@@ -361,15 +359,15 @@ static NSDate* mkDateFromComment(NSString *dt)
                                       if (lastModified.nonEmpty)
                                           self.lastModified = lastModified;
                                       
-                                      //DDLogVerbose(@"fetched %ld comments", comments.count);
-                                     
+                                      //DDLogInfo(@"fetched %ld comments", comments.count);                                      
+                                      
                                       NSArray *result = [comments map:^id(id elem) {
                                           return [SamLibComment fromDictionary:elem];  
                                       }];
                                       
                                       [buffer appendAll: result];
                                       
-                                      if (!parameters && // parameters != nil on deleteComment call
+                                      if (!parameters && // parameters != nil on deleteComment call                                          
                                           buffer.count < MAX_COMMENTS)
                                       {                                           
                                           BOOL isContinue;
