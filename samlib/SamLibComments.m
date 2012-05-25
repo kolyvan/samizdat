@@ -279,19 +279,30 @@ static NSDate* mkDateFromComment(NSString *dt)
                 [ma push:p]; 
         }
         
-        // two-stage sorting, in reverse order
+        NSArray *final;
+        if (ma.count < MAX_COMMENTS) {
+            
+            final = ma;
+            
+        } else {
         
-        // 1. sort by timestamp
-        // allow lift edited and deleted comments
-        NSArray *final = [ma sortWith:^(id obj1, id obj2) {
-            SamLibComment *l = obj1, *r = obj2;
-            return [r.timestamp compare:l.timestamp]; 
-        }];
-                
-        final = [final take: MIN(final.count, MAX_COMMENTS)]; 
+            // two-stage sorting, in reverse order
+            
+            // 1. sort by timestamp
+            // allow lift edited and deleted comments
+            /*
+            final = [ma sortWith:^(id obj1, id obj2) {
+                SamLibComment *l = obj1, *r = obj2;
+                return [r.timestamp compare:l.timestamp]; 
+            }];
+            
+            final = [final take: MAX_COMMENTS]; //] MIN(final.count, MAX_COMMENTS)]; 
+             */
+            final = [ma take: MAX_COMMENTS]; //] MIN(final.count, MAX_COMMENTS)]; 
+        }
         
-        // 2. sort newest comments by number 
-        
+        /*
+        // 2. sort newest comments by number
         final = [final sortWith:^NSComparisonResult(id obj1, id obj2) {
             SamLibComment *l = obj1, *r = obj2;        
             if (r.number < l.number)
@@ -300,6 +311,7 @@ static NSDate* mkDateFromComment(NSString *dt)
                 return NSOrderedDescending;
             return NSOrderedSame;
         }];
+        */ 
                 
         // determine and count new
         _numberOfNew = 0;        
