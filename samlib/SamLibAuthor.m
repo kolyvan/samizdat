@@ -336,7 +336,8 @@ extern int ddLogLevel;
                               
                               block(this, status, data);
                               
-                          });
+                          },
+                          nil);
     
 }
 
@@ -478,7 +479,8 @@ extern int ddLogLevel;
                                   }
                                   
                                   block(result);
-                              });
+                              },
+                              nil);
     }
     
 }

@@ -26,7 +26,8 @@
           referer:referer 
        parameters:nil
           success:success 
-          failure:failure];
+          failure:failure
+         progress:nil];
 }
 
 - (void) getPath:(NSString *)path
@@ -37,6 +38,26 @@
          success:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
          failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure 
 {
+    [self getPath:path 
+       ifModified:ifModified 
+    handleCookies:handleCookies 
+          referer:referer 
+       parameters:nil
+          success:success 
+          failure:failure 
+         progress:nil];
+}
+
+- (void) getPath:(NSString *)path
+      ifModified:(NSString *)ifModified
+   handleCookies:(BOOL) handleCookies
+         referer:(NSString *)referer
+      parameters:(NSDictionary *)parameters 
+         success:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
+         failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure 
+        progress:(void (^)(NSInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead))progress
+{
+    
     NSAssert(path != nil && path.length > 0, @"empty path");
     
     NSMutableURLRequest *request = [self requestWithMethod:@"GET" path:path parameters:parameters];
@@ -52,9 +73,14 @@
     }
     
     AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithRequest:request success:success failure:failure];     
-    [self enqueueHTTPRequestOperation:operation];
     
+    if (progress) {
+        operation.downloadProgressBlock = progress;
+    }
+    
+    [self enqueueHTTPRequestOperation:operation];
 }
+
 
 - (void)postPath:(NSString *)path
          referer:(NSString *)referer

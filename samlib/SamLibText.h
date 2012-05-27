@@ -13,6 +13,7 @@
 #import <Foundation/Foundation.h>
 #import "KxArc.h"
 #import "SamLib.h"
+#import "SamLibAgent.h"
 
 typedef void (^UpdateTextBlock)(SamLibText *text, SamLibStatus status, NSString *error);
 
@@ -124,7 +125,8 @@ typedef enum {
 
 - (void) flagAsRemoved;
 
-- (void) update: (UpdateTextBlock) block
+- (void) update: (UpdateTextBlock) block 
+       progress: (AsyncProgressBlock) progress
       formatter: (NSString *(^)(NSString *)) formatter;
 
 - (void) makeDiff: (NSString *(^)(NSString *)) formatter;

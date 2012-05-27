@@ -425,7 +425,8 @@ static NSDate* mkDateFromComment(NSString *dt)
                               }
                               block(self, status, data);
                               
-                          });
+                          },
+                          nil);
 }
 
 - (void) update: (BOOL) force 

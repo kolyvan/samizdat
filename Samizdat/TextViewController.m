@@ -51,6 +51,8 @@ static NSString * mkHTML(NSString * html)
 @interface TextViewController () {    
     SamLibText * _text;
     id _version;
+    
+    void (^_progressBlock)(CGFloat);
 }
 
 @property (readwrite, nonatomic, copy) id  version;
@@ -71,6 +73,7 @@ static NSString * mkHTML(NSString * html)
 
 - (void) dealloc 
 {
+    KX_RELEASE(_progressBlock);
     KX_RELEASE(_text);
     KX_RELEASE(_version);
     KX_SUPER_DEALLOC();
@@ -174,11 +177,19 @@ static NSString * mkHTML(NSString * html)
 - (void) reload:(id)sender
 {    
     AppDelegate *app = [NSApp delegate];    
+
+    KX_RELEASE(_progressBlock);
+    _progressBlock = nil;
+    _progressBlock = [app startReload:self 
+                          withMessage:_text.title 
+                          andProgress:YES];
     
-    if ([app startReload:self 
-             withMessage:_text.title]) {
+    if (_progressBlock) {
         
         [_text update:^(SamLibText *text, SamLibStatus status, NSString *error) {
+            
+            KX_RELEASE(_progressBlock);
+            _progressBlock = nil;
             
             [app finishReload:status 
                   withMessage:status == SamLibStatusFailure ? error : _text.title ];    
@@ -187,7 +198,20 @@ static NSString * mkHTML(NSString * html)
                 [self reloadWebView];           
             
         }
-            formatter: ^(NSString * html) { return mkHTML(html); } 
+             progress:^(NSInteger bytes, long long totalBytes, long long totalBytesExpected) {
+                                
+                 CGFloat progress = 0;
+                 if (totalBytesExpected > 0)
+                    progress = (CGFloat)totalBytes / totalBytesExpected;                 
+                 else
+                    progress = (CGFloat)totalBytes/ (_text.sizeInt * 1024);
+                                                   
+                 //DDLogCInfo(@"progress %ld, %ld, %f",totalBytes,totalBytesExpected,progress);                 
+                 _progressBlock(progress);
+             } 
+            formatter: ^(NSString * html) { 
+                return mkHTML(html); 
+            }
          ];
     }
 }

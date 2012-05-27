@@ -115,14 +115,17 @@ static void drawPie(NSRect bounds, CGFloat progress)
 
 static void drawBar(NSRect bounds, CGFloat progress)
 {
-    CGFloat w = bounds.size.width * progress;
-    
-    [[NSColor colorWithDeviceWhite:1 alpha:0.8] set];    
+    CGFloat w = 0;    
     NSRect rc = bounds;
-    rc.size.width = w;
-    NSRectFill(rc); 
     
-    [[NSColor colorWithDeviceWhite:1 alpha:0.2] set];    
+    if (progress > 0) {
+        [[NSColor colorWithDeviceWhite:1 alpha:0.8] set];            
+        w = bounds.size.width * progress;        
+        rc.size.width = w;
+        NSRectFill(rc); 
+    }
+    
+    [[NSColor colorWithDeviceWhite:1 alpha:0.3] set];    
     rc.origin.x += w;
     rc.size.width = bounds.size.width - w;
     NSRectFill(rc); 
@@ -815,7 +818,7 @@ typedef enum {
               interval: interval];
     
     if (self) {
-        
+
         _style = style;
         self.isPinned = YES;     
         self.progress = 0;

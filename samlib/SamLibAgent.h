@@ -16,6 +16,7 @@
 
 
 typedef void (^AsyncResultBlock)(SamLibStatus status, NSString *data, NSString *lastModified);
+typedef void (^AsyncProgressBlock)(NSInteger bytes, long long totalBytes, long long totalBytesExpected);
 
 typedef struct {
 
@@ -35,8 +36,8 @@ typedef struct {
                       BOOL handleCookies,
                       NSString *referer,                            
                       NSDictionary * parameters,                      
-                      AsyncResultBlock block);
-    
+                      AsyncResultBlock block,
+                      AsyncProgressBlock progress);
     
     void (*postData)(NSString *path, 
                      NSString *referer, 

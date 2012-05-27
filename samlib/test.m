@@ -42,7 +42,8 @@ void test_fetch_page()
                                        encoding:NSUTF8StringEncoding 
                                           error:nil];
                               
-                          });
+                          },
+                          nil);
     
     KxUtils.waitRunLoop(60, 0.5, ^() {
         
@@ -112,7 +113,8 @@ void test_fetch_textdata()
                                        encoding:NSUTF8StringEncoding 
                                           error:nil];
                               
-                          });
+                          },
+                          nil);
     
     KxUtils.waitRunLoop(60, 0.5, ^() {
         
@@ -143,7 +145,8 @@ void test_fetch_comments()
                                        encoding:NSUTF8StringEncoding 
                                           error:nil];
                               
-                          });
+                          },
+                          nil);
     
     KxUtils.waitRunLoop(60, 0.5, ^() {
         
@@ -282,7 +285,8 @@ void test_fetch_and_parse_textpage()
                               KxConsole.printlnf(@"comments: %@", [d get: @"comments"]);                    
                               
                               
-                          });
+                          },
+                          nil);
     
     KxUtils.waitRunLoop(60, 0.5, ^() {
         
@@ -489,7 +493,8 @@ void test_fetch_authors_list()
                                   }    
                               }
                               
-                          });
+                          },
+                          nil);
     
     KxUtils.waitRunLoop(60, 0.5, ^() {
         

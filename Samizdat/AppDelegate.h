@@ -50,6 +50,11 @@
 
 - (BOOL) startReload: (id) object
           withMessage: (NSString *) message;
+
+- (void(^)(CGFloat progress)) startReload: (id) object
+                              withMessage: (NSString *) message
+                              andProgress: (BOOL) unused;
+
 - (void) finishReload: (NSInteger) status 
           withMessage: (NSString *) message;
 

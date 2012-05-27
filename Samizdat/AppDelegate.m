@@ -54,6 +54,7 @@ int ddLogLevel = LOG_LEVEL_WARN;
     KxHistoryNav * _historyNav;        
     KxHUDView * _hudView;
     id<KxHUDRowWithSpin> _hudSpin;
+    id<KxHUDRowWithProgress> _progress;
     id _reloaded;
     KxViewController * _activeController;
     NSMutableDictionary * _controllers;
@@ -68,6 +69,7 @@ int ddLogLevel = LOG_LEVEL_WARN;
 
 - (void) dealloc 
 {
+    KX_RELEASE(_progress);
     KX_RELEASE(_hudSpin);
     KX_RELEASE(_hudView);
     KX_RELEASE(_historyNav);
@@ -561,11 +563,43 @@ int ddLogLevel = LOG_LEVEL_WARN;
     return YES;
 }
 
+- (void(^)(CGFloat progress)) startReload: (id) object
+         withMessage: (NSString *) message
+         andProgress: (BOOL) unused
+{
+    if (_reloaded)
+        return nil;
+    
+    _reloaded = KX_RETAIN(object);   
+    
+    message = KxUtils.format(locString(@"reload\r\n%@"), message);
+    
+    if (!_progress) {
+        _progress = KX_RETAIN([_hudView progress:message style:2]); 
+        _progress.textColor = [NSColor whiteColor];
+    }
+    else {
+        _progress.text = message;
+        [_progress reset];
+    }
+    
+    _reloadToolbarItem.image = [NSImage imageNamed:NSImageNameStopProgressTemplate];
+    
+    void (^block)(CGFloat) = ^(CGFloat progress) {
+        _progress.progress = progress;
+    };
+    
+    return [block copy];
+}
+
 - (void) finishReload: (NSInteger) status 
           withMessage: (NSString *) message
 {
     _hudSpin.isComplete = YES;
-    _hudSpin.isPinned = NO;        
+    _hudSpin.isPinned = NO; 
+
+    _progress.isPinned = NO; 
+    
     KX_RELEASE(_reloaded);
     _reloaded = nil;
     

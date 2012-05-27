@@ -286,7 +286,8 @@ static void fetchData(NSString *path,
                       BOOL handleCookies,
                       NSString *referer, 
                       NSDictionary * parameters,
-                      AsyncResultBlock block)
+                      AsyncResultBlock block,
+                      AsyncProgressBlock progress)
 {
     AFHTTPClient *client = httpClient(NO);
     
@@ -304,7 +305,8 @@ static void fetchData(NSString *path,
                 
                 handleFailure(operation, error, block);
                 
-            }];
+            }
+           progress:progress];
 }
 
 static void postData(NSString *path, 

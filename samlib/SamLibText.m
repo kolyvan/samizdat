@@ -478,25 +478,25 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 
 - (NSString *) htmlPath
 {   
-    NSString *s = [SamLibAgent.textsPath() stringByAppendingPathComponent:_path];
+    NSString *s = [SamLibAgent.textsPath() stringByAppendingPathComponent:self.key];
     return [s stringByAppendingPathExtension:@"html"];
 }
 
 - (NSString *) diffPath
 {
-    NSString *s = [SamLibAgent.textsPath() stringByAppendingPathComponent:_path];
+    NSString *s = [SamLibAgent.textsPath() stringByAppendingPathComponent:self.key];
     return [s stringByAppendingPathExtension:@"diff.html"];
 }
 
 - (NSString *) rawPath
 {
-    NSString *s = [SamLibAgent.textsPath() stringByAppendingPathComponent:_path];
+    NSString *s = [SamLibAgent.textsPath() stringByAppendingPathComponent:self.key];
     return [s stringByAppendingPathExtension:@"raw"];    
 }
 
 - (NSString *) oldPath
 {
-    NSString *s = [SamLibAgent.textsPath() stringByAppendingPathComponent:_path];
+    NSString *s = [SamLibAgent.textsPath() stringByAppendingPathComponent:self.key];
     return [s stringByAppendingPathExtension:@"old"];    
 }
 
@@ -666,6 +666,7 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 
 
 - (void) update: (UpdateTextBlock) block 
+       progress: (AsyncProgressBlock) progress
       formatter: (NSString *(^)(NSString *)) formatter;
 {    
 #if __has_feature(objc_arc_weak)    
@@ -700,7 +701,8 @@ static NSString * prettyHtml (NSMutableArray *diffs)
                               }                                            
                               
                               block(this, status, data);         
-                          });
+                          },
+                          progress);
     
 }
 
