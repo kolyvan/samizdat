@@ -19,6 +19,7 @@
 #import "NSString+Kolyvan.h"
 #import "NSArray+Kolyvan.h"
 #import "SamLibModel.h"
+#import "AppDelegate.h"
 
 @interface FavoritesViewController () {
     NSArray * _authors;
@@ -87,6 +88,23 @@
     if (_authors.nonEmpty) {
         [super reloadAuthors:_authors
                  withMessage:locString(@"favorites")];
+    }
+}
+
+- (void) handleSelect:(id)obj
+{
+    if ([obj isKindOfClass:[NSString class]]) {
+        
+        NSString *name = obj;
+        for (SamLibAuthor * author in [SamLibModel shared].authors)
+            if ([author.name isEqualToString:name]) {
+                [[NSApp delegate] showAuthorView: author];
+                break;
+            }            
+        
+    } else {
+        
+        [super handleSelect:obj];
     }
 }
 

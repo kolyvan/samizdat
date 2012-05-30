@@ -210,7 +210,6 @@
 		872E58BB1563DA7E00EFBF33 /* TextCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextCellView.m; sourceTree = "<group>"; };
 		872E58BD1563E04200EFBF33 /* FavoritesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FavoritesViewController.h; sourceTree = "<group>"; };
 		872E58BE1563E04200EFBF33 /* FavoritesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FavoritesViewController.m; sourceTree = "<group>"; };
-		87410B561569029800A4353D /* Rakefile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Rakefile; sourceTree = "<group>"; };
 		875A5DA91566176A00AEE39F /* AuthorInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AuthorInfoViewController.h; sourceTree = "<group>"; };
 		875A5DAA1566176A00AEE39F /* AuthorInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AuthorInfoViewController.m; sourceTree = "<group>"; };
 		875A5DAF156624AB00AEE39F /* KxLinkLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KxLinkLabel.h; sourceTree = "<group>"; };
@@ -425,7 +424,6 @@
 		87163EAC155D1889001D4818 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				87410B561569029800A4353D /* Rakefile */,
 				87B2E547156698D100A3113C /* AuthorInfoView.strings */,
 				87B2E549156698D100A3113C /* CommentsView.strings */,
 				87B2E54B156698D100A3113C /* MainMenu.strings */,
