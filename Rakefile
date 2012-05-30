@@ -5,7 +5,7 @@ require 'set'
 APP_NAME = 'Samizdat'
 
 SRC_FOLDERS= [
-	'.',
+	'Samizdat',
 	'samlib',
 ]
 
@@ -24,7 +24,7 @@ end
 
 def makeLocalizable
 
- 	outpath = Pathname.pwd + "en.lproj/Localizable.strings"
+ 	outpath = Pathname.pwd + "Samizdat/en.lproj/Localizable.strings"
 
 	r = /\"(.+)\"/	
 	strings = Set.new
@@ -76,9 +76,9 @@ end
 desc 'Generate .strings file from .xib'
 task :stringsFromXib do |t|	
 	LOCALIZED_XIBS.each do |xibName|
-		ruStrings = "ru.lproj/#{xibName}.strings"
-		xibFile = "en.lproj/#{xibName}.xib"
-		Pathname.new(xibFile).file? or raise "******** No #{xibFile} ********"
+		ruStrings = "Samizdat/ru.lproj/#{xibName}.strings"
+		xibFile = "Samizdat/en.lproj/#{xibName}.xib"
+		Pathname.new(xibFile).file? or raise "******** No #{xibFile} ********"		
 		system_or_exit "ibtool --generate-strings-file #{ruStrings} #{xibFile}"	
 	end	
 end	
@@ -86,9 +86,9 @@ end
 desc 'Generate localized .xib from .strings'
 task :localizeXib do |t|	
 	LOCALIZED_XIBS.each do |xibName|
-		ruStrings = "ru.lproj/#{xibName}.strings"
-		enXib = "en.lproj/#{xibName}.xib"
-		ruXib = "ru.lproj/#{xibName}.xib"
+		ruStrings = "Samizdat/ru.lproj/#{xibName}.strings"
+		enXib = "Samizdat/en.lproj/#{xibName}.xib"
+		ruXib = "Samizdat/ru.lproj/#{xibName}.xib"
 		Pathname.new(ruStrings).file? or raise "******** No #{ruStrings} ********"
 		Pathname.new(enXib).file? or raise "******** No #{enXib} ********"
 		system_or_exit "ibtool --strings-file #{ruStrings} #{enXib} --write #{ruXib}"	
@@ -98,7 +98,7 @@ end
 # 
 desc 'create .dmg with app'
 task :dmg do |t|
-	folder = Pathname.new '../tmp'
+	folder = Pathname.new 'tmp'
 	srcPath = folder + 'osx'
 	dmgPath = folder + "#{APP_NAME}.dmg"
 	ro_dmgPath = folder + "#{APP_NAME}_ro.dmg"
@@ -109,19 +109,26 @@ task :dmg do |t|
 	ro_dmgPath.rename dmgPath
 end	
 
+PROJECT_NAME = 'samlib'
+TARGET_NAME = 'Samizdat'
+SCHEME_NAME = 'Samizdat'
+CONFIGURATION = 'Release'
 
-#PROJECT_NAME = 'samlib'
-#TARGET_NAME = 'Samizdat'
-#CONFIGURATION = "Release"
+desc "Clean"
+task :clean do
+	buildDir = Pathname.new 'tmp/build'	
+  	system_or_exit "xcodebuild -project #{PROJECT_NAME}.xcodeproj -target #{TARGET_NAME} -configuration #{CONFIGURATION} clean SYMROOT=#{buildDir}"
+end
 
-#desc "Clean"
-#task :clean do
-#	buildDir = Pathname.new 'tmp/build'	
-#  	system_or_exit "xcodebuild -project ../#{PROJECT_NAME}.xcodeproj -target #{TARGET_NAME} -configuration #{CONFIGURATION} clean SYMROOT=#{buildDir}"
-#end
+desc "Build"
+task :build do
+	buildDir = Pathname.new 'tmp/build'		
+	system_or_exit "xcodebuild -project #{PROJECT_NAME}.xcodeproj -target #{TARGET_NAME} -sdk macosx10.7 -configuration #{CONFIGURATION} build TEST_AFTER_BUILD=NO SYMROOT=#{buildDir}"
+	#system_or_exit "xcodebuild -project #{PROJECT_NAME}.xcodeproj -target #{TARGET_NAME} -sdk macosx10.7 -configuration #{CONFIGURATION} build"
+end
 
-#desc "Build"
-#task :build do
-#	buildDir = Pathname.new 'tmp/build'		
-#	system_or_exit "xcodebuild -project ../#{PROJECT_NAME}.xcodeproj -target #{TARGET_NAME} -configuration #{CONFIGURATION} build TEST_AFTER_BUILD=NO SYMROOT=#{buildDir}"
-#end
+desc "Archive"
+task :archive do
+	# xcodebuild -project projectname -activetarget -activeconfiguration archive
+	system_or_exit "xcodebuild -scheme #{SCHEME_NAME} archive"
+end	
