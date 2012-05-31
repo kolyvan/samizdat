@@ -15,6 +15,7 @@
 #import "KxMacros.h"
 #import "KxUtils.h"
 #import "NSString+Kolyvan.h"
+#import "NSDate+Kolyvan.h"
 #import "SamLibModel.h"
 #import "SamLibAuthor.h"
 #import "SamLibText.h"
@@ -24,7 +25,7 @@ extern int ddLogLevel;
 
 ////
 
-static NSString * mkHTML(NSString * html)
+static NSString * mkHTML(SamLibText * text, NSString *html)
 {
     NSString *path = KxUtils.pathForResource(@"text.html");
     NSError *error;
@@ -40,6 +41,18 @@ static NSString * mkHTML(NSString * html)
     // replase css link from relative to absolute         
     template = [template stringByReplacingOccurrencesOfString:@"text.css" 
                                                    withString:KxUtils.pathForResource(@"text.css")];
+    
+    template = [template stringByReplacingOccurrencesOfString:@"<!-- TEXT_DATE -->" 
+                                                   withString:text.dateModified];
+    
+    template = [template stringByReplacingOccurrencesOfString:@"<!-- TEXT_SIZE -->" 
+                                                   withString:[text sizeWithDelta:@" "]];
+    
+    template = [template stringByReplacingOccurrencesOfString:@"<!-- TEXT_RATING -->" 
+                                                   withString:[text ratingWithDelta:@" "]];
+    
+    template = [template stringByReplacingOccurrencesOfString:@"<!-- TEXT_NOTE -->" 
+                                                   withString:text.note];
     
     return [template stringByReplacingOccurrencesOfString:@"<!-- DOWNLOADED_TEXT -->" 
                                                withString:html];
@@ -117,29 +130,22 @@ static NSString * mkHTML(NSString * html)
     
     if (_text.genre.nonEmpty)    
         [self webViewSetString:_text.genre forID:@"textGenre" inDom:dom];
-    
-    if (_text.dateModified.nonEmpty)        
-        [self webViewSetString:_text.dateModified forID:@"textDate" inDom:dom];                    
-    
-    if (_text.note.nonEmpty)
-        [self webViewSetString: _text.note forID:@"textNote"  inDom:dom];  
-    
-    [self webViewSetString:[_text sizeWithDelta:@" "]
-                     forID:@"textSize" 
-                     inDom:dom];
         
-    [self webViewSetString:[_text ratingWithDelta:@" "]
-                     forID:@"textRating" 
-                     inDom:dom];                        
+    [self webViewSetString: [_text.filetime shortRelativeFormatted]
+                     forID:@"textFiletime" 
+                     inDom:dom];  
 
     [self webViewSetString: [_text commentsWithDelta:@" "]
                      forID:@"commentsCount" 
                      inDom:dom];  
     
-    if (_text.canUpdate)
-        [self webViewSetString:locString(@"a new version is available") 
+    if (_text.canUpdate) {
+        NSString *s = KxUtils.format(locString(@"new version: %@"), [_text sizeWithDelta:@" "]);
+        [self webViewSetString:s 
                          forID:@"textReload" 
                          inDom:dom];
+        
+    } 
         
     if (isDiff) {
 
@@ -209,8 +215,8 @@ static NSString * mkHTML(NSString * html)
                  //DDLogCInfo(@"progress %ld, %ld, %f",totalBytes,totalBytesExpected,progress);                 
                  _progressBlock(progress);
              } 
-            formatter: ^(NSString * html) { 
-                return mkHTML(html); 
+            formatter: ^(SamLibText *text, NSString * html) { 
+                return mkHTML(text, html); 
             }
          ];
     }
@@ -242,12 +248,21 @@ static NSString * mkHTML(NSString * html)
             
             if (!_text.diffFile.nonEmpty) {
                 
-                [_text makeDiff:^(NSString *html) { 
-                    return mkHTML(html); 
+                [_text makeDiff:^(SamLibText *text, NSString *html) { 
+                    return mkHTML(text, html); 
                 }];
             }
-                        
-            [self reloadWebViewWithDiff];
+            
+            if (_text.diffResult.nonEmpty)
+                
+                [self reloadWebViewWithDiff];
+            
+            else {
+            
+                [[NSApp delegate] hudInfo:@"Empty diff"];
+                [self reloadWebView];
+                
+            }
             return NO;            
             
         } else if ([last isEqualToString:@"reload"]) {  
