@@ -153,14 +153,16 @@ didFinishLoadingFromDataSource:(WebDataSource *)dataSource
 - (CGFloat) scrollOffset
 {    
     NSScrollView *scrollView = findScrollBars(_webView);
-    NSRect rect = scrollView.documentVisibleRect;    
-    // DDLogInfo(@"rect %f %f %f %f", rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);       
-    CGFloat f = rect.origin.y;
-    if (f > 10) {
-        NSClipView * clipView = scrollView.documentView;
-        rect = clipView.frame;
-        // DDLogInfo(@"frame %f %f %f %f", rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);   
-        return f / rect.size.height;
+    if (scrollView) {
+        NSRect rect = scrollView.documentVisibleRect;    
+        // DDLogInfo(@"rect %f %f %f %f", rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);       
+        CGFloat y = rect.origin.y;
+        if (y > 10) {
+            NSClipView * clipView = scrollView.documentView;
+            rect = clipView.frame;
+            // DDLogInfo(@"frame %f %f %f %f", rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);   
+            return y / rect.size.height;
+        }
     }
     return 0;
 }
@@ -168,10 +170,12 @@ didFinishLoadingFromDataSource:(WebDataSource *)dataSource
 - (void) setScrollOffset: (CGFloat) offset
 {
     NSScrollView *scrollView = findScrollBars(_webView);
-    NSClipView * clipView = scrollView.documentView;
-    NSRect rect = clipView.frame;
-    CGFloat y = rect.size.height * offset;    
-    [clipView scrollPoint: NSMakePoint(0, y)];    
+    if (scrollView) {
+        NSClipView * clipView = scrollView.documentView;
+        NSRect rect = clipView.frame;
+        CGFloat y = rect.size.height * offset;    
+        [clipView scrollPoint: NSMakePoint(0, y)];    
+    }
 }
 
 
