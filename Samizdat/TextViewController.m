@@ -112,6 +112,11 @@ static NSString * mkHTML(SamLibText * text, NSString *html)
     
 }
 
+- (void) deactivate
+{
+    _text.scrollOffset = self.scrollOffset;
+}
+
 - (void) prepareHTML: (NSURL *) url
 {
     BOOL isDiff = [[url lastPathComponent] hasSuffix: @"diff.html"];
@@ -162,6 +167,11 @@ static NSString * mkHTML(SamLibText * text, NSString *html)
                              forID:@"textDiff" 
                              inDom:dom];
         } 
+    }
+        
+    CGFloat offset = _text.scrollOffset;
+    if (offset > 0) {       
+        self.scrollOffset = offset;        
     }
 }
 

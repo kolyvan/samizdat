@@ -19,6 +19,24 @@
 
 extern int ddLogLevel;
 
+static NSScrollView* findScrollBars(NSView * view)
+{
+    if ([view  isKindOfClass:[NSScrollView class]]) {
+        NSString * className = [view className];
+        if ([className isEqualToString:@"WebDynamicScrollBarsView"]) {
+            return (NSScrollView *)view;
+        } 
+    }
+    
+    for (NSView *sv in [view subviews]) {
+        id found = findScrollBars(sv);
+        if (found)
+            return found;
+    }
+    
+    return nil;
+}
+
 
 @implementation WebViewController
 
@@ -131,5 +149,31 @@ didFinishLoadingFromDataSource:(WebDataSource *)dataSource
     //DDLogInfo(@"didFinishLoading %@", url);            
     [self prepareHTML: url];
 }
+
+- (CGFloat) scrollOffset
+{    
+    NSScrollView *scrollView = findScrollBars(_webView);
+    NSRect rect = scrollView.documentVisibleRect;    
+    // DDLogInfo(@"rect %f %f %f %f", rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);       
+    CGFloat f = rect.origin.y;
+    if (f > 10) {
+        NSClipView * clipView = scrollView.documentView;
+        rect = clipView.frame;
+        // DDLogInfo(@"frame %f %f %f %f", rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);   
+        return f / rect.size.height;
+    }
+    return 0;
+}
+
+- (void) setScrollOffset: (CGFloat) offset
+{
+    NSScrollView *scrollView = findScrollBars(_webView);
+    NSClipView * clipView = scrollView.documentView;
+    NSRect rect = clipView.frame;
+    CGFloat y = rect.size.height * offset;    
+    [clipView scrollPoint: NSMakePoint(0, y)];    
+}
+
+
 
 @end

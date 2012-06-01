@@ -23,6 +23,8 @@
     BOOL _needReloadWebView;
 }
 
+@property (nonatomic) CGFloat scrollOffset;
+
 - (void) loadWebViewFromPath: (NSString *) path;
 
 - (void) loadWebViewFromHTML: (NSString *) html 
