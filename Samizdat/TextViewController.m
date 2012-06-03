@@ -50,9 +50,9 @@ static NSString * mkHTML(SamLibText * text, NSString *html)
     
     template = [template stringByReplacingOccurrencesOfString:@"<!-- TEXT_RATING -->" 
                                                    withString:[text ratingWithDelta:@" "]];
-    
-    template = [template stringByReplacingOccurrencesOfString:@"<!-- TEXT_NOTE -->" 
-                                                   withString:text.note];
+    if (text.note.nonEmpty)
+        template = [template stringByReplacingOccurrencesOfString:@"<!-- TEXT_NOTE -->" 
+                                                       withString:text.note];
     
     return [template stringByReplacingOccurrencesOfString:@"<!-- DOWNLOADED_TEXT -->" 
                                                withString:html];
