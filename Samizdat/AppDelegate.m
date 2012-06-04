@@ -18,6 +18,7 @@
 
 #import "NSDictionary+Kolyvan.h"
 #import "NSString+Kolyvan.h"
+#import "NSArray+Kolyvan.h"
 
 #import "KxHUD.h"
 #import "KxHUDLogger.h"
@@ -102,6 +103,39 @@ int ddLogLevel = LOG_LEVEL_WARN;
     KX_RELEASE(hudLogger);
 }
 
+- (void) storeSession: (BOOL) save
+{
+    if (save) {
+        
+        NSHTTPCookieStorage * storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];    
+        NSArray * cookies = [storage cookiesForURL: [NSURL URLWithString: @"http://samlib.ru/"]]; 
+        if (cookies.nonEmpty) {
+            NSArray *session = [cookies filter:^(id elem) {
+                return [elem isSessionOnly];
+            }];                        
+            [SamLibAgent.settings() update:@"session" 
+                                     value:[session map:^(id elem){ return [elem properties];}]];
+        }
+        
+    } else {
+        
+        [SamLibAgent.settings() removeObjectForKey:@"session"];
+    }
+}
+
+- (void) restoreSession
+{
+    NSArray * session = [SamLibAgent.settings() get:@"session"];
+    if (session.nonEmpty) {
+        NSHTTPCookieStorage * storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+        for (NSDictionary *dict in session) {
+            NSHTTPCookie *cookie = [NSHTTPCookie cookieWithProperties: dict];
+            [storage setCookie:cookie];
+            //DDLogInfo(@"set cookie %@: %@", cookie.name, cookie.value);
+        }
+    }
+}
+
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {     
     [SamLibUser setKeychainService: KxUtils.appBundleID()];
@@ -109,12 +143,15 @@ int ddLogLevel = LOG_LEVEL_WARN;
     [_window setDelegate:self];    
     [self initLogger];
     [self hudInit];
+    [self restoreSession];
 
     _controllers = [[NSMutableDictionary alloc] init];    
     _historyNav = [[KxHistoryNav alloc] init];
     
     [self showAuthorsView: nil];
-    //[self showTestView: nil];     
+        
+    //NSHTTPCookieStorage * storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];    
+    //DDLogInfo(@"%@", [storage cookiesForURL: [NSURL URLWithString: @"http://samlib.ru/"]]);
 }
 
 - (void)applicationDidBecomeActive:(NSNotification *)aNotification
@@ -309,12 +346,12 @@ int ddLogLevel = LOG_LEVEL_WARN;
     NSTextField *nameField  = [[NSTextField alloc] initWithFrame:NSMakeRect(0,75,250,20)];
     NSSecureTextField *passField  = [[NSSecureTextField alloc] initWithFrame:NSMakeRect(0,50,250,20)];    
     NSButton *saveButton    = [[NSButton alloc] initWithFrame:NSMakeRect(0, 25, 250, 20)];    
-    //NSButton *autoButton    = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 250, 20)];        
+    NSButton *sessionButton = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 250, 20)];        
     
     [rootView addSubview:nameField];
     [rootView addSubview:passField];
     [rootView addSubview:saveButton];    
-    //[rootView addSubview:autoButton];        
+    [rootView addSubview:sessionButton];        
    
     [nameField setEditable:YES];
     [nameField setDrawsBackground:NO];
@@ -334,9 +371,9 @@ int ddLogLevel = LOG_LEVEL_WARN;
     [saveButton setTitle: locString(@"remember password")];
     [saveButton setState: pass.nonEmpty ? NSOnState : NSOffState];
     
-    //[autoButton setButtonType: NSSwitchButton];
-    //[autoButton setTitle: locString(@"auto login")];
-    //[autoButton setEnabled:NO];
+    [sessionButton setButtonType: NSSwitchButton];
+    [sessionButton setTitle: locString(@"save session")];
+    //[sessionButton setEnabled:NO];
     
     NSAlert * alert = [[NSAlert alloc] init]; 
     
@@ -351,8 +388,8 @@ int ddLogLevel = LOG_LEVEL_WARN;
     [okButton setEnabled: (name.nonEmpty &&
                            pass.nonEmpty)];
     
-    //[saveButton setAction: @selector(onSavePassButton:)];
-    //[saveButton setTarget:self];
+    [saveButton setAction: @selector(onSavePassButton:)];
+    [saveButton setTarget:self];
     
     [nameField setAction: @selector(onNamePassEnter:)];
     [nameField setTarget:self];
@@ -362,13 +399,14 @@ int ddLogLevel = LOG_LEVEL_WARN;
     
     [nameField setTag:1];
     [passField setTag:2];    
-    //[autoButton setTag:3];    
+    [sessionButton setTag:3];    
     
     if ( NSAlertFirstButtonReturn == [alert runModal]) 
     {           
         NSString *nameLogin = nameField.stringValue;
         NSString *passLogin = passField.stringValue;
         BOOL savePass = saveButton.state == NSOnState; 
+        BOOL session = sessionButton.state == NSOnState;
         
         DDLogInfo(@"login %@ pass %@", nameLogin, passLogin);
         
@@ -390,6 +428,8 @@ int ddLogLevel = LOG_LEVEL_WARN;
                         user.pass = @"";
                 }
                 
+                [self storeSession: session];
+                
                 [self hudSuccess: locString(@"login success")];
                 
             } else {
@@ -407,14 +447,14 @@ int ddLogLevel = LOG_LEVEL_WARN;
     KX_RELEASE(nameField);
     KX_RELEASE(passField);
     KX_RELEASE(saveButton);
-    //KX_RELEASE(autoButton);
+    KX_RELEASE(sessionButton);
     
 }
 
 //- (IBAction) onSavePassButton: (id) sender
 //{
-//    NSButton * autoButton = [[sender superview] viewWithTag:3];
-//    [autoButton setEnabled: [sender state] == NSOnState];
+//    NSButton * sessionButton = [[sender superview] viewWithTag:3];
+//    [sessionButton setEnabled: [sender state] == NSOnState];
 //}
 
 - (IBAction) onNamePassEnter: (id) sender
