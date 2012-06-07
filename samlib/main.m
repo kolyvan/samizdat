@@ -64,7 +64,7 @@ int main(int argc, const char * argv[])
         initLogger();
         SamLibAgent.initialize();
         
-        test();
+        //test();
         
         // ******************
         // test purpose only !
@@ -82,6 +82,7 @@ int main(int argc, const char * argv[])
         //test_login_logout2();
         //test_post_comment_with_login();
         //test_fetch_authors_list();
+        test_vote();
        
         SamLibAgent.cleanup();        
         

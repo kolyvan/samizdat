@@ -117,6 +117,7 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 @synthesize diffResult = _diffResult;
 @synthesize filetime = _filetime;
 @synthesize dateModified = _dateModified;
+@synthesize myVote = _myVote;
 
 @synthesize deltaSize = _deltaSize;
 //@synthesize deltaComments = _deltaComments;
@@ -312,7 +313,8 @@ static NSString * prettyHtml (NSMutableArray *diffs)
         //_favorited      = [[dict get: @"favorited" orElse:[NSNumber numberWithBool:NO]] boolValue];    
         _diffResult     = KX_RETAIN(getStringFromDict(dict, @"diffResult", path));
         _lastModified   = KX_RETAIN(getStringFromDict(dict, @"lastModified", path));
-        _filetime       = KX_RETAIN(getDateFromDict(dict, @"filetime", path));            
+        _filetime       = KX_RETAIN(getDateFromDict(dict, @"filetime", path));
+        _myVote         = [getNumberFromDict(dict, @"myVote", path) intValue];    
         
         NSDate *dt = getDateFromDict(dict, @"timestamp", path);        
         if (dt) self.timestamp = dt;
@@ -473,7 +475,7 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 
 - (NSDictionary *) toDictionary
 {
-    NSMutableDictionary * dict = [NSMutableDictionary dictionaryWithCapacity:16];
+    NSMutableDictionary * dict = [NSMutableDictionary dictionaryWithCapacity:17];
     
     [dict updateOnly: @"path" valueNotNil: _path];
     [dict updateOnly: @"copyright" valueNotNil: _copyright];    
@@ -491,6 +493,9 @@ static NSString * prettyHtml (NSMutableArray *diffs)
     [dict updateOnly: @"lastModified" valueNotNil: _lastModified];
     [dict updateOnly: @"diffResult" valueNotNil: _diffResult];
     [dict updateOnly: @"filetime" valueNotNil: [_filetime iso8601Formatted]];
+    
+    if (_myVote != 0)
+        [dict updateOnly: @"myVote" valueNotNil: [NSNumber numberWithInt:_myVote]];
     
     return dict;
 }
@@ -773,5 +778,36 @@ static NSString * prettyHtml (NSMutableArray *diffs)
         return KxUtils.format(@"%.2f", f);
     return @"";
 }
+
+- (void) vote: (SamLibTextVote) value 
+        block: (UpdateTextBlock) block
+{
+    NSMutableDictionary * d = [NSMutableDictionary dictionary];    
+    
+    [d update:@"FILE" value:[_path stringByDeletingPathExtension]];
+    [d update:@"DIR" value:[_author.relativeUrl drop:1]];        
+    [d update:@"BALL" value:KxUtils.format(@"%ld", value)];
+    
+    SamLibAgent.postData(@"/cgi-bin/votecounter",  
+                         KxUtils.format(@"http://samlib.ru%@", self.relativeUrl), 
+                         d,
+                         NO,
+                         ^(SamLibStatus status, NSString *data, NSString *lastModified) {
+                             
+                             if (status == SamLibStatusSuccess) {
+                             //if (status == SamLibStatusSuccess &&
+                             //    [data contains:@"<TITLE>302 Found</TITLE>"]) {
+                                
+                                 DDLogInfo(@"vote accepted %d", value);                                 
+                                 _myVote = value;
+                                 ++_version;
+                             }
+                             
+                             block(self, status, data);
+                         });
+}
+
+//- (void) fetchVotes: (FetchVotesBlock) block{}
+
 
 @end

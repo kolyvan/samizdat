@@ -247,7 +247,8 @@ void test_fetch_textdata2()
         
         finished = YES;
     }
-     formatter: nil];
+        progress: nil
+       formatter: nil];
     
     KxUtils.waitRunLoop(60, 0.5, ^() {
         
@@ -501,4 +502,29 @@ void test_fetch_authors_list()
         return finished;
     });
 
+}
+
+
+void test_vote()
+{
+     __block BOOL finished = NO;
+    
+    // dmitriew_p
+    NSString *filepath = [SamLibAgent.authorsPath() stringByAppendingPathComponent: @"iwanow475_i_i"];
+    SamLibAuthor *author = [SamLibAuthor fromFile: filepath];
+    SamLibText *text = [author.texts objectAtIndex:0];
+    
+    [text vote: 7
+         block: ^(SamLibText *text, SamLibStatus status, NSString *error) {
+             
+             KxConsole.printlnf(@"status %ld %@\n%@", status, text.path, error);        
+             
+             finished = YES;
+         }];
+    
+    KxUtils.waitRunLoop(60, 0.5, ^() {
+        
+        return finished;
+    });
+    
 }
