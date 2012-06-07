@@ -73,7 +73,10 @@ typedef enum {
     NSString * _diffResult;
     NSDate * _filetime;
     NSString *_dateModified;
-    SamLibTextVote _myVote;
+    BOOL _favorited;    
+    SamLibTextVote _myVote;    
+    NSInteger _readPosition;    
+
     
     SamLibTextChanged _changedFlag;        
     NSInteger _deltaSize;
@@ -130,9 +133,9 @@ typedef enum {
 @property (readonly, nonatomic) BOOL canMakeDiff;
 
 @property (readonly, nonatomic) NSString * groupEx;
-@property (readwrite, nonatomic) BOOL favorited;
-@property (nonatomic) CGFloat scrollOffset;
 
+@property (readwrite, nonatomic) BOOL favorited;
+@property (readwrite, nonatomic) CGFloat scrollOffset;
 @property (readonly, nonatomic) SamLibTextVote myVote;
 
 + (id) fromDictionary: (NSDictionary *) dict 

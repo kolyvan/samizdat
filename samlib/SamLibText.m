@@ -231,26 +231,14 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 
 - (BOOL) favorited
 {
-    NSArray * favorites = [SamLibAgent.settings() get: @"favorites"];    
-    return [favorites containsObject:self.key];    
+    return _favorited;
 }
 
 - (void) setFavorited:(BOOL)favorited
 {
-    NSMutableArray * favorites = [SamLibAgent.settings() get: @"favorites" 
-                                                       orSet:^id{
-                                                           return [NSMutableArray array];
-                                                       }];
-    
-    BOOL containts = [favorites containsObject:self.key];
-    
-    if (containts && !favorited) {
+    if (_favorited != favorited) {
+        _favorited = favorited;
         ++_version;
-        [favorites removeObject:self.key];
-    }
-    else if (!containts && favorited) {
-        ++_version;
-        [favorites addObject:self.key];
     }
 }
 
@@ -314,7 +302,9 @@ static NSString * prettyHtml (NSMutableArray *diffs)
         _diffResult     = KX_RETAIN(getStringFromDict(dict, @"diffResult", path));
         _lastModified   = KX_RETAIN(getStringFromDict(dict, @"lastModified", path));
         _filetime       = KX_RETAIN(getDateFromDict(dict, @"filetime", path));
-        _myVote         = [getNumberFromDict(dict, @"myVote", path) intValue];    
+        _favorited      = [getNumberFromDict(dict, @"favorited", path) boolValue];  
+        _readPosition   = [getNumberFromDict(dict, @"readPosition", path) intValue];
+        _myVote         = [getNumberFromDict(dict, @"myVote", path) intValue];
         
         NSDate *dt = getDateFromDict(dict, @"timestamp", path);        
         if (dt) self.timestamp = dt;
@@ -475,7 +465,7 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 
 - (NSDictionary *) toDictionary
 {
-    NSMutableDictionary * dict = [NSMutableDictionary dictionaryWithCapacity:17];
+    NSMutableDictionary * dict = [NSMutableDictionary dictionaryWithCapacity:19];
     
     [dict updateOnly: @"path" valueNotNil: _path];
     [dict updateOnly: @"copyright" valueNotNil: _copyright];    
@@ -494,8 +484,15 @@ static NSString * prettyHtml (NSMutableArray *diffs)
     [dict updateOnly: @"diffResult" valueNotNil: _diffResult];
     [dict updateOnly: @"filetime" valueNotNil: [_filetime iso8601Formatted]];
     
-    if (_myVote != 0)
-        [dict updateOnly: @"myVote" valueNotNil: [NSNumber numberWithInt:_myVote]];
+    if (_myVote)
+        [dict update: @"myVote" value: [NSNumber numberWithInt:_myVote]];
+    
+    if (_readPosition)
+        [dict update: @"readPosition" value: [NSNumber numberWithInt:_readPosition]];
+    
+    if (_favorited)
+        [dict update: @"favorited" value: [NSNumber numberWithBool:_favorited]];
+    
     
     return dict;
 }

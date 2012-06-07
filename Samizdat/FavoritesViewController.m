@@ -39,44 +39,31 @@
 {       
     KX_RELEASE(_authors);
     _authors = nil;
+   
+    NSMutableArray * ma = [NSMutableArray array];
+    NSMutableArray * authors = [NSMutableArray array];    
     
-    NSArray * favorites = [SamLibAgent.settings() get: @"favorites"];
-
-    NSMutableArray * ma = [NSMutableArray array];     
+    for (SamLibAuthor *author in [SamLibModel shared].authors) {
         
-    if (favorites.nonEmpty)
-    {    
-        SamLibModel *model = [SamLibModel shared];        
-        for (NSString *key in favorites) {        
+        BOOL flag = YES;
+        
+        for (SamLibText *text in author.texts) {
             
-            SamLibText *text = [model findTextByKey:key];
-            if (text) {
+            if (text.favorited) {
+                
+                if (flag) {
+                    flag = NO;
+                    [ma push:author.name];
+                    [authors push: author];
+                }
+            
                 [text commentsObject:YES]; // force to load comments from disk
                 [ma push:text];
             }
-        }   
-        
-        NSArray *texts = [ma sortWith:^(id obj1, id obj2) {        
-            SamLibText *l = obj1, *r = obj2;
-            return [l.author.name compare:r.author.name];
-        }];
-        
-        [ma removeAllObjects];
-        
-        KX_WEAK SamLibAuthor *author = nil;
-        
-        NSMutableArray * authors = [NSMutableArray array];
-        
-        for (SamLibText *text in texts) {
-            
-            if (author != text.author) {
-                author = text.author;
-                [ma push:author.name];
-                [authors push: author];
-            }        
-            [ma push:text];
         }
-        
+    }
+    
+    if (authors.nonEmpty) {
         _authors = KX_RETAIN(authors);
     }
     
