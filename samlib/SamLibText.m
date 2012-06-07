@@ -244,26 +244,20 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 
 - (CGFloat) scrollOffset
 {
-    NSDictionary* dict = [SamLibAgent.settings() get: @"scrollOffset"];    
-    return [[dict get:self.key] floatValue];    
+    unsigned long long fileSize = self.htmlFileSize;
+    if (fileSize)
+        return _position / (CGFloat)fileSize;
+    return 0;    
 }
 
 - (void) setScrollOffset:(CGFloat)offset
 {
-    NSMutableDictionary * dict = [SamLibAgent.settings() get: @"scrollOffset" 
-                                                       orSet:^id{
-                                                           return [NSMutableDictionary dictionary];
-                                                       }];
-    
-    CGFloat old = [[dict get:self.key] floatValue]; 
-    
-    if (old != offset) {
-        //++_version;
-        if (offset > 0)
-            [dict update:self.key value:[NSNumber numberWithFloat:offset]];
-        else
-            [dict removeObjectForKey:self.key];
-    }
+    unsigned long long fileSize = self.htmlFileSize;
+    unsigned long long position = fileSize * offset;
+    if (llabs(_position - position) > 40) {
+        _position = position;
+        ++_version;
+    }    
 }
 
 + (id) fromDictionary: (NSDictionary *) dict
@@ -297,17 +291,18 @@ static NSString * prettyHtml (NSMutableArray *diffs)
         _author = author;   
         
         [self updateFromDictionary:dict setChanged:NO allowNil:NO];
-        
-        //_favorited      = [[dict get: @"favorited" orElse:[NSNumber numberWithBool:NO]] boolValue];    
+
         _diffResult     = KX_RETAIN(getStringFromDict(dict, @"diffResult", path));
         _lastModified   = KX_RETAIN(getStringFromDict(dict, @"lastModified", path));
         _filetime       = KX_RETAIN(getDateFromDict(dict, @"filetime", path));
         _favorited      = [getNumberFromDict(dict, @"favorited", path) boolValue];  
-        _readPosition   = [getNumberFromDict(dict, @"readPosition", path) intValue];
         _myVote         = [getNumberFromDict(dict, @"myVote", path) intValue];
+        _position       = [getNumberFromDict(dict, @"position", path) unsignedLongLongValue];
         
         NSDate *dt = getDateFromDict(dict, @"timestamp", path);        
         if (dt) self.timestamp = dt;
+        
+        _cachedFileSize = 0;
     }
     
     return self;
@@ -487,12 +482,11 @@ static NSString * prettyHtml (NSMutableArray *diffs)
     if (_myVote)
         [dict update: @"myVote" value: [NSNumber numberWithInt:_myVote]];
     
-    if (_readPosition)
-        [dict update: @"readPosition" value: [NSNumber numberWithInt:_readPosition]];
-    
     if (_favorited)
         [dict update: @"favorited" value: [NSNumber numberWithBool:_favorited]];
     
+    if (_position)
+        [dict update: @"position" value: [NSNumber numberWithUnsignedLongLong:_position]];        
     
     return dict;
 }
@@ -537,6 +531,24 @@ static NSString * prettyHtml (NSMutableArray *diffs)
     KX_RELEASE(fm);    
     return r ? self.htmlPath : nil;
 }
+
+- (unsigned long long) htmlFileSize
+{
+    if (0 == _cachedFileSize) {
+
+        NSString *path = self.htmlPath;    
+        NSFileManager * fm = [[NSFileManager alloc] init];        
+        if ([fm isReadableFileAtPath:path]) {        
+            NSDictionary *dict = [fm attributesOfItemAtPath:path error:nil];        
+            if (dict)
+                _cachedFileSize = [dict fileSize];
+        }    
+        KX_RELEASE(fm);    
+        
+    }
+    return _cachedFileSize;
+}
+
 
 - (NSString *) diffFile
 {
@@ -622,7 +634,9 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 
 - (void) saveHTML: (NSString *) data
         formatter: (TextFormatter) formatter
-{       
+{           
+    _cachedFileSize = 0;
+    
     NSError *error;
     
     NSFileManager *fm = [[NSFileManager alloc] init];

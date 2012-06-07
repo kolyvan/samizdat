@@ -74,10 +74,10 @@ typedef enum {
     NSDate * _filetime;
     NSString *_dateModified;
     BOOL _favorited;    
-    SamLibTextVote _myVote;    
-    NSInteger _readPosition;    
+    SamLibTextVote _myVote;        
+    unsigned long long _position;
+    unsigned long long _cachedFileSize;
 
-    
     SamLibTextChanged _changedFlag;        
     NSInteger _deltaSize;
     NSInteger _deltaComments;    
