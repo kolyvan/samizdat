@@ -26,7 +26,7 @@ extern int ddLogLevel;
 + (NSIndexSet *)acceptableStatusCodes {
     NSMutableIndexSet * mis = [[AFHTTPRequestOperation acceptableStatusCodes] mutableCopy];
     [mis addIndex:302];
-    return mis;
+    return [mis autorelease];
 }
 
 -(NSURLRequest *)connection:(NSURLConnection *)connection
