@@ -103,39 +103,6 @@ int ddLogLevel = LOG_LEVEL_WARN;
     KX_RELEASE(hudLogger);
 }
 
-- (void) storeSession: (BOOL) save
-{
-    if (save) {
-        
-        NSHTTPCookieStorage * storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];    
-        NSArray * cookies = [storage cookiesForURL: [NSURL URLWithString: @"http://samlib.ru/"]]; 
-        if (cookies.nonEmpty) {
-            NSArray *session = [cookies filter:^(id elem) {
-                return [elem isSessionOnly];
-            }];                        
-            [SamLibAgent.settings() update:@"session" 
-                                     value:[session map:^(id elem){ return [elem properties];}]];
-        }
-        
-    } else {
-        
-        [SamLibAgent.settings() removeObjectForKey:@"session"];
-    }
-}
-
-- (void) restoreSession
-{
-    NSArray * session = [SamLibAgent.settings() get:@"session"];
-    if (session.nonEmpty) {
-        NSHTTPCookieStorage * storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-        for (NSDictionary *dict in session) {
-            NSHTTPCookie *cookie = [NSHTTPCookie cookieWithProperties: dict];
-            [storage setCookie:cookie];
-            //DDLogInfo(@"set cookie %@: %@", cookie.name, cookie.value);
-        }
-    }
-}
-
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {     
     [SamLibUser setKeychainService: KxUtils.appBundleID()];
@@ -143,7 +110,7 @@ int ddLogLevel = LOG_LEVEL_WARN;
     [_window setDelegate:self];    
     [self initLogger];
     [self hudInit];
-    [self restoreSession];
+    restoreSamLibSessionCookies();
 
     _controllers = [[NSMutableDictionary alloc] init];    
     _historyNav = [[KxHistoryNav alloc] init];
@@ -427,8 +394,8 @@ int ddLogLevel = LOG_LEVEL_WARN;
                     if (pass.nonEmpty)
                         user.pass = @"";
                 }
-                
-                [self storeSession: session];
+
+                storeSamLibSessionCookies(session);
                 
                 [self hudSuccess: locString(@"login success")];
                 
@@ -474,6 +441,8 @@ int ddLogLevel = LOG_LEVEL_WARN;
         if (SamLibStatusSuccess == status) {
             
             [self hudSuccess: locString(@"logout success")];
+            
+            storeSamLibSessionCookies(NO);
             
         } else {
             
