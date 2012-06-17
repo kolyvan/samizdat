@@ -133,6 +133,14 @@
 		87F29664155CDA590006F982 /* SSKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F29663155CDA590006F982 /* SSKeychain.m */; };
 		87F29667155CDA9A0006F982 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87F29666155CDA9A0006F982 /* Security.framework */; };
 		87F2F882158DAC3C00AF0BF1 /* GoogleSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F2F881158DAC3C00AF0BF1 /* GoogleSearch.m */; };
+		87F2F899158DC58C00AF0BF1 /* FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F2F890158DC58C00AF0BF1 /* FMDatabase.m */; };
+		87F2F89A158DC58C00AF0BF1 /* FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F2F892158DC58C00AF0BF1 /* FMDatabaseAdditions.m */; };
+		87F2F89B158DC58C00AF0BF1 /* FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F2F894158DC58C00AF0BF1 /* FMDatabasePool.m */; };
+		87F2F89C158DC58C00AF0BF1 /* FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F2F896158DC58C00AF0BF1 /* FMDatabaseQueue.m */; };
+		87F2F89D158DC58C00AF0BF1 /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F2F898158DC58C00AF0BF1 /* FMResultSet.m */; };
+		87F2F8A6158DC63700AF0BF1 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 87F2F8A5158DC63700AF0BF1 /* libsqlite3.dylib */; };
+		87F2F8A7158DC65C00AF0BF1 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 87F2F8A5158DC63700AF0BF1 /* libsqlite3.dylib */; };
+		87F2F8AA158DD35300AF0BF1 /* SamLibCacheNames.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F2F8A9158DD35300AF0BF1 /* SamLibCacheNames.m */; };
 		87F58BB1155B726500FC839F /* SamLibComments.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F58BB0155B726500FC839F /* SamLibComments.m */; };
 		87F58BC4155BD03C00FC839F /* SamLibUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F58BC3155BD03C00FC839F /* SamLibUser.m */; };
 		87FA5A2E1560BB6800E8DDBD /* TextViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87FA5A2C1560BB6800E8DDBD /* TextViewController.m */; };
@@ -338,6 +346,19 @@
 		87F29673155D16730006F982 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		87F2F880158DAC3C00AF0BF1 /* GoogleSearch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoogleSearch.h; sourceTree = "<group>"; };
 		87F2F881158DAC3C00AF0BF1 /* GoogleSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoogleSearch.m; sourceTree = "<group>"; };
+		87F2F88F158DC58C00AF0BF1 /* FMDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabase.h; sourceTree = "<group>"; };
+		87F2F890158DC58C00AF0BF1 /* FMDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabase.m; sourceTree = "<group>"; };
+		87F2F891158DC58C00AF0BF1 /* FMDatabaseAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabaseAdditions.h; sourceTree = "<group>"; };
+		87F2F892158DC58C00AF0BF1 /* FMDatabaseAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseAdditions.m; sourceTree = "<group>"; };
+		87F2F893158DC58C00AF0BF1 /* FMDatabasePool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabasePool.h; sourceTree = "<group>"; };
+		87F2F894158DC58C00AF0BF1 /* FMDatabasePool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabasePool.m; sourceTree = "<group>"; };
+		87F2F895158DC58C00AF0BF1 /* FMDatabaseQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabaseQueue.h; sourceTree = "<group>"; };
+		87F2F896158DC58C00AF0BF1 /* FMDatabaseQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseQueue.m; sourceTree = "<group>"; };
+		87F2F897158DC58C00AF0BF1 /* FMResultSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMResultSet.h; sourceTree = "<group>"; };
+		87F2F898158DC58C00AF0BF1 /* FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMResultSet.m; sourceTree = "<group>"; };
+		87F2F8A5158DC63700AF0BF1 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		87F2F8A8158DD35300AF0BF1 /* SamLibCacheNames.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SamLibCacheNames.h; sourceTree = "<group>"; };
+		87F2F8A9158DD35300AF0BF1 /* SamLibCacheNames.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SamLibCacheNames.m; sourceTree = "<group>"; };
 		87F58BAF155B726500FC839F /* SamLibComments.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SamLibComments.h; sourceTree = "<group>"; };
 		87F58BB0155B726500FC839F /* SamLibComments.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SamLibComments.m; sourceTree = "<group>"; };
 		87F58BC2155BD03C00FC839F /* SamLibUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SamLibUser.h; sourceTree = "<group>"; };
@@ -356,6 +377,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				87F2F8A6158DC63700AF0BF1 /* libsqlite3.dylib in Frameworks */,
 				87FA5A321560BD9800E8DDBD /* WebKit.framework in Frameworks */,
 				87163EAA155D1889001D4818 /* Cocoa.framework in Frameworks */,
 				87163EC1155D18C1001D4818 /* DiffMatchPatch.framework in Frameworks */,
@@ -367,6 +389,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				87F2F8A7158DC65C00AF0BF1 /* libsqlite3.dylib in Frameworks */,
 				87F29667155CDA9A0006F982 /* Security.framework in Frameworks */,
 				87D33F621557C3C300784BB2 /* Foundation.framework in Frameworks */,
 				87E2FED6155A6851009C4DA9 /* DiffMatchPatch.framework in Frameworks */,
@@ -550,6 +573,7 @@
 		87D33F521557C3C300784BB2 = {
 			isa = PBXGroup;
 			children = (
+				87F2F8A5158DC63700AF0BF1 /* libsqlite3.dylib */,
 				87EA4D3F15653003000D5F41 /* icon.icns */,
 				871B5E8D155E841500FCAFB9 /* images */,
 				8771A6841558FAA2001BB718 /* kxtools */,
@@ -607,6 +631,8 @@
 				87F58BC3155BD03C00FC839F /* SamLibUser.m */,
 				87F2F880158DAC3C00AF0BF1 /* GoogleSearch.h */,
 				87F2F881158DAC3C00AF0BF1 /* GoogleSearch.m */,
+				87F2F8A8158DD35300AF0BF1 /* SamLibCacheNames.h */,
+				87F2F8A9158DD35300AF0BF1 /* SamLibCacheNames.m */,
 			);
 			path = samlib;
 			sourceTree = "<group>";
@@ -626,6 +652,7 @@
 		87D33F7A1557C68100784BB2 /* vendors */ = {
 			isa = PBXGroup;
 			children = (
+				87F2F88E158DC58C00AF0BF1 /* fmdb */,
 				87F29661155CDA590006F982 /* keychain */,
 				87B126CC1557F3E800966B08 /* logger */,
 				87D33F7B1557C68100784BB2 /* af */,
@@ -675,6 +702,23 @@
 				87F29673155D16730006F982 /* Foundation.framework */,
 			);
 			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		87F2F88E158DC58C00AF0BF1 /* fmdb */ = {
+			isa = PBXGroup;
+			children = (
+				87F2F88F158DC58C00AF0BF1 /* FMDatabase.h */,
+				87F2F890158DC58C00AF0BF1 /* FMDatabase.m */,
+				87F2F891158DC58C00AF0BF1 /* FMDatabaseAdditions.h */,
+				87F2F892158DC58C00AF0BF1 /* FMDatabaseAdditions.m */,
+				87F2F893158DC58C00AF0BF1 /* FMDatabasePool.h */,
+				87F2F894158DC58C00AF0BF1 /* FMDatabasePool.m */,
+				87F2F895158DC58C00AF0BF1 /* FMDatabaseQueue.h */,
+				87F2F896158DC58C00AF0BF1 /* FMDatabaseQueue.m */,
+				87F2F897158DC58C00AF0BF1 /* FMResultSet.h */,
+				87F2F898158DC58C00AF0BF1 /* FMResultSet.m */,
+			);
+			path = fmdb;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -890,6 +934,12 @@
 				87F29664155CDA590006F982 /* SSKeychain.m in Sources */,
 				87EA4D3915652453000D5F41 /* SamLibModel.m in Sources */,
 				87F2F882158DAC3C00AF0BF1 /* GoogleSearch.m in Sources */,
+				87F2F899158DC58C00AF0BF1 /* FMDatabase.m in Sources */,
+				87F2F89A158DC58C00AF0BF1 /* FMDatabaseAdditions.m in Sources */,
+				87F2F89B158DC58C00AF0BF1 /* FMDatabasePool.m in Sources */,
+				87F2F89C158DC58C00AF0BF1 /* FMDatabaseQueue.m in Sources */,
+				87F2F89D158DC58C00AF0BF1 /* FMResultSet.m in Sources */,
+				87F2F8AA158DD35300AF0BF1 /* SamLibCacheNames.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

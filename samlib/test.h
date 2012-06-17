@@ -9,7 +9,7 @@
 
 extern void test_fetch_page();
 extern void test_fetch_textdata();
-void test_fetch_comments();
+extern void test_fetch_comments();
 
 extern void test_parser_page();
 extern void test_parse_comments();
@@ -23,5 +23,8 @@ extern void test_post_comment();
 extern void test_login_logout2();
 extern void test_post_comment_with_login();
 
-void test_fetch_authors_list();
-void test_vote();
+extern void test_fetch_authors_list();
+extern void test_vote();
+
+extern void test_google_search();
+extern void test_cache();
