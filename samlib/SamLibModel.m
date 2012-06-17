@@ -13,7 +13,9 @@
 
 #import "KxArc.h"
 #import "KxMacros.h"
+#import "KxUtils.h"
 #import "NSArray+Kolyvan.h"
+#import "NSDictionary+Kolyvan.h"
 #import "NSString+Kolyvan.h"
 #import "SamLibModel.h"
 #import "SamLibAgent.h"

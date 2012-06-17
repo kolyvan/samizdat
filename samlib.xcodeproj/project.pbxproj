@@ -132,6 +132,7 @@
 		87F0CD2C1562188D008E96D8 /* comment.html in Resources */ = {isa = PBXBuildFile; fileRef = 87F0CD2B1562188D008E96D8 /* comment.html */; };
 		87F29664155CDA590006F982 /* SSKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F29663155CDA590006F982 /* SSKeychain.m */; };
 		87F29667155CDA9A0006F982 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87F29666155CDA9A0006F982 /* Security.framework */; };
+		87F2F882158DAC3C00AF0BF1 /* GoogleSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F2F881158DAC3C00AF0BF1 /* GoogleSearch.m */; };
 		87F58BB1155B726500FC839F /* SamLibComments.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F58BB0155B726500FC839F /* SamLibComments.m */; };
 		87F58BC4155BD03C00FC839F /* SamLibUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F58BC3155BD03C00FC839F /* SamLibUser.m */; };
 		87FA5A2E1560BB6800E8DDBD /* TextViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87FA5A2C1560BB6800E8DDBD /* TextViewController.m */; };
@@ -335,6 +336,8 @@
 		87F29671155D16730006F982 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		87F29672155D16730006F982 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		87F29673155D16730006F982 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		87F2F880158DAC3C00AF0BF1 /* GoogleSearch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoogleSearch.h; sourceTree = "<group>"; };
+		87F2F881158DAC3C00AF0BF1 /* GoogleSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoogleSearch.m; sourceTree = "<group>"; };
 		87F58BAF155B726500FC839F /* SamLibComments.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SamLibComments.h; sourceTree = "<group>"; };
 		87F58BB0155B726500FC839F /* SamLibComments.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SamLibComments.m; sourceTree = "<group>"; };
 		87F58BC2155BD03C00FC839F /* SamLibUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SamLibUser.h; sourceTree = "<group>"; };
@@ -602,6 +605,8 @@
 				87F58BB0155B726500FC839F /* SamLibComments.m */,
 				87F58BC2155BD03C00FC839F /* SamLibUser.h */,
 				87F58BC3155BD03C00FC839F /* SamLibUser.m */,
+				87F2F880158DAC3C00AF0BF1 /* GoogleSearch.h */,
+				87F2F881158DAC3C00AF0BF1 /* GoogleSearch.m */,
 			);
 			path = samlib;
 			sourceTree = "<group>";
@@ -884,6 +889,7 @@
 				87F58BC4155BD03C00FC839F /* SamLibUser.m in Sources */,
 				87F29664155CDA590006F982 /* SSKeychain.m in Sources */,
 				87EA4D3915652453000D5F41 /* SamLibModel.m in Sources */,
+				87F2F882158DAC3C00AF0BF1 /* GoogleSearch.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

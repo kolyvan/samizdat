@@ -20,10 +20,12 @@
 #import "SamLibAuthor.h"
 #import "SamLibComments.h"
 #import "SamLibUser.h"
+#import "SamLibModel.h"
 #import "DDLog.h"
 #import "DDTTYLogger.h"
 #import "DDFileLogger.h"
 #import "JSONKit.h"
+#import "GoogleSearch.h"
 #import "test.h"
 
 
@@ -32,7 +34,48 @@
 int ddLogLevel = LOG_LEVEL_INFO;
 
 void test() 
-{
+{    
+    // "site:samlib.ru/i intitle:Иванов inurl:indexdate.shtml"
+    // "site:samlib.ru/k inurl:indexdate.shtml"
+    //
+    
+    __block BOOL finished = NO;
+    googleSearch(@"site:samlib.ru/s intitle:Смирнов intitle:Василий inurl:indexdate.shtml", 
+                 ^(GoogleSearchStatus status, NSString *details, NSArray *results) {
+                     
+                     DDLogCInfo(@"\n%ld %@ %ld\n", status,details, results.count);
+                     
+                     if (status == GoogleSearchStatusSuccess) {
+                         
+                         NSMutableSet *ms = [NSMutableSet set];
+                         
+                         for (NSDictionary * dict in results) {
+                             
+                             NSString * url =[dict get:@"url"];
+                             
+                             if ([url hasPrefix:@"http://samlib.ru/k/"])
+                                 url = [url drop: @"http://samlib.ru/k/".length];
+                             
+                             if ([url hasSuffix:@"/indexdate.shtml"])
+                                 url = [url take: url.length - @"/indexdate.shtml".length];
+                             
+                             [ms addObject:url];
+                             DDLogCInfo(@"%@", url);
+                         }
+                         
+                         DDLogCInfo(@"total: %ld\n%@", ms.count, ms);
+                         
+                         saveObject(results, [@"~/tmp/googlesearch.json" stringByExpandingTildeInPath]); 
+                     }
+                     
+                     finished = YES;
+                     
+                 });
+    
+    
+    KxUtils.waitRunLoop(60, 0.5, ^() {        
+        return finished;
+    });
 }
 
 
@@ -64,7 +107,7 @@ int main(int argc, const char * argv[])
         initLogger();
         SamLibAgent.initialize();
         
-        //test();
+        test();
         
         // ******************
         // test purpose only !
@@ -82,7 +125,7 @@ int main(int argc, const char * argv[])
         //test_login_logout2();
         //test_post_comment_with_login();
         //test_fetch_authors_list();
-        test_vote();
+        //test_vote();
        
         SamLibAgent.cleanup();        
         

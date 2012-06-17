@@ -32,4 +32,9 @@
 - (SamLibAuthor *) findAuthor: (NSString *) byPath;
 - (SamLibText *) findTextByKey: (NSString *)key;
 
+//+ (void) fuzzySearchAuthorByName: (NSString *) name 
+//                           block: (void(^)(NSArray *result)) block;
+//+ (void) fuzzySearchAuthorByPath: (NSString *) name 
+//                           block: (void(^)(NSArray *result)) block;
+
 @end
