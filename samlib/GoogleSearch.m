@@ -38,8 +38,7 @@ static void getGoogleSearch(AFHTTPClient *client, NSDictionary *parameters, GetG
        parameters: parameters
           success:^(AFHTTPRequestOperation *operation, id responseObject) {                  
               
-              NSHTTPURLResponse * response = (NSHTTPURLResponse *)operation.response;
-              
+              NSHTTPURLResponse * response = (NSHTTPURLResponse *)operation.response;              
               DDLogCInfo(@"%ld %@", response.statusCode, response.URL);
               
               NSError *error;
@@ -72,7 +71,7 @@ static void getGoogleSearch(AFHTTPClient *client, NSDictionary *parameters, GetG
               
               NSHTTPURLResponse * response = (NSHTTPURLResponse *)operation.response;
               
-              DDLogCInfo(@"%ld %@", response.statusCode, response.URL);
+              DDLogCWarn(@"%ld %@", response.statusCode, response.URL);
               
               NSString *message = nil;
               
@@ -154,47 +153,14 @@ void googleSearch(NSString *query, GoogleSearchResult finalBlock)
             
             //DDLogCInfo(@"get page %@ = %ld", [pages.first get:@"label"], results.count);
 
+            // google doesn't like simultaneous requests!
+            
             if (pages.count > 1)
                 nextGoogleSearch(client, parameters, pages.tail, results, finalBlock);
             else
                 finalBlock(GoogleSearchStatusSuccess, nil, results);
-            
-            /*
-            
-             opps, google doesn't like such simultaneous requests            
-             
-            if (pages.count > 1) {
-                __block NSInteger count = pages.count - 1;
-                for (NSDictionary *page in pages.tail) {
-                    
-                    NSMutableDictionary *parameters_ = [parameters mutableCopy];
-                    NSString *start = [page get:@"start"];
-                    [parameters_ update:@"start" value:start];    
-                    
-                    getGoogleSearch(client, parameters_, ^(GoogleSearchStatus status, NSString *details, NSDictionary *data) {
-                        
-                        if (status == GoogleSearchStatusSuccess) {
-                            
-                            NSArray *r = [data get:@"results"];   
-                            
-                            DDLogCInfo(@"get page %@ = %ld", [page get:@"label"], r.count);
-                            
-                            [results appendAll:r];                                                                        
-                            
-                        } else {
-                            
-                            DDLogCWarn(@"googleSearch failure: %d %@", status, details);
-                        }
-                        
-                        if (--count == 0)                        
-                            finalBlock(GoogleSearchStatusSuccess, nil, results);                                        
-                    });     
-                }
-            } else {
-                finalBlock(GoogleSearchStatusSuccess, nil, results);
-            }
-            */
-            
+                       
+                       
         } else {
                 
             finalBlock(status, details, nil);                                        

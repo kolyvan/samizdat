@@ -35,7 +35,28 @@ int ddLogLevel = LOG_LEVEL_INFO;
 
 void test() 
 {   
-   
+    
+    __block BOOL finished = NO;
+    
+    SamLibModel *model = [SamLibModel shared];
+    [model fuzzySearchAuthorByName:@"Иванов Иван" 
+                              flag: FuzzySearchFlagGoogle | FuzzySearchFlagSamlib
+                             block:^(NSArray *result) {
+        
+        for (NSDictionary *d in result)
+            KxConsole.printlnf(@"%@ %@ %@ %@", 
+                               [d get:@"path"], 
+                               [d get:@"name"],
+                               [d get:@"distance"],
+                               [d get:@"place"]);    
+        
+        finished = YES;
+    }];
+    
+    KxUtils.waitRunLoop(60, 0.5, ^() {        
+        return finished;
+    });
+    
 }
 
 

@@ -843,6 +843,9 @@ static NSArray * scanAuthors(NSString *html)
 
         NSString *path = scanUpToTag(scanner1, @"/>");     
         if (path.nonEmpty) {
+            
+            path = [path drop:2];
+            
             NSString *name = scanUpToTag(scanner1, @"</a>");       
             if (name.nonEmpty) {
                 NSString *info =  [author substringFromIndex:scanner1.scanLocation];

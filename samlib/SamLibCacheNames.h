@@ -19,6 +19,7 @@
 
 - (NSArray *) selectByPath: (NSString *) path; 
 - (NSArray *) selectByName: (NSString *) name; 
+- (NSArray *) selectBySection:(unichar)section;
 
 - (void) addPath: (NSString *) path 
         withName: (NSString *) name

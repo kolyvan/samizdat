@@ -585,7 +585,7 @@ void test_google_search()
 void test_cache()
 {   
     SamLibCacheNames *cache = [[SamLibCacheNames alloc] init];
-    
+        
     [cache addPath:@"ivanov"    withName:@"Иванов" withInfo:@"12345"];
     [cache addPath:@"ivanov_s"  withName:@"Иванов Сергей" withInfo:@"ффффффф"];    
     [cache addPath:@"smirnov"   withName:@"Смирнов" withInfo:@"XXXXX"];
@@ -598,13 +598,17 @@ void test_cache()
     [cache addBatch:batch];
     
     [cache each:^(NSString *path, NSString *name, NSString *info) {       
-        NSLog(@"%@|%@|%@", path, name, info);        
+        KxConsole.printlnf(@"%@|%@|%@", path, name, info);        
     }];
-    
+        
     //for (NSDictionary *d in [cache selectByName:@"Смирнов%"])
-    //    DDLogCInfo(@"%@ %@ %@", [d get:@"path"], [d get:@"name"], [d get:@"info"]);
+    //    KxConsole.printlnf(@"%@ %@ %@", [d get:@"path"], [d get:@"name"], [d get:@"info"]);
     //for (NSDictionary *d in [cache selectByPath:@"ivanov%"])
-    //    DDLogCInfo(@"%@ %@ %@", [d get:@"path"], [d get:@"name"], [d get:@"info"]);
+    //    KxConsole.printlnf(@"%@ %@ %@", [d get:@"path"], [d get:@"name"], [d get:@"info"]);
+    
+    for (NSDictionary *d in [cache selectBySection:'s'])
+        KxConsole.printlnf(@"%@ %@ %@", [d get:@"path"], [d get:@"name"], [d get:@"info"]);
+
     
     [cache close];
     

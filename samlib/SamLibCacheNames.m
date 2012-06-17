@@ -70,6 +70,7 @@ extern int ddLogLevel;
                     NSString * sql = 
                     @"CREATE TABLE IF NOT EXISTS NAMES ("
                     @" ID INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    @" SECTION INTEGER,"                                        
                     @" PATH TEXT UNIQUE,"                    
                     @" NAME TEXT NOT NULL,"
                     @" INFO TEXT"
@@ -150,14 +151,24 @@ extern int ddLogLevel;
 {
     NSAssert(path.nonEmpty, @"empty path"); 
     NSString *sql = @"SELECT PATH, NAME, INFO FROM NAMES WHERE PATH LIKE ? ORDER BY PATH";
-    return [self executeQuery: sql withArgs:[NSArray arrayWithObject:path.lowercaseString]];
+    return [self executeQuery: sql 
+                     withArgs:[NSArray arrayWithObject:path.lowercaseString]];
 }
 
 - (NSArray *) selectByName: (NSString *) name
 {   
     NSAssert(name.nonEmpty, @"empty name");    
     NSString *sql = @"SELECT PATH, NAME, INFO FROM NAMES WHERE NAME LIKE ? ORDER BY PATH";
-    return [self executeQuery: sql withArgs:[NSArray arrayWithObject:name]];
+    return [self executeQuery: sql 
+                     withArgs:[NSArray arrayWithObject:name]];
+}
+
+- (NSArray *) selectBySection:(unichar)section
+{
+    NSString *sql = @"SELECT PATH, NAME, INFO FROM NAMES WHERE SECTION=? ORDER BY PATH";
+    return [self executeQuery: sql 
+                     withArgs:[NSArray arrayWithObject:[NSNumber numberWithInt:section]]];
+
 }
 
 - (void) addPath: (NSString *) path 
@@ -170,9 +181,12 @@ extern int ddLogLevel;
     if (![self openDB])
         return;
     
-    NSString * insert = @"INSERT OR REPLACE INTO NAMES (PATH, NAME, INFO) VALUES (?, ?, ?)";
-            
-    NSArray *args = KxUtils.array(path.lowercaseString, name, info, nil);            
+    NSString * insert = @"INSERT OR REPLACE INTO NAMES (SECTION, PATH, NAME, INFO) VALUES (?, ?, ?, ?)";
+    
+    path = path.lowercaseString;        
+    NSNumber *section = [NSNumber numberWithInt:path.first];    
+    NSArray *args = KxUtils.array(section, path, name, info, nil);            
+    
     [db executeUpdate:insert withArgumentsInArray:args];
     
     if (db.hadError)        
@@ -187,7 +201,7 @@ extern int ddLogLevel;
     if (![self openDB])
         return;
     
-    NSString * insert = @"INSERT OR REPLACE INTO NAMES (PATH, NAME, INFO) VALUES (?, ?, ?)";
+    NSString * insert = @"INSERT OR REPLACE INTO NAMES (SECTION, PATH, NAME, INFO) VALUES (?, ?, ?, ?)";
         
     [db beginTransaction];
     
@@ -199,7 +213,11 @@ extern int ddLogLevel;
         if (path.nonEmpty && name.nonEmpty) {
 
             NSString *info = [d get:@"info" orElse:@""];
-            NSArray *args = KxUtils.array(path.lowercaseString, name, info, nil);            
+            
+            path = path.lowercaseString;        
+            NSNumber *section = [NSNumber numberWithInt:path.first];    
+            NSArray *args = KxUtils.array(section, path, name, info, nil);
+            
             [db executeUpdate:insert withArgumentsInArray:args];
         } 
     }

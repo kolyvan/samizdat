@@ -200,8 +200,8 @@ static AFHTTPClient * httpClient(BOOL cleanup)
             NSIndexSet *codes = [NSIndexSet indexSetWithIndex:304];            
             [[AFHTTPRequestOperation class] addAcceptableStatusCodes: codes];
             
-            NSSet *contens = [NSSet setWithObject: @"text/html"];    
-            [[AFHTTPRequestOperation class] addAcceptableContentTypes: contens];
+            //NSSet *contens = [NSSet setWithObject: @"text/html"];    
+            //[[AFHTTPRequestOperation class] addAcceptableContentTypes: contens];
         });
         
         

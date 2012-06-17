@@ -86,6 +86,13 @@
 		8787E591155D4A8B00A73F8E /* KxHistoryNav.m in Sources */ = {isa = PBXBuildFile; fileRef = 8787E590155D4A8B00A73F8E /* KxHistoryNav.m */; };
 		8787E594155D51D800A73F8E /* TestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8787E593155D51D800A73F8E /* TestViewController.m */; };
 		8787E596155D522700A73F8E /* TestView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8787E595155D522700A73F8E /* TestView.xib */; };
+		8796C2DC158E28C400331767 /* SamLibCacheNames.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F2F8A9158DD35300AF0BF1 /* SamLibCacheNames.m */; };
+		8796C2DE158E28CD00331767 /* GoogleSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F2F881158DAC3C00AF0BF1 /* GoogleSearch.m */; };
+		8796C2DF158E28E100331767 /* FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F2F890158DC58C00AF0BF1 /* FMDatabase.m */; };
+		8796C2E0158E28E400331767 /* FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F2F892158DC58C00AF0BF1 /* FMDatabaseAdditions.m */; };
+		8796C2E1158E28E600331767 /* FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F2F894158DC58C00AF0BF1 /* FMDatabasePool.m */; };
+		8796C2E2158E28E900331767 /* FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F2F896158DC58C00AF0BF1 /* FMDatabaseQueue.m */; };
+		8796C2E3158E28EB00331767 /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F2F898158DC58C00AF0BF1 /* FMResultSet.m */; };
 		87B1269F1557DB6C00966B08 /* SamLibAgent.m in Sources */ = {isa = PBXBuildFile; fileRef = 87B1269E1557DB6C00966B08 /* SamLibAgent.m */; };
 		87B126D31557F3E800966B08 /* DDFileLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 87B126CE1557F3E800966B08 /* DDFileLogger.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		87B126D41557F3E800966B08 /* DDLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 87B126D01557F3E800966B08 /* DDLog.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
@@ -895,6 +902,13 @@
 				87EA4D4315653318000D5F41 /* TextsGroupViewController.m in Sources */,
 				875A5DAC1566176A00AEE39F /* AuthorInfoViewController.m in Sources */,
 				875A5DB1156624AB00AEE39F /* KxLinkLabel.m in Sources */,
+				8796C2DC158E28C400331767 /* SamLibCacheNames.m in Sources */,
+				8796C2DE158E28CD00331767 /* GoogleSearch.m in Sources */,
+				8796C2DF158E28E100331767 /* FMDatabase.m in Sources */,
+				8796C2E0158E28E400331767 /* FMDatabaseAdditions.m in Sources */,
+				8796C2E1158E28E600331767 /* FMDatabasePool.m in Sources */,
+				8796C2E2158E28E900331767 /* FMDatabaseQueue.m in Sources */,
+				8796C2E3158E28EB00331767 /* FMResultSet.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
