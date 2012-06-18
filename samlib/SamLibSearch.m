@@ -289,9 +289,15 @@ static NSString * mkPathFromName(NSString *name)
 - (void) googleSearch: (NSString *)pattern
                   key: (NSString *)key
                 query: (NSString *)query 
-              baseURL: (NSString *)baseURL
+              section: (unichar)section
                 block: (AsyncSearchResult) block
-{
+{   
+    
+    if (query)
+        query = KxUtils.format(@"site:samlib.ru/%c %@ inurl:indexdate.shtml", section, query);
+    else
+        query = KxUtils.format(@"site:samlib.ru/%c inurl:indexdate.shtml", section);
+    
     googleSearch(query, 
                  ^(GoogleSearchStatus status, NSString *details, NSArray *googleResult) {
                      
@@ -300,6 +306,8 @@ static NSString * mkPathFromName(NSString *name)
                      if (status == GoogleSearchStatusSuccess) {
                          
                          DDLogInfo(@"loaded from google: %d", googleResult.count);
+                         
+                         NSString *baseURL = KxUtils.format(@"http://samlib.ru/%c/", section); 
                          
                          NSMutableArray *authors = [NSMutableArray array];
                          
@@ -332,12 +340,10 @@ static NSString * mkPathFromName(NSString *name)
     for (NSString *s in [name split])
         [ms appendFormat:@"intitle:%@ ", s];        
     
-    unichar section = path.first;
-        
     [self googleSearch:name 
                    key:@"name" 
-                 query:KxUtils.format(@"site:samlib.ru/%c %@ inurl:indexdate.shtml", section, ms) 
-               baseURL:KxUtils.format(@"http://samlib.ru/%c/", section) 
+                 query:ms
+               section:path.first
                  block:block];
     
 }
@@ -346,12 +352,10 @@ static NSString * mkPathFromName(NSString *name)
                       block: (AsyncSearchResult) block
 
 {    
-    unichar section = path.first;
-    
     [self googleSearch:path 
                    key:@"path" 
-                 query:KxUtils.format(@"site:samlib.ru/%c inurl:indexdate.shtml", section) 
-               baseURL:KxUtils.format(@"http://samlib.ru/%c/", section) 
+                 query:nil
+               section:path.first
                  block:block];
 }
 
@@ -374,8 +378,7 @@ static NSString * mkPathFromName(NSString *name)
                                   
                                   if (authors.nonEmpty) {
                                       
-                                      [_cacheNames addBatch:authors];
-                                      
+                                      [_cacheNames addBatch:authors];                                      
                                       result = searchAuthor(pattern, key, authors);
                                       DDLogInfo(@"found in samlib: %d", result.count);                                      
                                   }
@@ -437,8 +440,6 @@ static NSString * mkPathFromName(NSString *name)
     
     if (byName) {        
         
-        //pattern = [pattern capitalizedString];    
-        //NSString *capital = [pattern capitalizedString];    
         path = SamLibParser.captitalToPath(pattern.first);        
         
         if (!path.nonEmpty) {
