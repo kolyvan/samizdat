@@ -181,12 +181,12 @@ extern int ddLogLevel;
     if (![self openDB])
         return;
     
-    NSString * insert = @"INSERT OR REPLACE INTO NAMES (SECTION, PATH, NAME, INFO) VALUES (?, ?, ?, ?)";
-    
     path = path.lowercaseString;        
     NSNumber *section = [NSNumber numberWithInt:path.first];    
-    NSArray *args = KxUtils.array(section, path, name, info, nil);            
     
+    NSString * insert = @"INSERT OR REPLACE INTO NAMES (SECTION, PATH, NAME, INFO) VALUES (?, ?, ?, ?)";
+    NSArray * args = KxUtils.array(section, path, name, info ? info: [NSNull null], nil);
+                
     [db executeUpdate:insert withArgumentsInArray:args];
     
     if (db.hadError)        
@@ -212,7 +212,7 @@ extern int ddLogLevel;
         
         if (path.nonEmpty && name.nonEmpty) {
 
-            NSString *info = [d get:@"info" orElse:@""];
+            id info = [d get:@"info" orElse:[NSNull null]];
             
             path = path.lowercaseString;        
             NSNumber *section = [NSNumber numberWithInt:path.first];    

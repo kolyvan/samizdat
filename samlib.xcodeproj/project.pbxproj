@@ -148,6 +148,7 @@
 		87F2F8A6158DC63700AF0BF1 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 87F2F8A5158DC63700AF0BF1 /* libsqlite3.dylib */; };
 		87F2F8A7158DC65C00AF0BF1 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 87F2F8A5158DC63700AF0BF1 /* libsqlite3.dylib */; };
 		87F2F8AA158DD35300AF0BF1 /* SamLibCacheNames.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F2F8A9158DD35300AF0BF1 /* SamLibCacheNames.m */; };
+		87F4C81A158EDF7600ABB48A /* SamLibSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F4C819158EDF7600ABB48A /* SamLibSearch.m */; };
 		87F58BB1155B726500FC839F /* SamLibComments.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F58BB0155B726500FC839F /* SamLibComments.m */; };
 		87F58BC4155BD03C00FC839F /* SamLibUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F58BC3155BD03C00FC839F /* SamLibUser.m */; };
 		87FA5A2E1560BB6800E8DDBD /* TextViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87FA5A2C1560BB6800E8DDBD /* TextViewController.m */; };
@@ -366,6 +367,8 @@
 		87F2F8A5158DC63700AF0BF1 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		87F2F8A8158DD35300AF0BF1 /* SamLibCacheNames.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SamLibCacheNames.h; sourceTree = "<group>"; };
 		87F2F8A9158DD35300AF0BF1 /* SamLibCacheNames.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SamLibCacheNames.m; sourceTree = "<group>"; };
+		87F4C818158EDF7600ABB48A /* SamLibSearch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SamLibSearch.h; sourceTree = "<group>"; };
+		87F4C819158EDF7600ABB48A /* SamLibSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SamLibSearch.m; sourceTree = "<group>"; };
 		87F58BAF155B726500FC839F /* SamLibComments.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SamLibComments.h; sourceTree = "<group>"; };
 		87F58BB0155B726500FC839F /* SamLibComments.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SamLibComments.m; sourceTree = "<group>"; };
 		87F58BC2155BD03C00FC839F /* SamLibUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SamLibUser.h; sourceTree = "<group>"; };
@@ -640,6 +643,8 @@
 				87F2F881158DAC3C00AF0BF1 /* GoogleSearch.m */,
 				87F2F8A8158DD35300AF0BF1 /* SamLibCacheNames.h */,
 				87F2F8A9158DD35300AF0BF1 /* SamLibCacheNames.m */,
+				87F4C818158EDF7600ABB48A /* SamLibSearch.h */,
+				87F4C819158EDF7600ABB48A /* SamLibSearch.m */,
 			);
 			path = samlib;
 			sourceTree = "<group>";
@@ -954,6 +959,7 @@
 				87F2F89C158DC58C00AF0BF1 /* FMDatabaseQueue.m in Sources */,
 				87F2F89D158DC58C00AF0BF1 /* FMResultSet.m in Sources */,
 				87F2F8AA158DD35300AF0BF1 /* SamLibCacheNames.m in Sources */,
+				87F4C81A158EDF7600ABB48A /* SamLibSearch.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

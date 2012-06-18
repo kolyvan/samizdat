@@ -21,36 +21,47 @@
 #import "SamLibComments.h"
 #import "SamLibUser.h"
 #import "SamLibModel.h"
+#import "SamLibSearch.h"
 #import "DDLog.h"
 #import "DDTTYLogger.h"
 #import "DDFileLogger.h"
 #import "JSONKit.h"
 
+#define NSNUMBER_SHORTHAND
+#import "KxMacros.h"
+
 #import "test.h"
 
+#import <wctype.h>
+#import <xlocale.h>
 
 //static int ddLogLevel = LOG_LEVEL_WARN;
 //static int ddLogLevel = LOG_LEVEL_VERBOSE;
 int ddLogLevel = LOG_LEVEL_INFO;
 
 void test() 
-{   
-    
+{  
     __block BOOL finished = NO;
+   
+    // FuzzySearchFlagCache|FuzzySearchFlagGoogle|FuzzySearchFlagSamlib
     
-    SamLibModel *model = [SamLibModel shared];
-    [model fuzzySearchAuthorByName:@"Иванов Иван" 
-                              flag: FuzzySearchFlagGoogle | FuzzySearchFlagSamlib
-                             block:^(NSArray *result) {
-        
-        for (NSDictionary *d in result)
-            KxConsole.printlnf(@"%@ %@ %@ %@", 
-                               [d get:@"path"], 
-                               [d get:@"name"],
-                               [d get:@"distance"],
-                               [d get:@"place"]);    
-        
-        finished = YES;
+    [SamLibSearch searchAuthorByName:@"Дмитриев Павел"
+                                flag: FuzzySearchFlagLocal
+                               block:^(NSArray *result) {
+                               
+                                   if (result.nonEmpty) {
+                                   
+                                       for (NSDictionary *d in result)
+                                           KxConsole.printlnf(@"%@ %@ %@ %@", 
+                                                              [d get:@"path"], 
+                                                              [d get:@"name"],
+                                                              [d get:@"distance"],
+                                                              [d get:@"from"]);    
+                                   } else {                                   
+                                       
+                                       KxConsole.println(@"finish searching");                                       
+                                       finished = YES;
+                                   }
     }];
     
     KxUtils.waitRunLoop(60, 0.5, ^() {        
@@ -87,7 +98,7 @@ int main(int argc, const char * argv[])
         
         initLogger();
         SamLibAgent.initialize();
-        
+       
         test();
         
         // ******************

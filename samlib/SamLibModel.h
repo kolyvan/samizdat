@@ -16,17 +16,6 @@
 @class SamLibText;
 @class SamLibComments;
 
-typedef void(^AsyncSearchResult)(NSArray *result);
-
-typedef enum {
-    
-    FuzzySearchFlagLocal    = 1 << 0,
-    FuzzySearchFlagCache    = 1 << 1,
-    FuzzySearchFlagGoogle   = 1 << 2,    
-    FuzzySearchFlagSamlib   = 1 << 3,  
-    
-} FuzzySearchFlag;
-
 @interface SamLibModel : NSObject 
 
 @property (readonly, nonatomic) NSArray * authors;
@@ -42,12 +31,5 @@ typedef enum {
 
 - (SamLibAuthor *) findAuthor: (NSString *) byPath;
 - (SamLibText *) findTextByKey: (NSString *)key;
-
-- (void) fuzzySearchAuthorByName: (NSString *) name 
-                            flag: (FuzzySearchFlag) flag
-                           block: (void(^)(NSArray *result)) block;
-
-//- (void) fuzzySearchAuthorByPath: (NSString *) name 
-//                           block: (void(^)(NSArray *result)) block;
 
 @end
