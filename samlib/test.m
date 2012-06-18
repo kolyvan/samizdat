@@ -541,7 +541,7 @@ void test_google_search()
     // "site:samlib.ru/i intitle:Иванов inurl:indexdate.shtml"
     // "site:samlib.ru/k inurl:indexdate.shtml"
     //
-    
+    /*
     __block BOOL finished = NO;
     googleSearch(@"site:samlib.ru/s intitle:Смирнов intitle:Василий inurl:indexdate.shtml", 
                  ^(GoogleSearchStatus status, NSString *details, NSArray *results) {
@@ -579,6 +579,7 @@ void test_google_search()
     KxUtils.waitRunLoop(60, 0.5, ^() {        
         return finished;
     });
+    */
 }
 
 

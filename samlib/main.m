@@ -45,7 +45,7 @@ void test()
    
     // FuzzySearchFlagCache|FuzzySearchFlagGoogle|FuzzySearchFlagSamlib
     
-    [SamLibSearch searchAuthorByPath:@"petrow"
+    [SamLibSearch searchAuthorByPath:@"dmitriew"
                                 flag: FuzzySearchFlagGoogle
                                block:^(NSArray *result) {
                                

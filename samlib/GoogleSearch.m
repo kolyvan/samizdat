@@ -7,6 +7,7 @@
 //
 
 #import "GoogleSearch.h"
+#import "KxArc.h"
 #import "KxMacros.h"
 #import "KxUtils.h"
 #import "NSArray+Kolyvan.h"
@@ -21,6 +22,9 @@
 extern int ddLogLevel;
 
 /*
+ 
+ http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=site:samlib.ru/k%20inurl:indexdate.shtml&start=0
+  
  query samples:
     site:samlib.ru/k inurl:indexdate.shtml
     site:samlib.ru/i intitle:Иванов inurl:indexdate.shtml 
@@ -86,84 +90,140 @@ static void getGoogleSearch(AFHTTPClient *client, NSDictionary *parameters, GetG
          progress:nil];
 }
 
-static void nextGoogleSearch(AFHTTPClient *client, 
-                             NSDictionary *parameters, 
-                             NSArray *pages, 
-                             NSMutableArray *results,
-                             GoogleSearchResult block)
+////
+
+@interface GoogleSearch() {
+    AFHTTPClient *_client;
+}
+@property (readonly) BOOL canceled;
+
+@end
+
+@implementation GoogleSearch
+
+@synthesize canceled = _canceled;
+
+- (id) init
 {
-    NSDictionary *page = pages.first;
-    NSMutableDictionary *parameters_ = [parameters mutableCopy];    
-    NSString *start = [page get:@"start"];
-    [parameters_ update:@"start" value:start];    
-    
-    getGoogleSearch(client, 
-                    parameters_, 
-                    ^(GoogleSearchStatus status, NSString *details, NSDictionary *data) {
-        
-        if (status == GoogleSearchStatusSuccess) {
-            
-            NSArray *r = [data get:@"results"];   
-            
-            //DDLogCInfo(@"get page %@ = %ld", [page get:@"label"], r.count);
-            
-            [results appendAll:r];
-            
-            if (pages.count > 1)                
-                nextGoogleSearch(client, parameters, pages.tail, results, block);
-            else
-                block(GoogleSearchStatusSuccess, nil, results);            
-            
-        } else {
-            
-            DDLogCWarn(@"googleSearch failure: %d %@", status, details);            
-            
-            // at least one request has been received successfully            
-            block(GoogleSearchStatusSuccess, nil, results); 
-        }
-    });    
+    self = [super init];
+    if (self) {
+        _client = [AFHTTPClient clientWithBaseURL:[NSURL URLWithString:@"http://ajax.googleapis.com/"]];
+    }
+    return self;
 }
 
-void googleSearch(NSString *query, GoogleSearchResult finalBlock)
+- (void) dealloc
 {
-    // example
-    // http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=site:samlib.ru/k%20inurl:indexdate.shtml&start=0
+    DDLogInfo(@"%@ dealloc", [self class]);
     
-    AFHTTPClient *client;
-    client = [AFHTTPClient clientWithBaseURL:[NSURL URLWithString:@"http://ajax.googleapis.com/"]];
-    
+    [self cancel];
+    KX_SUPER_DEALLOC();
+}
+
++ (id) search: (NSString *)query 
+          block: (GoogleSearchResult) block
+{
+    GoogleSearch *p = [[GoogleSearch alloc] init];
+    [p search:query block:block];
+    return  KX_AUTORELEASE(p);
+}
+
+- (void) cancel
+{
+    _canceled = YES;
+    [_client cancelAll];
+    KX_RELEASE(_client);
+    _client = nil;
+}
+
+- (void) search: (NSString *)query 
+          block: (GoogleSearchResult) block;
+
+{   
     NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithCapacity:4];
     
     [parameters update:@"v" value:@"1.0"];
     [parameters update:@"rsz" value:@"8"];
     [parameters update:@"start" value:@"0"];
     [parameters update:@"q" value:query];
-     
-    getGoogleSearch(client, 
+    
+    KX_WEAK GoogleSearch *this = self;
+    
+    getGoogleSearch(_client, 
                     parameters, 
                     ^(GoogleSearchStatus status, NSString *details, NSDictionary *data) {
-               
-        if (status == GoogleSearchStatusSuccess) {
-                         
-            //saveObject(data, [@"~/tmp/google.json" stringByExpandingTildeInPath]);
-            
-            NSMutableArray *results = [[data get:@"results"] mutableCopy];                        
-            NSDictionary *cursor = [data get:@"cursor"];
-            NSArray *pages = [cursor get:@"pages"];
-            
-            //DDLogCInfo(@"get page %@ = %ld", [pages.first get:@"label"], results.count);
-
-            // google doesn't like simultaneous requests!
-            
-            if (pages.count > 1)
-                nextGoogleSearch(client, parameters, pages.tail, results, finalBlock);
-            else
-                finalBlock(GoogleSearchStatusSuccess, nil, results);
-                       
-                       
-        } else {
-                
-            finalBlock(status, details, nil);                                        
-        }       
-    });
+                        
+                        if (status == GoogleSearchStatusSuccess) {
+                            
+                            //saveObject(data, [@"~/tmp/google.json" stringByExpandingTildeInPath]);
+                            
+                            NSMutableArray *results = [[data get:@"results"] mutableCopy];                        
+                            NSDictionary *cursor = [data get:@"cursor"];
+                            NSArray *pages = [cursor get:@"pages"];
+                            
+                            //DDLogCInfo(@"get page %@ = %ld", [pages.first get:@"label"], results.count);
+                            
+                            // google doesn't like simultaneous requests!
+                            
+                            if (pages.count > 1 && this && !this.canceled)
+                                
+                                [this moreSearch: parameters 
+                                           pages: pages.tail 
+                                         results: results 
+                                           block: block];
+                            else
+                                block(GoogleSearchStatusSuccess, nil, results);
+                            
+                            
+                        } else {
+                            
+                            block(status, details, nil);                                        
+                        }       
+                    });
 }
+
+- (void) moreSearch: (NSDictionary *)parameters 
+              pages: (NSArray *)  pages
+            results: (NSMutableArray *)results
+              block: (GoogleSearchResult) block
+{
+    NSDictionary *page = pages.first;
+    NSMutableDictionary *parameters_ = [parameters mutableCopy];    
+    NSString *start = [page get:@"start"];
+    [parameters_ update:@"start" value:start]; 
+    
+    KX_WEAK GoogleSearch *this = self;
+    
+    getGoogleSearch(_client, 
+                    parameters_, 
+                    ^(GoogleSearchStatus status, NSString *details, NSDictionary *data) {
+                        
+                        if (status == GoogleSearchStatusSuccess) {
+                            
+                            NSArray *r = [data get:@"results"];   
+                            
+                            //DDLogCInfo(@"get page %@ = %ld", [page get:@"label"], r.count);
+                            
+                            [results appendAll:r];
+                            
+                            if (pages.count > 1 && this && !this.canceled)
+                                
+                                [this moreSearch: parameters 
+                                           pages: pages.tail 
+                                         results: results 
+                                           block: block];
+
+                            else
+                                block(GoogleSearchStatusSuccess, nil, results);            
+                            
+                        } else {
+                            
+                            DDLogCWarn(@"googleSearch failure: %d %@", status, details);            
+                            
+                            // at least one request has been received successfully            
+                            block(GoogleSearchStatusSuccess, nil, results); 
+                        }
+                    });    
+}
+
+@end

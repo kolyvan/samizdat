@@ -19,4 +19,11 @@ typedef enum {
 
 typedef void (^GoogleSearchResult)(GoogleSearchStatus status, NSString *details, NSArray *results);
 
-extern void googleSearch(NSString *query, GoogleSearchResult block);
+@interface GoogleSearch : NSObject
+
++ (id) search: (NSString *)query 
+        block: (GoogleSearchResult) block;
+
+- (void) cancel;
+
+@end

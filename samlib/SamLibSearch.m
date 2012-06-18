@@ -178,9 +178,11 @@ static NSString * mkPathFromName(NSString *name)
 ///
 
 @interface SamLibSearch() {
-    SamLibCacheNames * _cacheNames;
+    SamLibCacheNames * _cacheNames;    
+    GoogleSearch * _googleSearch;
     NSMutableDictionary *_history;
     NSString * _historyDigest;
+    BOOL _cancelAgent;
 }
 @end
 
@@ -207,6 +209,8 @@ static NSString * mkPathFromName(NSString *name)
 
 - (void) dealloc
 {
+    [self cancel];    
+    
     DDLogInfo(@"%@ dealloc", [self class]);
 
     if (![_historyDigest isEqualToString: [_history.description md5]]) {
@@ -298,37 +302,41 @@ static NSString * mkPathFromName(NSString *name)
     else
         query = KxUtils.format(@"site:samlib.ru/%c inurl:indexdate.shtml", section);
     
-    googleSearch(query, 
-                 ^(GoogleSearchStatus status, NSString *details, NSArray *googleResult) {
-                     
-                     NSArray *result = nil;
-                     
-                     if (status == GoogleSearchStatusSuccess) {
-                         
-                         DDLogInfo(@"loaded from google: %d", googleResult.count);
-                         
-                         NSString *baseURL = KxUtils.format(@"http://samlib.ru/%c/", section); 
-                         
-                         NSMutableArray *authors = [NSMutableArray array];
-                         
-                         for (NSDictionary *d in googleResult) {
-                             NSDictionary *mapped = mapGoogleResult(d, baseURL);
-                             if (mapped)
-                                 [authors push:mapped];
-                         }
-                         
-                         if (authors.nonEmpty) {
-                             
-                             [_cacheNames addBatch:authors];
-                             result = searchAuthor(pattern, key, authors);                             
-                             DDLogInfo(@"found in google: %d", result.count);               
-                         }                         
-                     } 
-                     
-                     block(result);                     
-                     
-                 });
 
+//    googleSearch(query, 
+//                 ^(GoogleSearchStatus status, NSString *details, NSArray *googleResult) {
+    
+    _googleSearch = [GoogleSearch search: query 
+                                   block: ^(GoogleSearchStatus status, NSString *details, NSArray *googleResult) {
+                       
+                       
+                       NSArray *result = nil;
+                       
+                       if (status == GoogleSearchStatusSuccess) {
+                           
+                           DDLogInfo(@"loaded from google: %d", googleResult.count);
+                           
+                           NSString *baseURL = KxUtils.format(@"http://samlib.ru/%c/", section); 
+                           
+                           NSMutableArray *authors = [NSMutableArray array];
+                           
+                           for (NSDictionary *d in googleResult) {
+                               NSDictionary *mapped = mapGoogleResult(d, baseURL);
+                               if (mapped)
+                                   [authors push:mapped];
+                           }
+                           
+                           if (authors.nonEmpty) {
+                               
+                               [_cacheNames addBatch:authors];
+                               result = searchAuthor(pattern, key, authors);                             
+                               DDLogInfo(@"found in google: %d", result.count);               
+                           }                         
+                       } 
+                       
+                       block(result);                     
+                       
+                   }];
 }
 
 - (void) googleSearchByName: (NSString *)name
@@ -365,6 +373,7 @@ static NSString * mkPathFromName(NSString *name)
                  path: (NSString *) path
                 block: (AsyncSearchResult) block
 {
+    _cancelAgent = YES;    
     SamLibAgent.fetchData(path, nil, NO, nil, nil,
                           ^(SamLibStatus status, NSString *data, NSString *lastModified) {                                  
                               
@@ -408,6 +417,8 @@ static NSString * mkPathFromName(NSString *name)
 -(void) directSearchByPath: (NSString *) path  
                      block: (AsyncSearchResult) block
 {
+    _cancelAgent = YES;        
+    
     SamLibAuthor *author = [[SamLibAuthor alloc] initWithPath:path];
     
     [author update:^(SamLibAuthor *author, SamLibStatus status, NSString *error) {        
@@ -524,7 +535,7 @@ static NSString * mkPathFromName(NSString *name)
         };
                 
         if (0 != (flag & FuzzySearchFlagDirect)) {
-                                    
+            
             if (byName)                            
                 pattern = mkPathFromName(pattern);                               
                         
@@ -576,8 +587,10 @@ static NSString * mkPathFromName(NSString *name)
 
 - (void) cancel
 {
-    // todo:
-    // SamLibAgent.cancelAll
+    if (_cancelAgent)
+        SamLibAgent.cancelAll();    
+    [_googleSearch cancel];
+    _googleSearch = nil;
 }
 
 @end
