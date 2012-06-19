@@ -17,20 +17,23 @@ typedef enum {
     FuzzySearchFlagGoogle   = 1 << 2,    
     FuzzySearchFlagSamlib   = 1 << 3,  
     FuzzySearchFlagDirect   = 1 << 4,      
+    FuzzySearchFlagAll      = FuzzySearchFlagLocal|FuzzySearchFlagCache|FuzzySearchFlagGoogle|FuzzySearchFlagSamlib|FuzzySearchFlagDirect
     
 } FuzzySearchFlag;
 
 
 @interface SamLibSearch : NSObject
 
-+ (id) searchAuthorByName: (NSString *) name 
-                     flag: (FuzzySearchFlag) flag
-                    block: (AsyncSearchResult) block;
-
-+ (id) searchAuthorByPath: (NSString *) path 
-                     flag: (FuzzySearchFlag) flag
-                    block: (AsyncSearchResult) block;
++ (id) searchAuthor: (NSString *) name 
+             byName: (BOOL) byName
+               flag: (FuzzySearchFlag) flag
+              block: (AsyncSearchResult) block;
 
 - (void) cancel;
+
++ (NSArray *) sortByDistance: (NSArray *) result;
+
++ (NSArray *) unionLeft: (NSArray *) left 
+               andRight: (NSArray *) right;
 
 @end

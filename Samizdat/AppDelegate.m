@@ -35,9 +35,10 @@
 #import "AuthorInfoViewController.h"
 #import "TextViewController.h"
 #import "CommentsViewController.h"
-#import "AddAuthorViewController.h"
+//#import "AddAuthorViewController.h"
 #import "FavoritesViewController.h"
 #import "TextsGroupViewController.h"
+#import "SearchAuthorViewController.h"
 #import "SamLibModel.h"
 
 #import "DDLog.h"
@@ -277,8 +278,8 @@ int ddLogLevel = LOG_LEVEL_WARN;
 
 - (IBAction) showAddAuthorView: (id) sender
 {
-    [self selectControllerClass:[AddAuthorViewController class] 
-                        withArg:nil];    
+//    [self selectControllerClass:[AddAuthorViewController class] withArg:nil];    
+    [self selectControllerClass:[SearchAuthorViewController class] withArg:nil];    
 }
 
 - (IBAction) showFavoritesView: (id) sender

@@ -32,14 +32,6 @@ extern int ddLogLevel;
 
 ///
 
-static NSArray * sortByDistance(NSArray * array)
-{
-    return [array sortWith:^(id obj1, id obj2) {
-        NSDictionary *l = obj1, *r = obj2;
-        return [[r get:@"distance"] compare: [l get:@"distance"]];
-    }];
-}
-
 static NSDictionary * mapGoogleResult(NSDictionary * dict, NSString * baseURL)
 {        
     // "titleNoFormatting": "Журнал &quot;Самиздат&quot;.Смирнов Василий Дмитриевич. Смирнов ..."
@@ -99,7 +91,7 @@ static NSArray * searchAuthor(NSString * pattern,
             float distance = levenshteinDistanceNS(value, patternChars, patternLengtn);
             distance = 1.0 - (distance / MAX(value.length, patternLengtn));
             
-            if (patternLengtn < value.length &&                
+            if (patternLengtn <= value.length &&                
                 [value hasPrefix: pattern] &&
                 (distance > MINDISTANCE1)) {
                 
@@ -119,37 +111,14 @@ static NSArray * searchAuthor(NSString * pattern,
     return ma;    
 }
 
-static NSArray * mkUnion (NSArray* l, NSArray *r)
-{    
-    NSMutableArray *result = [NSMutableArray array];
-    
-    // filter duplicates    
-    for (NSDictionary *m in l) {
-        
-        NSString *path = [m get:@"path"];
-        
-        BOOL found = NO;
-        
-        for (NSDictionary *n in r)            
-            if ([path isEqualToString: [n get:@"path"]]) {
-                found = YES;
-                break;
-            }   
-        
-        if (!found) 
-            [result push:m];
-    }
-    
-    // union    
-    [result appendAll: r];
-    return result;
-}
+
 
 static NSString * mkPathFromName(NSString *name)
 {    
     // convert from cirillyc name to path                                
     // Дмитриев Павел -> dmitriew_p
-    
+        
+    name = name.lowercaseString;
     NSMutableString *ms = [NSMutableString string];
     NSArray *a = [name split];
     NSString *first = a.first;
@@ -260,6 +229,8 @@ static NSString * mkPathFromName(NSString *name)
         SamLibAuthor *author = elem;
         return KxUtils.dictionary(author.name, @"name", 
                                   author.path, @"path", 
+                                  author.title, @"info", 
+                                  //[NSNumber numberWithFloat:3], @"distance",                                  
                                   @"local", @"from",                                  
                                   nil);
     }];
@@ -267,38 +238,43 @@ static NSString * mkPathFromName(NSString *name)
     return searchAuthor(pattern, key, authors); 
 }
 
-- (NSArray *) cacheSearchAuthorByName: (NSString *)name 
-                              section: (unichar) sectionChar
+- (NSArray *) cacheSearchAuthor: (NSString *)pattern
+                            key: (NSString *)key 
+                        section: (unichar) sectionChar
 {
-    NSArray *like = [_cacheNames selectByName:KxUtils.format(@"%%%@%%", name)]; // LIKE %name%     
-    NSArray *section = [_cacheNames selectBySection:sectionChar];
-    NSArray *result = mkUnion(section, like);         
-    DDLogInfo(@"loaded from cache: %d", result.count);    
-    if (result.nonEmpty)
-        return searchAuthor(name, @"name", result);    
-    return nil;
-}
+    NSString *s = KxUtils.format(@"%%%@%%", pattern);
 
-- (NSArray *) cacheSearchAuthorByPath: (NSString *)path
-{
-    NSArray *like = [_cacheNames selectByPath:KxUtils.format(@"%%%@%%", path)];    
-    NSArray *section = [_cacheNames selectBySection:path.first];
-    NSArray *result = mkUnion(section, like); 
+    NSArray *like; // LIKE %name% 
+    if ([key isEqualToString: @"name"])
+        like = [_cacheNames selectByName:s];    
+    else
+        like = [_cacheNames selectByPath:s];    
+        
+    NSArray *section = [_cacheNames selectBySection:sectionChar];
+    NSArray *result = [self->isa unionLeft:section andRight: like]; 
     DDLogInfo(@"loaded from cache: %d", result.count);    
     if (result.nonEmpty)
-        return searchAuthor(path, @"path", result);    
+        return searchAuthor(pattern, key, result);    
     return nil;
 }
 
 - (void) googleSearch: (NSString *)pattern
                   key: (NSString *)key
-                query: (NSString *)query 
               section: (unichar)section
                 block: (AsyncSearchResult) block
 {   
     
-    if (query)
-        query = KxUtils.format(@"site:samlib.ru/%c %@ inurl:indexdate.shtml", section, query);
+    NSString *query;
+    
+    if ([key isEqualToString:@"name"]) {
+        
+        NSMutableString *ms = [NSMutableString string];
+        for (NSString *s in [pattern split])
+            [ms appendFormat:@"intitle:%@ ", s];      
+        
+        query = KxUtils.format(@"site:samlib.ru/%c %@ inurl:indexdate.shtml", section, ms);
+        
+    }
     else
         query = KxUtils.format(@"site:samlib.ru/%c inurl:indexdate.shtml", section);
     
@@ -339,42 +315,13 @@ static NSString * mkPathFromName(NSString *name)
                    }];
 }
 
-- (void) googleSearchByName: (NSString *)name
-                       path: (NSString *) path
-                      block: (AsyncSearchResult) block
-
-{   
-    NSMutableString *ms = [NSMutableString string];
-    for (NSString *s in [name split])
-        [ms appendFormat:@"intitle:%@ ", s];        
-    
-    [self googleSearch:name 
-                   key:@"name" 
-                 query:ms
-               section:path.first
-                 block:block];
-    
-}
-
-- (void) googleSearchByPath: (NSString *)path
-                      block: (AsyncSearchResult) block
-
-{    
-    [self googleSearch:path 
-                   key:@"path" 
-                 query:nil
-               section:path.first
-                 block:block];
-}
-
-
 - (void) samlibSearch: (NSString *)pattern
                   key: (NSString *)key
-                 path: (NSString *) path
+              catalog: (NSString *)catalog
                 block: (AsyncSearchResult) block
 {
     _cancelAgent = YES;    
-    SamLibAgent.fetchData(path, nil, NO, nil, nil,
+    SamLibAgent.fetchData(catalog, nil, NO, nil, nil,
                           ^(SamLibStatus status, NSString *data, NSString *lastModified) {                                  
                               
                               NSArray *result = nil;
@@ -398,22 +345,6 @@ static NSString * mkPathFromName(NSString *name)
                           nil);
 }
 
-- (void) samlibSearchByName: (NSString *) name  
-                       path: (NSString *) path                       
-                      block: (AsyncSearchResult) block
-{ 
-    [self samlibSearch:name key:@"name" path:path block:block];    
-}
-
-- (void) samlibSearchByPath: (NSString *) path  
-                      block: (AsyncSearchResult) block
-{ 
-    [self samlibSearch:path 
-                   key:@"path" 
-                  path:KxUtils.format(@"%c/", path.first)
-                 block:block];    
-}
-
 -(void) directSearchByPath: (NSString *) path  
                      block: (AsyncSearchResult) block
 {
@@ -421,22 +352,25 @@ static NSString * mkPathFromName(NSString *name)
     
     SamLibAuthor *author = [[SamLibAuthor alloc] initWithPath:path];
     
-    [author update:^(SamLibAuthor *author, SamLibStatus status, NSString *error) {        
+    [author update:^(SamLibAuthor *unused, SamLibStatus status, NSString *error) {        
         
         if (status == SamLibStatusSuccess) {
             
-            NSDictionary *d = KxUtils.dictionary(author.path, @"path",
-                                                 author.name, @"name",
-                                                 author.title, @"info",  
-                                                 [NSNumber numberWithFloat:2], @"distance",
-                                                 @"direct", @"from",
-                                                 nil);
-            block([NSArray arrayWithObject:d]);
+            NSMutableDictionary *md = [NSMutableDictionary dictionary];
+            [md update:@"path"      value:author.path];
+            [md update:@"distance"  value:[NSNumber numberWithFloat:2]];
+            [md update:@"from"      value:@"direct"];            
+            [md updateOnly:@"name"  valueNotNil:author.name];
+            [md updateOnly:@"info"  valueNotNil:author.title];
+            block([NSArray arrayWithObject:md]);
             
         } else {
-            
-            block(nil);        
+
+            block(nil);              
+                  
         }
+
+        KX_RELEASE(author);
     
     }];
 }
@@ -447,49 +381,54 @@ static NSString * mkPathFromName(NSString *name)
                  flag: (FuzzySearchFlag) flag
                 block: (AsyncSearchResult) block
 {      
-    NSString *path; 
+    NSString *key;
+    NSString *catalog; // samlib catalog    
+    unichar section;
     
     if (byName) {        
         
-        path = SamLibParser.captitalToPath(pattern.first);        
+        catalog = SamLibParser.captitalToPath(pattern.first);        
         
-        if (!path.nonEmpty) {
+        if (!catalog.nonEmpty) {
             
             DDLogWarn(locString(@"invalid author name: %@"), pattern);
             block(nil);
             return;
         }  
+        
+        section = catalog.first;
+        key = @"name";
+        
+    } else {
+        
+        pattern = pattern.lowercaseString;        
+        section = pattern.first;
+        catalog = KxUtils.format(@"%c/", section);
+        key = @"path";        
     }
     
     if (0 != (flag & FuzzySearchFlagLocal)) {
         
         NSArray *found = [self localSearchAuthor:pattern 
-                                             key:byName ? @"name" : @"path"];    
+                                             key:key];    
         DDLogInfo(@"found local: %d", found.count);    
         if (found.nonEmpty)
-            block(sortByDistance(found));
-    }
-    
-    __block int asyncCount = 0;
-    
-    if (0 != (flag & FuzzySearchFlagDirect))
-        asyncCount++;
+            block(found);
+    }   
     
     BOOL cacheHit = NO;
     
     if (0 != (flag & FuzzySearchFlagCache)) {
         
-        NSArray *found;
-        if (byName)
-            found = [self cacheSearchAuthorByName:pattern section:path.first];
-        else
-            found = [self cacheSearchAuthorByPath:pattern];
+        NSArray *found = [self cacheSearchAuthor:pattern 
+                                             key:key
+                                         section:section];
         
         DDLogInfo(@"found in cache: %d", found.count);     
         
         if (found.nonEmpty) {
             
-            block(sortByDistance(found));                    
+            block(found);                    
             for (NSDictionary *d in found) {
                 float distance = [[d get: @"distance"] floatValue];
                 if (distance > DISTANCE_THRESHOLD) {
@@ -500,62 +439,57 @@ static NSString * mkPathFromName(NSString *name)
         }
     }
     
+    BOOL needDirect = 0 != (flag & FuzzySearchFlagDirect); 
+    BOOL needGoogle = NO, needSamlib = NO;
+    
     if (!cacheHit) {
         
         if (0 != (flag & FuzzySearchFlagGoogle)) {
             
-            if ([self checkTime:GOOGLE_REQUERY_TIME 
-                       forQuery:KxUtils.format(@"google:%@", pattern)])
-                asyncCount++;
-            else
-                flag &= ~FuzzySearchFlagGoogle;
+            needGoogle = [self checkTime:GOOGLE_REQUERY_TIME 
+                                forQuery:KxUtils.format(@"google:%@", pattern)];
         }
         
         if (0 != (flag & FuzzySearchFlagSamlib)) {
             
-            if ([self checkTime:SAMLIB_REQUERY_TIME 
-                       forQuery:KxUtils.format(@"samlib:%@", pattern)])
-                asyncCount++;         
-            else
-                flag &= ~FuzzySearchFlagSamlib;
+            needSamlib = [self checkTime:SAMLIB_REQUERY_TIME 
+                       forQuery:KxUtils.format(@"samlib:%@", catalog)];
         }
-    }
+    } 
+    
+    __block int asyncCount = 0;    
+    
+    asyncCount += (needDirect ? 1 : 0);
+    asyncCount += (needGoogle ? 1 : 0);
+    asyncCount += (needSamlib ? 1 : 0);
     
     if (asyncCount) {
         
         void(^asyncBlock)(NSArray *) = ^(NSArray *found) {
-            
+                       
             if (found.nonEmpty)
-                block(sortByDistance(found));
+                block(found);
             
             if (--asyncCount == 0) {
                 
-                block(nil); // fire about finish
+                block(nil); // 
             }
         };
                 
-        if (0 != (flag & FuzzySearchFlagDirect)) {
+        if (needDirect) {
             
-            if (byName)                            
-                pattern = mkPathFromName(pattern);                               
-                        
-            [self directSearchByPath:pattern block:asyncBlock];
+            [self directSearchByPath:byName ? mkPathFromName(pattern) : pattern
+                               block:asyncBlock];
         }
         
-        if (0 != (flag & FuzzySearchFlagGoogle)) {
-            
-            if (byName)
-                [self googleSearchByName:pattern path:path block:asyncBlock];
-            else
-                [self googleSearchByPath:pattern block:asyncBlock];
+        if (needGoogle) {            
+
+            [self googleSearch:pattern key:key section:section block:asyncBlock];
         }
         
-        if (0 != (flag & FuzzySearchFlagSamlib)) {
+        if (needSamlib) {
             
-            if (byName)
-                [self samlibSearchByName:pattern path:path block:asyncBlock];
-            else
-                [self samlibSearchByPath:pattern block:asyncBlock];
+            [self samlibSearch:pattern key:key catalog:catalog block:asyncBlock];
         }
         
     } else {
@@ -564,26 +498,16 @@ static NSString * mkPathFromName(NSString *name)
     }    
 }
 
-+ (id) searchAuthorByName: (NSString *) name 
-                     flag: (FuzzySearchFlag) flag
-                    block: (void(^)(NSArray *result)) block
++ (id) searchAuthor: (NSString *) pattern
+             byName: (BOOL) byName
+               flag: (FuzzySearchFlag) flag
+              block: (void(^)(NSArray *result)) block
 {
-    NSAssert(name.nonEmpty, @"empty name");
+    NSAssert(pattern.nonEmpty, @"empty pattern");
     SamLibSearch *p = [[SamLibSearch alloc] init];    
-    [p searchAuthor:name byName:YES flag:flag block:block];    
+    [p searchAuthor:pattern byName:byName flag:flag block:block];    
     return KX_AUTORELEASE(p);
 }
-
-+ (id) searchAuthorByPath: (NSString *) path 
-                     flag: (FuzzySearchFlag) flag
-                    block: (AsyncSearchResult) block
-{
-    NSAssert(path.nonEmpty, @"empty path");
-    SamLibSearch *p = [[SamLibSearch alloc] init];    
-    [p searchAuthor:path byName:NO flag:flag block:block];    
-    return nil;
-}
-
 
 - (void) cancel
 {
@@ -591,6 +515,41 @@ static NSString * mkPathFromName(NSString *name)
         SamLibAgent.cancelAll();    
     [_googleSearch cancel];
     _googleSearch = nil;
+}
+
++ (NSArray *) sortByDistance: (NSArray *) result
+{
+    return [result sortWith:^(id obj1, id obj2) {
+        NSDictionary *l = obj1, *r = obj2;
+        return [[r get:@"distance"] compare: [l get:@"distance"]];
+    }];
+}
+
++ (NSArray *) unionLeft: (NSArray *) l
+               andRight: (NSArray *) r
+{    
+    NSMutableArray *result = [NSMutableArray array];
+    
+    // filter duplicates    
+    for (NSDictionary *m in l) {
+        
+        NSString *path = [m get:@"path"];
+        
+        BOOL found = NO;
+        
+        for (NSDictionary *n in r)            
+            if ([path isEqualToString: [n get:@"path"]]) {
+                found = YES;
+                break;
+            }   
+        
+        if (!found) 
+            [result push:m];
+    }
+    
+    // union    
+    [result appendAll: r];
+    return result;
 }
 
 @end

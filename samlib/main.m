@@ -45,24 +45,25 @@ void test()
    
     // FuzzySearchFlagCache|FuzzySearchFlagGoogle|FuzzySearchFlagSamlib
     
-    [SamLibSearch searchAuthorByPath:@"dmitriew"
-                                flag: FuzzySearchFlagGoogle
-                               block:^(NSArray *result) {
-                               
-                                   if (result.nonEmpty) {
-                                   
-                                       for (NSDictionary *d in result)
-                                           KxConsole.printlnf(@"%@ %@ %@ %@", 
-                                                              [d get:@"path"], 
-                                                              [d get:@"name"],
-                                                              [d get:@"distance"],
-                                                              [d get:@"from"]);    
-                                   } else {                                   
-                                       
-                                       KxConsole.println(@"finish searching");                                       
-                                       finished = YES;
-                                   }
-    }];
+    [SamLibSearch searchAuthor: @"Смирнов" 
+                        byName: YES
+                          flag: FuzzySearchFlagGoogle
+                         block:^(NSArray *result) {
+                             
+                             if (result.nonEmpty) {
+                                 
+                                 for (NSDictionary *d in result)
+                                     KxConsole.printlnf(@"%@ %@ %@ %@", 
+                                                        [d get:@"path"], 
+                                                        [d get:@"name"],
+                                                        [d get:@"distance"],
+                                                        [d get:@"from"]);    
+                             } else {                                   
+                                 
+                                 KxConsole.println(@"finish searching");                                       
+                                 finished = YES;
+                             }
+                         }];
     
     KxUtils.waitRunLoop(60, 0.5, ^() {        
         return finished;
