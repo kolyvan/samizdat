@@ -26,6 +26,8 @@
 extern int ddLogLevel;
 
 /*
+ https://developers.google.com/web-search/docs/?hl=ru-RU#fonje
+ http://www.googleguide.com/advanced_operators.html#allinanchor
  
  http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=site:samlib.ru/k%20inurl:indexdate.shtml&start=0
   
