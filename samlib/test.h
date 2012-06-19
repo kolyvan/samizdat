@@ -26,5 +26,5 @@ extern void test_post_comment_with_login();
 extern void test_fetch_authors_list();
 extern void test_vote();
 
-extern void test_google_search();
+extern void test_search();
 extern void test_cache();

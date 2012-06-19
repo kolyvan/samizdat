@@ -5,6 +5,10 @@
 //  Created by Kolyvan on 17.06.12.
 //  Copyright (c) 2012 Konstantin Boukreev. All rights reserved.
 //
+//  https://github.com/kolyvan/samizdat
+//  this file is part of Samizdat
+//  Samizdat is licenced under the LGPL v3, see lgpl-3.0.txt
+
 
 #import "GoogleSearch.h"
 #import "KxArc.h"
@@ -154,26 +158,23 @@ static void getGoogleSearch(AFHTTPClient *client, NSDictionary *parameters, GetG
                     ^(GoogleSearchStatus status, NSString *details, NSDictionary *data) {
                         
                         if (status == GoogleSearchStatusSuccess) {
-                            
-                            //saveObject(data, [@"~/tmp/google.json" stringByExpandingTildeInPath]);
-                            
+                                                                                    
                             NSMutableArray *results = [[data get:@"results"] mutableCopy];                        
                             NSDictionary *cursor = [data get:@"cursor"];
                             NSArray *pages = [cursor get:@"pages"];
-                            
-                            //DDLogCInfo(@"get page %@ = %ld", [pages.first get:@"label"], results.count);
-                            
+                                                        
                             // google doesn't like simultaneous requests!
                             
-                            if (pages.count > 1 && this && !this.canceled)
+                            if (pages.count > 1 && this && !this.canceled) {
                                 
                                 [this moreSearch: parameters 
                                            pages: pages.tail 
                                          results: results 
                                            block: block];
-                            else
-                                block(GoogleSearchStatusSuccess, nil, results);
-                            
+                            } else {                                
+                                
+                                block(GoogleSearchStatusSuccess, nil, results);                            
+                            }
                             
                         } else {
                             
@@ -201,8 +202,6 @@ static void getGoogleSearch(AFHTTPClient *client, NSDictionary *parameters, GetG
                         if (status == GoogleSearchStatusSuccess) {
                             
                             NSArray *r = [data get:@"results"];   
-                            
-                            //DDLogCInfo(@"get page %@ = %ld", [page get:@"label"], r.count);
                             
                             [results appendAll:r];
                             

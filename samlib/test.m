@@ -18,12 +18,14 @@
 #import "KxConsole.h"
 #import "NSObject+Kolyvan.h"
 #import "NSDictionary+Kolyvan.h"
+#import "NSArray+Kolyvan.h"
 #import "NSDate+Kolyvan.h"
 #import "NSString+Kolyvan.h"
 #import "SamLibUser.h"
 #import "JSONKit.h"
 #import "GoogleSearch.h"
 #import "SamLibCacheNames.h"
+#import "SamLibSearch.h"
 #import "DDLog.h"
 
 extern int ddLogLevel;
@@ -536,58 +538,40 @@ void test_vote()
 }
 
 
-void test_google_search() 
+void test_search() 
 {    
-    // "site:samlib.ru/i intitle:Иванов inurl:indexdate.shtml"
-    // "site:samlib.ru/k inurl:indexdate.shtml"
-    //
-    /*
     __block BOOL finished = NO;
-    googleSearch(@"site:samlib.ru/s intitle:Смирнов intitle:Василий inurl:indexdate.shtml", 
-                 ^(GoogleSearchStatus status, NSString *details, NSArray *results) {
-                     
-                     DDLogCInfo(@"\n%ld %@ %ld\n", status,details, results.count);
-                     
-                     if (status == GoogleSearchStatusSuccess) {
-                         
-                         NSMutableSet *ms = [NSMutableSet set];
-                         
-                         for (NSDictionary * dict in results) {
-                             
-                             NSString * url =[dict get:@"url"];
-                             
-                             if ([url hasPrefix:@"http://samlib.ru/k/"])
-                                 url = [url drop: @"http://samlib.ru/k/".length];
-                             
-                             if ([url hasSuffix:@"/indexdate.shtml"])
-                                 url = [url take: url.length - @"/indexdate.shtml".length];
-                             
-                             [ms addObject:url];
-                             DDLogCInfo(@"%@", url);
-                         }
-                         
-                         DDLogCInfo(@"total: %ld\n%@", ms.count, ms);
-                         
-                         saveObject(results, [@"~/tmp/googlesearch.json" stringByExpandingTildeInPath]); 
-                     }
-                     
-                     finished = YES;
-                     
-                 });
     
+    [SamLibSearch searchAuthor: @"Смирнов" 
+                        byName: YES
+                          flag: FuzzySearchFlagAll
+                         block:^(NSArray *result) {
+                             
+                             if (result.nonEmpty) {
+                                 
+                                 for (NSDictionary *d in result)
+                                     KxConsole.printlnf(@"%@ %@ %@ %@", 
+                                                        [d get:@"path"], 
+                                                        [d get:@"name"],
+                                                        [d get:@"distance"],
+                                                        [d get:@"from"]);    
+                             } else {                                   
+                                 
+                                 KxConsole.println(@"finish searching");                                       
+                                 finished = YES;
+                             }
+                         }];
     
     KxUtils.waitRunLoop(60, 0.5, ^() {        
         return finished;
     });
-    */
 }
 
 
 void test_cache()
 {   
     SamLibCacheNames *cache = [[SamLibCacheNames alloc] init];
-    
-    /*
+        
     [cache addPath:@"ivanov"    withName:@"Иванов" withInfo:@"12345"];
     [cache addPath:@"ivanov_s"  withName:@"Иванов Сергей" withInfo:@"ффффффф"];    
     [cache addPath:@"smirnov"   withName:@"Смирнов" withInfo:@"XXXXX"];
@@ -598,11 +582,11 @@ void test_cache()
     [batch addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"Foo Bar", @"name", @"foo", @"path", nil]];
     [batch addObject:[NSDictionary dictionaryWithObjectsAndKeys:@"Moo Zoo", @"name", @"moo", @"path", nil]];        
     [cache addBatch:batch];
-    */
     
-    //[cache each:^(NSString *path, NSString *name, NSString *info) {       
-    //    KxConsole.printlnf(@"%@|%@|%@", path, name, info);        
-    //}];
+    
+    [cache each:^(NSString *path, NSString *name, NSString *info) {       
+        KxConsole.printlnf(@"%@|%@|%@", path, name, info);        
+    }];
         
     //for (NSDictionary *d in [cache selectByName:@"Смирнов%"])
     //    KxConsole.printlnf(@"%@ %@ %@", [d get:@"path"], [d get:@"name"], [d get:@"info"]);
@@ -612,7 +596,6 @@ void test_cache()
     for (NSDictionary *d in [cache selectBySection:'s'])
         KxConsole.printlnf(@"%@ %@ %@", [d get:@"path"], [d get:@"name"], [d get:@"info"]);
 
-    
     [cache close];
     
 }

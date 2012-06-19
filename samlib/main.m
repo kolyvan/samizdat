@@ -32,43 +32,12 @@
 
 #import "test.h"
 
-#import <wctype.h>
-#import <xlocale.h>
-
 //static int ddLogLevel = LOG_LEVEL_WARN;
 //static int ddLogLevel = LOG_LEVEL_VERBOSE;
 int ddLogLevel = LOG_LEVEL_INFO;
 
 void test() 
-{  
-    __block BOOL finished = NO;
-   
-    // FuzzySearchFlagCache|FuzzySearchFlagGoogle|FuzzySearchFlagSamlib
-    
-    [SamLibSearch searchAuthor: @"Смирнов" 
-                        byName: YES
-                          flag: FuzzySearchFlagGoogle
-                         block:^(NSArray *result) {
-                             
-                             if (result.nonEmpty) {
-                                 
-                                 for (NSDictionary *d in result)
-                                     KxConsole.printlnf(@"%@ %@ %@ %@", 
-                                                        [d get:@"path"], 
-                                                        [d get:@"name"],
-                                                        [d get:@"distance"],
-                                                        [d get:@"from"]);    
-                             } else {                                   
-                                 
-                                 KxConsole.println(@"finish searching");                                       
-                                 finished = YES;
-                             }
-                         }];
-    
-    KxUtils.waitRunLoop(60, 0.5, ^() {        
-        return finished;
-    });
-    
+{   
 }
 
 
@@ -120,6 +89,7 @@ int main(int argc, const char * argv[])
         //test_fetch_authors_list();
         //test_vote();       
         //test_cache();
+        //test_search();                
         
         SamLibAgent.cleanup();        
         

@@ -5,6 +5,10 @@
 //  Created by Kolyvan on 19.06.12.
 //  Copyright (c) 2012 Konstantin Boukreev. All rights reserved.
 //
+//  https://github.com/kolyvan/samizdat
+//  this file is part of Samizdat
+//  Samizdat is licenced under the LGPL v3, see lgpl-3.0.txt
+
 
 #import "SearchAuthorViewController.h"
 
@@ -28,12 +32,10 @@
     IBOutlet NSSearchField * _searchField;
     IBOutlet NSTableView * _tableView;
     IBOutlet NSScrollView *_scrollView;
-
     NSArray * _result;
     SamLibSearch *_search;
     BOOL _byName;
 }
-
 @end
 
 @implementation SearchAuthorViewController
@@ -81,7 +83,6 @@
     //[self cancelSearch];
 }
 
-
 - (IBAction) cancel: (id) sender
 {    
     [_search cancel];
@@ -92,7 +93,7 @@
 - (void) addSearchResult: (NSArray *) found
 {
     // union and sort
-    NSArray *t = [SamLibSearch unionLeft:found andRight:_result];    
+    NSArray *t = [SamLibSearch unionArray:found withArray:_result];    
     
     KX_RELEASE(_result);
     _result = KX_RETAIN([SamLibSearch sortByDistance:t]);
@@ -204,8 +205,6 @@
 {
     NSInteger i = [sender tag];
     NSDictionary *dict = [_result objectAtIndex:i];
-    
-    //NSLog(@"select %@", dict);
     
     SamLibModel *model = [SamLibModel shared];
     

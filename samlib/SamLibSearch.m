@@ -5,6 +5,10 @@
 //  Created by Kolyvan on 18.06.12.
 //  Copyright (c) 2012 Konstantin Boukreev. All rights reserved.
 //
+//  https://github.com/kolyvan/samizdat
+//  this file is part of Samizdat
+//  Samizdat is licenced under the LGPL v3, see lgpl-3.0.txt
+
 
 #import "SamLibSearch.h"
 #import "KxArc.h"
@@ -251,7 +255,7 @@ static NSString * mkPathFromName(NSString *name)
         like = [_cacheNames selectByPath:s];    
         
     NSArray *section = [_cacheNames selectBySection:sectionChar];
-    NSArray *result = [self->isa unionLeft:section andRight: like]; 
+    NSArray *result = [self->isa unionArray:section withArray: like]; 
     DDLogInfo(@"loaded from cache: %d", result.count);    
     if (result.nonEmpty)
         return searchAuthor(pattern, key, result);    
@@ -277,10 +281,6 @@ static NSString * mkPathFromName(NSString *name)
     }
     else
         query = KxUtils.format(@"site:samlib.ru/%c inurl:indexdate.shtml", section);
-    
-
-//    googleSearch(query, 
-//                 ^(GoogleSearchStatus status, NSString *details, NSArray *googleResult) {
     
     _googleSearch = [GoogleSearch search: query 
                                    block: ^(GoogleSearchStatus status, NSString *details, NSArray *googleResult) {
@@ -366,12 +366,10 @@ static NSString * mkPathFromName(NSString *name)
             
         } else {
 
-            block(nil);              
-                  
+            block(nil);
         }
 
         KX_RELEASE(author);
-    
     }];
 }
 
@@ -525,8 +523,8 @@ static NSString * mkPathFromName(NSString *name)
     }];
 }
 
-+ (NSArray *) unionLeft: (NSArray *) l
-               andRight: (NSArray *) r
++ (NSArray *) unionArray: (NSArray *) l
+               withArray: (NSArray *) r
 {    
     NSMutableArray *result = [NSMutableArray array];
     
