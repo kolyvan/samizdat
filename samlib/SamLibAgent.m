@@ -111,23 +111,62 @@ static void saveSettings()
     _settings(YES);
 }
 
+
+static id getSettings(NSString *key, id defaultValue)
+{
+    return [settings() get:key orElse:defaultValue];
+}
+
+static void setSettings(NSString *key, id value,  id defaultValue)
+{
+    id current = getSettings(key, defaultValue);
+    
+    if (![current isEqualTo: value]) {
+        
+        if (!value ||
+            [value isEqualTo: defaultValue]) {
+            
+            [settings() removeObjectForKey:key];
+        }
+        else {
+           
+            [settings() update: key value: value];
+        }    
+    };
+}
+
 static BOOL settingsBool(NSString *key, BOOL defaultValue)
 {
-    NSNumber *number = [settings() get:key];
-    return number ? [number boolValue] : defaultValue;
+    return [getSettings(key, [NSNumber numberWithBool:defaultValue]) boolValue];
 }
 
 static void setSettingsBool(NSString *key, BOOL value, BOOL defaultValue)
 {
-    BOOL current = settingsBool(key, defaultValue);
-    
-    if (current != value) {
-        
-        if (value == defaultValue)
-            [settings() removeObjectForKey:key];
-        else
-            [settings() update:key value:[NSNumber numberWithBool:value]];        
-    };
+    setSettings(key, 
+                [NSNumber numberWithBool:value], 
+                [NSNumber numberWithBool:defaultValue]);
+}
+
+static NSInteger settingsInt(NSString *key, NSInteger defaultValue)
+{
+    return [getSettings(key, [NSNumber numberWithInteger:defaultValue]) integerValue];
+}
+
+static void setSettingsInt(NSString *key, NSInteger value, NSInteger defaultValue)
+{
+    setSettings(key, 
+                [NSNumber numberWithInteger:value], 
+                [NSNumber numberWithInteger:defaultValue]);
+}
+
+static NSString * settingsString(NSString *key,  NSString * defaultValue)
+{
+    return getSettings(key, defaultValue);
+}
+
+static void setSettingsString(NSString *key, NSString *value, NSString *defaultValue)
+{
+    setSettings(key, value, defaultValue);
 }
 
 //#pragma mark - fetching
@@ -326,6 +365,11 @@ SamLibAgent_t SamLibAgent = {
     saveSettings,
     settingsBool,
     setSettingsBool,
+    
+    settingsInt,
+    setSettingsInt,
+    settingsString,
+    setSettingsString,
     
     fetchData,
     postData,

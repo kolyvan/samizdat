@@ -29,7 +29,15 @@
 
 extern int ddLogLevel;
 
-static NSInteger MAX_COMMENTS = 50;
+static NSInteger maxCommens()
+{
+    static NSInteger value;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        value = SamLibAgent.settingsInt(@"comments.maxsize", 100);
+    });
+    return value;
+}
 
 static NSDate* mkDateFromComment(NSString *dt)
 {
@@ -281,39 +289,15 @@ static NSDate* mkDateFromComment(NSString *dt)
         }
         
         NSArray *final;
-        if (ma.count < MAX_COMMENTS) {
+        if (ma.count < maxCommens()) {
             
             final = ma;
             
         } else {
         
-            // two-stage sorting, in reverse order
-            
-            // 1. sort by timestamp
-            // allow lift edited and deleted comments
-            /*
-            final = [ma sortWith:^(id obj1, id obj2) {
-                SamLibComment *l = obj1, *r = obj2;
-                return [r.timestamp compare:l.timestamp]; 
-            }];
-            
-            final = [final take: MAX_COMMENTS]; //] MIN(final.count, MAX_COMMENTS)]; 
-             */
-            final = [ma take: MAX_COMMENTS]; //] MIN(final.count, MAX_COMMENTS)]; 
+            final = [ma take: maxCommens()];
         }
-        
-        /*
-        // 2. sort newest comments by number
-        final = [final sortWith:^NSComparisonResult(id obj1, id obj2) {
-            SamLibComment *l = obj1, *r = obj2;        
-            if (r.number < l.number)
-                return NSOrderedAscending;
-            if (r.number > l.number)            
-                return NSOrderedDescending;
-            return NSOrderedSame;
-        }];
-        */ 
-                
+                        
         // determine and count new
         _numberOfNew = 0;        
         for (SamLibComment * p in final) {
@@ -381,7 +365,7 @@ static NSDate* mkDateFromComment(NSString *dt)
                                       [buffer appendAll: result];
                                       
                                       if (!parameters && // parameters != nil on deleteComment call                                          
-                                          buffer.count < MAX_COMMENTS)
+                                          buffer.count < maxCommens())
                                       {                                           
                                           BOOL isContinue;
                                           
