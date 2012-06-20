@@ -110,6 +110,9 @@ extern int ddLogLevel;
 
 - (void) deleteAuthor: (SamLibAuthor *) author
 {
+    for (SamLibText *text in author.texts)
+        [text removeTextFiles:YES andComments:YES];
+        
     SamLibAgent.removeAuthor(author.path); 
     
     NSMutableArray *ma = [_authors mutableCopy];
