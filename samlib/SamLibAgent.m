@@ -11,18 +11,15 @@
 
 
 #import "SamLibAgent.h"
-#import "SamLibAuthor.h"
+#import "SamLibStorage.h"
 #import "KxUtils.h"
 #import "KxArc.h"
 #import "KxMacros.h"
-#import "NSArray+Kolyvan.h"
-#import "NSString+Kolyvan.h"
 #import "NSDictionary+Kolyvan.h"
 #import "NSString+Kolyvan.h"
 #import "AFHTTPClient+Kolyvan.h"
 #import "AFHTTPRequestOperation.h"
 #import "DDLog.h"
-#import "JSONKit.h"
 
 extern int ddLogLevel;
 
@@ -44,55 +41,6 @@ static NSString * samlibURL()
     }       
     
     return url;
-}
-
-static NSString * authorsPath()
-{
-    static NSString * path = nil;
-    
-    if (!path) {
-            
-#ifdef _DEVELOPMENT_MODE_
-        path = [@"~/tmp/samlib/authors/" stringByExpandingTildeInPath];
-#else
-        path = KX_RETAIN([KxUtils.privateDataPath() stringByAppendingPathComponent: @"authors"]);
-#endif              
-        KxUtils.ensureDirectory(path);        
-    }
-    
-    return path;
-}
-
-static NSString * textsPath()
-{
-    static NSString * path = nil;
-    
-    if (!path) {
-#ifdef _DEVELOPMENT_MODE_                  
-        path = [@"~/tmp/samlib/texts/" stringByExpandingTildeInPath];
-#else
-        path = KX_RETAIN([KxUtils.cacheDataPath() stringByAppendingPathComponent: @"texts"]);
-#endif  
-        KxUtils.ensureDirectory(path);                
-    }
-    
-    return path;
-}
-
-static NSString * commentsPath()
-{
-    static NSString * path = nil;
-    
-    if (!path) {
-#ifdef _DEVELOPMENT_MODE_            
-        path = [@"~/tmp/samlib/comments/" stringByExpandingTildeInPath];
-#else
-        path = KX_RETAIN([KxUtils.cacheDataPath() stringByAppendingPathComponent: @"comments"]);
-#endif      
-        KxUtils.ensureDirectory(path);                
-    }
-    
-    return path;
 }
 
 static NSString * settingsPath()
@@ -126,7 +74,7 @@ static NSMutableDictionary * _settings(BOOL save)
                 
                 KX_RELEASE(digest);
                 digest = KX_RETAIN(md5);
-                saveDictionary(dict, settingsPath()); 
+                SamLibStorage.saveDictionary(dict, settingsPath()); 
                 
                 DDLogCVerbose(@"save settings: %ld", dict.count);
             }
@@ -137,7 +85,7 @@ static NSMutableDictionary * _settings(BOOL save)
         if (!dict) {
                         
             NSMutableDictionary *d;
-            d = (NSMutableDictionary *)loadDictionaryEx(settingsPath(), NO);
+            d = (NSMutableDictionary *)SamLibStorage.loadDictionaryEx(settingsPath(), NO);
             
             if (d) {
                 digest = KX_RETAIN([[d description] md5]);
@@ -161,6 +109,25 @@ static NSMutableDictionary * settings()
 static void saveSettings()
 {
     _settings(YES);
+}
+
+static BOOL settingsBool(NSString *key, BOOL defaultValue)
+{
+    NSNumber *number = [settings() get:key];
+    return number ? [number boolValue] : defaultValue;
+}
+
+static void setSettingsBool(NSString *key, BOOL value, BOOL defaultValue)
+{
+    BOOL current = settingsBool(key, defaultValue);
+    
+    if (current != value) {
+        
+        if (value == defaultValue)
+            [settings() removeObjectForKey:key];
+        else
+            [settings() update:key value:[NSNumber numberWithBool:value]];        
+    };
 }
 
 //#pragma mark - fetching
@@ -354,11 +321,11 @@ SamLibAgent_t SamLibAgent = {
     cleanup,
     
     samlibURL,
-    authorsPath,
-    textsPath,
-    commentsPath,  
+    
     settings,
     saveSettings,
+    settingsBool,
+    setSettingsBool,
     
     fetchData,
     postData,

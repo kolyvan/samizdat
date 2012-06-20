@@ -24,12 +24,12 @@ typedef struct {
     void (*cleanup)();
         
     NSString * (*samlibURL)();        
-    NSString * (*authorsPath)();
-    NSString * (*textsPath)();    
-    NSString * (*commentsPath)();
     
     NSMutableDictionary * (*settings)();
     void (*saveSettings)();
+    
+    BOOL (*settingsBool)(NSString *key, BOOL defaultValue);
+    void (*setSettingsBool)(NSString *key, BOOL value, BOOL defaultValue);
    
     void (*fetchData)(NSString *path, 
                       NSString *lastModified, 

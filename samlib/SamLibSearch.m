@@ -25,6 +25,7 @@
 #import "SamLibCacheNames.h"
 #import "GoogleSearch.h"
 #import "DDLog.h"
+#import "SamLibStorage.h"
 
 extern int ddLogLevel;
 
@@ -165,7 +166,7 @@ static NSString * mkPathFromName(NSString *name)
 
 + (NSString *) historyPath
 {
-    return [KxUtils.cacheDataPath() stringByAppendingPathComponent: @"searchlog.json"];
+    return [SamLibStorage.namesPath() stringByAppendingPathComponent: @"searchlog.json"];
 }
 
 - (id) init
@@ -174,7 +175,7 @@ static NSString * mkPathFromName(NSString *name)
     if (self) {
         _cacheNames = [[SamLibCacheNames alloc] init];
         
-        _history = (NSMutableDictionary *)loadDictionaryEx([self->isa historyPath], NO);
+        _history = (NSMutableDictionary *)SamLibStorage.loadDictionaryEx([self->isa historyPath], NO);
         if (!_history)            
             _history = [NSMutableDictionary dictionary];        
         _historyDigest = [_history.description md5];
@@ -191,7 +192,7 @@ static NSString * mkPathFromName(NSString *name)
     if (![_historyDigest isEqualToString: [_history.description md5]]) {
 
         DDLogInfo(@"save search history");
-        saveDictionary(_history, [self->isa historyPath]);        
+        SamLibStorage.saveDictionary(_history, [self->isa historyPath]);        
     }
 
     KX_RELEASE(_history);

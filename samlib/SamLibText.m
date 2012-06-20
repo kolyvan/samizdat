@@ -22,6 +22,7 @@
 #define NSNUMBER_SHORTHAND
 #import "KxMacros.h"
 #import "KxUtils.h"
+#import "SamLibStorage.h"
 
 #ifndef __IPHONE_OS_VERSION_MAX_ALLOWED
 #import <DiffMatchPatch/DiffMatchPatch.h>
@@ -501,31 +502,31 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 
 - (NSString *) htmlPath
 {   
-    NSString *s = [SamLibAgent.textsPath() stringByAppendingPathComponent:self.key];
+    NSString *s = [SamLibStorage.textsPath() stringByAppendingPathComponent:self.key];
     return [s stringByAppendingPathExtension:@"html"];
 }
 
 - (NSString *) diffPath
 {
-    NSString *s = [SamLibAgent.textsPath() stringByAppendingPathComponent:self.key];
+    NSString *s = [SamLibStorage.textsPath() stringByAppendingPathComponent:self.key];
     return [s stringByAppendingPathExtension:@"diff.html"];
 }
 
 - (NSString *) rawPath
 {
-    NSString *s = [SamLibAgent.textsPath() stringByAppendingPathComponent:self.key];
+    NSString *s = [SamLibStorage.textsPath() stringByAppendingPathComponent:self.key];
     return [s stringByAppendingPathExtension:@"raw"];    
 }
 
 - (NSString *) oldPath
 {
-    NSString *s = [SamLibAgent.textsPath() stringByAppendingPathComponent:self.key];
+    NSString *s = [SamLibStorage.textsPath() stringByAppendingPathComponent:self.key];
     return [s stringByAppendingPathExtension:@"old"];    
 }
 
 - (NSString *) commentsPath
 {
-    NSString *s = [SamLibAgent.commentsPath() stringByAppendingPathComponent: self.key];
+    NSString *s = [SamLibStorage.commentsPath() stringByAppendingPathComponent: self.key];
     return [s stringByAppendingPathExtension: @"comments"];
 }
 

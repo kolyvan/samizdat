@@ -158,6 +158,8 @@
 		87F4C81A158EDF7600ABB48A /* SamLibSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F4C819158EDF7600ABB48A /* SamLibSearch.m */; };
 		87F58BB1155B726500FC839F /* SamLibComments.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F58BB0155B726500FC839F /* SamLibComments.m */; };
 		87F58BC4155BD03C00FC839F /* SamLibUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F58BC3155BD03C00FC839F /* SamLibUser.m */; };
+		87F75D141591C5BF0046DA46 /* SamLibStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F75D131591C5BF0046DA46 /* SamLibStorage.m */; };
+		87F75D151591C5BF0046DA46 /* SamLibStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F75D131591C5BF0046DA46 /* SamLibStorage.m */; };
 		87FA5A2E1560BB6800E8DDBD /* TextViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87FA5A2C1560BB6800E8DDBD /* TextViewController.m */; };
 		87FA5A2F1560BB6800E8DDBD /* TextView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 87FA5A2D1560BB6800E8DDBD /* TextView.xib */; };
 		87FA5A321560BD9800E8DDBD /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87FA5A311560BD9800E8DDBD /* WebKit.framework */; };
@@ -386,6 +388,8 @@
 		87F58BB0155B726500FC839F /* SamLibComments.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SamLibComments.m; sourceTree = "<group>"; };
 		87F58BC2155BD03C00FC839F /* SamLibUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SamLibUser.h; sourceTree = "<group>"; };
 		87F58BC3155BD03C00FC839F /* SamLibUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SamLibUser.m; sourceTree = "<group>"; };
+		87F75D121591C5BF0046DA46 /* SamLibStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SamLibStorage.h; sourceTree = "<group>"; };
+		87F75D131591C5BF0046DA46 /* SamLibStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SamLibStorage.m; sourceTree = "<group>"; };
 		87FA5A2B1560BB6800E8DDBD /* TextViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextViewController.h; sourceTree = "<group>"; };
 		87FA5A2C1560BB6800E8DDBD /* TextViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextViewController.m; sourceTree = "<group>"; };
 		87FA5A2D1560BB6800E8DDBD /* TextView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextView.xib; sourceTree = "<group>"; };
@@ -664,6 +668,8 @@
 				87F2F8A9158DD35300AF0BF1 /* SamLibCacheNames.m */,
 				87F4C818158EDF7600ABB48A /* SamLibSearch.h */,
 				87F4C819158EDF7600ABB48A /* SamLibSearch.m */,
+				87F75D121591C5BF0046DA46 /* SamLibStorage.h */,
+				87F75D131591C5BF0046DA46 /* SamLibStorage.m */,
 			);
 			path = samlib;
 			sourceTree = "<group>";
@@ -940,6 +946,7 @@
 				8796C2E3158E28EB00331767 /* FMResultSet.m in Sources */,
 				87F20201159023690083F879 /* SearchAuthorViewController.m in Sources */,
 				87F20204159041C10083F879 /* SamLibSearch.m in Sources */,
+				87F75D151591C5BF0046DA46 /* SamLibStorage.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -986,6 +993,7 @@
 				87F2F89D158DC58C00AF0BF1 /* FMResultSet.m in Sources */,
 				87F2F8AA158DD35300AF0BF1 /* SamLibCacheNames.m in Sources */,
 				87F4C81A158EDF7600ABB48A /* SamLibSearch.m in Sources */,
+				87F75D141591C5BF0046DA46 /* SamLibStorage.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

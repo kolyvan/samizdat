@@ -22,6 +22,7 @@
 #import "DDLog.h"
 #import "JSONKit.h"
 #import "KxTuple2.h"
+#import "SamLibStorage.h"
 
 extern int ddLogLevel;
 
@@ -343,8 +344,8 @@ extern int ddLogLevel;
 
 - (void) save: (NSString *) folder
 {
-    if (saveDictionary([self toDictionary], 
-                       [folder stringByAppendingPathComponent:_path])) {
+    if (SamLibStorage.saveDictionary([self toDictionary], 
+                                     [folder stringByAppendingPathComponent:_path])) {
  
  
         KX_RELEASE(_hash);
@@ -354,7 +355,7 @@ extern int ddLogLevel;
 
 + (id) fromFile: (NSString *) filepath
 {
-    NSDictionary *dict = loadDictionary(filepath);
+    NSDictionary *dict = SamLibStorage.loadDictionary(filepath);
     if (dict) {    
         NSString *path = [filepath lastPathComponent];        
         if (dict.nonEmpty)

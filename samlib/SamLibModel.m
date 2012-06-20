@@ -19,6 +19,7 @@
 #import "SamLibAuthor.h"
 #import "SamLibText.h"
 #import "SamLibComments.h"
+#import "SamLibStorage.h"
 #import "DDLog.h"
 
 extern int ddLogLevel;
@@ -81,13 +82,13 @@ extern int ddLogLevel;
 {
     for (SamLibAuthor * author in _authors) {
         if (author.isDirty) {
-            [author save: SamLibAgent.authorsPath()];
+            [author save: SamLibStorage.authorsPath()];
             DDLogInfo(@"save author: %@", author.path);
         }
         for (SamLibText *text in author.texts) {
             SamLibComments *comments = [text commentsObject:NO];
             if (comments && comments.isDirty) {
-                [comments save: SamLibAgent.commentsPath()];
+                [comments save: SamLibStorage.commentsPath()];
                 DDLogInfo(@"save comments: %@", text.key);
             }
         }
@@ -96,7 +97,7 @@ extern int ddLogLevel;
 
 - (void) addAuthor: (SamLibAuthor *) author
 {    
-    [author save:SamLibAgent.authorsPath()];
+    [author save:SamLibStorage.authorsPath()];
 
     NSMutableArray *a = [_authors mutableCopy];
     [a push: author];    
@@ -113,7 +114,7 @@ extern int ddLogLevel;
 
     // remove file
     NSError * error;    
-    NSString * fullpath = [SamLibAgent.authorsPath() stringByAppendingPathComponent:author.path];
+    NSString * fullpath = [SamLibStorage.authorsPath() stringByAppendingPathComponent:author.path];
     NSFileManager *fm = [[NSFileManager alloc] init];
     if (![fm removeItemAtPath:fullpath error:&error]) {
         DDLogCError(locString(@"file error: %@"), 
@@ -161,41 +162,21 @@ extern int ddLogLevel;
 + (NSArray*) loadAuthors
 {    
     NSMutableArray * authors = [NSMutableArray array];
-    NSFileManager *fm = [[NSFileManager alloc] init];
+        
+    SamLibStorage.enumerateFolder(SamLibStorage.authorsPath(), 
+                                  ^(NSFileManager *fm, NSString *fullpath, NSDictionary *attr){
+                                      
+                                      SamLibAuthor *author = [SamLibAuthor fromFile: fullpath];
+                                      
+                                      if (author) {
+                                          DDLogVerbose(@"loaded author: %@", author.path);
+                                          [authors push: author];
+                                      }
+                                      else {
+                                          DDLogWarn(@"unable load author: %@", [fullpath lastPathComponent]);                        
+                                      }   
+    });
     
-    NSError *error;
-    NSArray * files = [fm contentsOfDirectoryAtPath:SamLibAgent.authorsPath() 
-                                              error:&error];
-    if (files) {
-        
-        for (NSString *filename in files) {
-            
-            if (filename.first != '.') {
-                
-                NSString * fullpath = [SamLibAgent.authorsPath() stringByAppendingPathComponent:filename];
-                NSDictionary *attr = [fm attributesOfItemAtPath:fullpath error:nil];
-                
-                if ([[attr get:NSFileType] isEqual: NSFileTypeRegular]) {
-                    
-                    SamLibAuthor *author = [SamLibAuthor fromFile: fullpath];
-                    if (author) {
-                        DDLogCVerbose(@"loaded author: %@", author.path);
-                        [authors push: author];
-                    }
-                    else {
-                        DDLogCWarn(@"unable load author: %@", filename);                        
-                    }                     
-                }
-            }
-        }
-        
-        
-    } else {
-        DDLogCError(locString(@"file error: %@"), 
-                    KxUtils.completeErrorMessage(error));        
-    }
-    
-    KX_RELEASE(fm);
     return authors;
 }
 

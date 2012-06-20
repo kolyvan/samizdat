@@ -26,6 +26,7 @@
 #import "GoogleSearch.h"
 #import "SamLibCacheNames.h"
 #import "SamLibSearch.h"
+#import "SamLibStorage.h"
 #import "DDLog.h"
 
 extern int ddLogLevel;
@@ -207,7 +208,7 @@ void test_fetch_author()
             KxConsole.println(@"updated");    
             if (author.isDirty) {
                 KxConsole.println(@"save  ...");    
-                [author save:SamLibAgent.authorsPath()];
+                [author save:SamLibStorage.authorsPath()];
             }
         } else if (status == SamLibStatusNotModifed) {
             KxConsole.println(@"not modifed");        
@@ -229,7 +230,7 @@ void test_fetch_textdata2()
 {
     __block BOOL finished = NO;
     //SamLibAuthor *author = [[SamLibAuthor alloc] initWithPath: @"iwanow475_i_i"];
-    NSString *filepath = [SamLibAgent.authorsPath() stringByAppendingPathComponent: @"iwanow475_i_i"];
+    NSString *filepath = [SamLibStorage.authorsPath() stringByAppendingPathComponent: @"iwanow475_i_i"];
     SamLibAuthor *author = [SamLibAuthor fromFile: filepath];
     
     SamLibText *text = [author.texts objectAtIndex:1];
@@ -244,7 +245,7 @@ void test_fetch_textdata2()
             KxConsole.printlnf(@"make diff: %@", td.diffResult);
             
             //if (td.diffResult.length > 0)
-            [author save:SamLibAgent.authorsPath()];
+            [author save:SamLibStorage.authorsPath()];
             
             
         } else if (status == SamLibStatusNotModifed) {
@@ -309,11 +310,11 @@ void test_fetch_comments2()
 {
     __block BOOL finished = NO;
 
-    NSString *filepath = [SamLibAgent.authorsPath() stringByAppendingPathComponent: @"iwanow475_i_i"];
+    NSString *filepath = [SamLibStorage.authorsPath() stringByAppendingPathComponent: @"iwanow475_i_i"];
     SamLibAuthor *author = [SamLibAuthor fromFile: filepath];
     SamLibText *text = [author.texts objectAtIndex:1];
     
-    filepath = [SamLibAgent.commentsPath() stringByAppendingPathComponent: text.key];
+    filepath = [SamLibStorage.commentsPath() stringByAppendingPathComponent: text.key];
     filepath = [filepath stringByAppendingPathExtension: @"comments"];
     SamLibComments *comments = [SamLibComments fromFile: filepath withText:text]; 
     
@@ -324,7 +325,7 @@ void test_fetch_comments2()
             
             KxConsole.printlnf(@"fetched new comments: %ld", comments.numberOfNew);                        
             if (comments.isDirty)
-                [comments save:SamLibAgent.commentsPath()];
+                [comments save:SamLibStorage.commentsPath()];
             
         } else if (status == SamLibStatusNotModifed) {
             
@@ -348,11 +349,11 @@ void test_post_comment()
 {
     __block BOOL finished = NO;
     
-    NSString *filepath = [SamLibAgent.authorsPath() stringByAppendingPathComponent: @"iwanow475_i_i"];
+    NSString *filepath = [SamLibStorage.authorsPath() stringByAppendingPathComponent: @"iwanow475_i_i"];
     SamLibAuthor *author = [SamLibAuthor fromFile: filepath];
     SamLibText *text = [author.texts objectAtIndex:1];
     
-    filepath = [SamLibAgent.commentsPath() stringByAppendingPathComponent: text.key];
+    filepath = [SamLibStorage.commentsPath() stringByAppendingPathComponent: text.key];
     filepath = [filepath stringByAppendingPathExtension: @"comments"];
     SamLibComments *comments = [SamLibComments fromFile: filepath withText:text]; 
     
@@ -366,7 +367,7 @@ void test_post_comment()
             
             KxConsole.printlnf(@"fetched new comments: %ld", comments.numberOfNew);                        
             if (comments.isDirty)
-                [comments save:SamLibAgent.commentsPath()];
+                [comments save:SamLibStorage.commentsPath()];
             
         } else if (status == SamLibStatusNotModifed) {
             
@@ -429,11 +430,11 @@ void test_post_comment_with_login()
     __block BOOL finished = NO;
     
     
-    NSString *filepath = [SamLibAgent.authorsPath() stringByAppendingPathComponent: @"iwanow475_i_i"];
+    NSString *filepath = [SamLibStorage.authorsPath() stringByAppendingPathComponent: @"iwanow475_i_i"];
     SamLibAuthor *author = [SamLibAuthor fromFile: filepath];
     SamLibText *text = [author.texts objectAtIndex:1];
     
-    filepath = [SamLibAgent.commentsPath() stringByAppendingPathComponent: text.key];
+    filepath = [SamLibStorage.commentsPath() stringByAppendingPathComponent: text.key];
     filepath = [filepath stringByAppendingPathExtension: @"comments"];
     SamLibComments *comments = [SamLibComments fromFile: filepath withText:text]; 
         
@@ -444,7 +445,7 @@ void test_post_comment_with_login()
                      
                      KxConsole.printlnf(@"fetched new comments: %ld", comments.numberOfNew);                        
                      if (comments.isDirty)
-                         [comments save:SamLibAgent.commentsPath()];
+                         [comments save:SamLibStorage.commentsPath()];
                      
                  } else if (status == SamLibStatusNotModifed) {
                      
@@ -518,7 +519,7 @@ void test_vote()
      __block BOOL finished = NO;
     
     // dmitriew_p
-    NSString *filepath = [SamLibAgent.authorsPath() stringByAppendingPathComponent: @"iwanow475_i_i"];
+    NSString *filepath = [SamLibStorage.authorsPath() stringByAppendingPathComponent: @"iwanow475_i_i"];
     SamLibAuthor *author = [SamLibAuthor fromFile: filepath];
     SamLibText *text = [author.texts objectAtIndex:0];
     

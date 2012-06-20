@@ -25,6 +25,7 @@
 #import "SamLibAgent.h"
 #import "SamLibParser.h"
 #import "SamLibUser.h"
+#import "SamLibStorage.h"
 
 extern int ddLogLevel;
 
@@ -466,7 +467,7 @@ static NSDate* mkDateFromComment(NSString *dt)
     if (!r)
         return KX_AUTORELEASE([[SamLibComments alloc] initWithText:text]);
         
-    NSDictionary *dict = loadDictionary(filepath);
+    NSDictionary *dict = SamLibStorage.loadDictionary(filepath);
     if (dict) {    
         if (dict.nonEmpty)
             return [SamLibComments fromDictionary:dict withText:text];
@@ -477,8 +478,8 @@ static NSDate* mkDateFromComment(NSString *dt)
 
 - (void) save: (NSString *)folder
 {
-    if (saveDictionary([self toDictionary], 
-                       [folder stringByAppendingPathComponent: self.filename])) {
+    if (SamLibStorage.saveDictionary([self toDictionary], 
+                                     [folder stringByAppendingPathComponent: self.filename])) {
         _isDirty = NO;
     }
 }
