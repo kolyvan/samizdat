@@ -598,4 +598,6 @@ void test_cache()
 
     [cache close];
     
+    KX_RELEASE(cache);
+    
 }

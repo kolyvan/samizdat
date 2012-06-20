@@ -9,7 +9,6 @@
 //  this file is part of Samizdat
 //  Samizdat is licenced under the LGPL v3, see lgpl-3.0.txt
 
-
 #import "SamLibText.h"
 #import "SamLibAuthor.h"
 #import "SamLibAgent.h"
@@ -78,20 +77,20 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 
 @interface SamLibText()
 
-@property (readwrite, nonatomic) NSString * copyright;
-@property (readwrite, nonatomic) NSString * title;
-@property (readwrite, nonatomic) NSString * size;
-@property (readwrite, nonatomic) NSString * comments;
-@property (readwrite, nonatomic) NSString * note;
-@property (readwrite, nonatomic) NSString * genre;
-@property (readwrite, nonatomic) NSString * group;
-@property (readwrite, nonatomic) NSString * type;
-@property (readwrite, nonatomic) NSString * rating;
-@property (readwrite, nonatomic) NSString * flagNew;
-@property (readwrite, nonatomic) NSString * lastModified;
-@property (readwrite, nonatomic) NSString * diffResult;
-@property (readwrite, nonatomic) NSDate * filetime;
-@property (readwrite, nonatomic) NSString * dateModified;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSString * copyright;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSString * title;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSString * size;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSString * comments;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSString * note;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSString * genre;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSString * group;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSString * type;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSString * rating;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSString * flagNew;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSString * lastModified;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSString * diffResult;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSDate * filetime;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSString * dateModified;
 
 - (void) updateFromDictionary: (NSDictionary *) dict
                    setChanged: (BOOL) setChanged

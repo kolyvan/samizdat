@@ -45,11 +45,7 @@ typedef struct {
                      BOOL redirect,                         
                      AsyncResultBlock block);
     
-    void (*cancelAll)();    
-       
-    NSArray* (*loadAuthors)();
-    void (*removeAuthor)(NSString *path);
-    
+    void (*cancelAll)();
     
 } SamLibAgent_t;
 

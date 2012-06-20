@@ -136,8 +136,8 @@ static NSDate* mkDateFromComment(NSString *dt)
 ////
 
 @interface SamLibComments()
-@property (readwrite, nonatomic) NSString * lastModified;
-@property (readwrite, nonatomic) NSArray * all;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSString * lastModified;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSArray * all;
 @end
 
 @implementation SamLibComments

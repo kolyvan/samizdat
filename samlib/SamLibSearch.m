@@ -102,12 +102,14 @@ static NSArray * searchAuthor(NSString * pattern,
                 NSMutableDictionary *md = [dict mutableCopy];
                 [md update:@"distance" value:[NSNumber numberWithFloat:1.0 + distance]];                
                 [ma push:md];
+                KX_RELEASE(md);
             }
             else if (distance > MINDISTANCE2) {            
                 
                 NSMutableDictionary *md = [dict mutableCopy];
                 [md update:@"distance" value:[NSNumber numberWithFloat:distance]];                
                 [ma push:md];
+                KX_RELEASE(md);                
             }
         }
     }
@@ -193,7 +195,7 @@ static NSString * mkPathFromName(NSString *name)
     }
 
     KX_RELEASE(_history);
-    KX_RELEASE(_historyVersion); 
+    KX_RELEASE(_historyDigest); 
     
     [_cacheNames close];
     KX_RELEASE(_cacheNames);

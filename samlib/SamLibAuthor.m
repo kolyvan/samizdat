@@ -9,7 +9,6 @@
 //  this file is part of Samizdat
 //  Samizdat is licenced under the LGPL v3, see lgpl-3.0.txt
 
-
 #import "SamLibAuthor.h"
 #import "SamLibAgent.h"
 #import "SamLibParser.h"
@@ -28,17 +27,17 @@ extern int ddLogLevel;
 
 @interface SamLibAuthor()
 
-@property (readwrite, nonatomic) NSString * name;
-@property (readwrite, nonatomic) NSString * title;
-@property (readwrite, nonatomic) NSString * updated;
-@property (readwrite, nonatomic) NSString * size;
-@property (readwrite, nonatomic) NSString * rating;
-@property (readwrite, nonatomic) NSString * visitors;
-@property (readwrite, nonatomic) NSString * www;
-@property (readwrite, nonatomic) NSString * email;
-@property (readwrite, nonatomic) NSString * lastModified;
-@property (readwrite, nonatomic) NSString * about;
-@property (readwrite, nonatomic) NSArray * texts;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSString * name;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSString * title;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSString * updated;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSString * size;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSString * rating;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSString * visitors;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSString * www;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSString * email;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSString * lastModified;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSString * about;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSArray * texts;
 
 - (void) updateFromDictionary: (NSDictionary *) dict;
 
@@ -88,7 +87,6 @@ extern int ddLogLevel;
     }
     return 0;    
 }
-
 
 - (BOOL) ignored
 {
@@ -153,7 +151,7 @@ extern int ddLogLevel;
         NSDate *dt = getDateFromDict(dict, @"timestamp", path);        
         if (dt) self.timestamp = dt;
 
-        _hash = KX_RETAIN([self computeHash]);
+        _hash = KX_RETAIN([self computeHash]);        
     }
     return self;
 }

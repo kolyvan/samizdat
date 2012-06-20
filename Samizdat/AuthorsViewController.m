@@ -55,14 +55,14 @@ extern int ddLogLevel;
             return NSOrderedAscending;        
         
     }];
-    
-    NSMutableArray * ma = [NSMutableArray array];            
+        
+    NSMutableArray * ma = [NSMutableArray array];                
     for (SamLibAuthor *author in authors) {            
         [ma push:author];    
         for (SamLibText *text in author.texts)
             if (text.changedSize)
                 [ma push:text];
-    }
+    }    
     return ma;
 }
 

@@ -55,7 +55,7 @@ static NSString * authorsPath()
 #ifdef _DEVELOPMENT_MODE_
         path = [@"~/tmp/samlib/authors/" stringByExpandingTildeInPath];
 #else
-        path = [KxUtils.privateDataPath() stringByAppendingPathComponent: @"authors"];
+        path = KX_RETAIN([KxUtils.privateDataPath() stringByAppendingPathComponent: @"authors"]);
 #endif              
         KxUtils.ensureDirectory(path);        
     }
@@ -71,7 +71,7 @@ static NSString * textsPath()
 #ifdef _DEVELOPMENT_MODE_                  
         path = [@"~/tmp/samlib/texts/" stringByExpandingTildeInPath];
 #else
-        path = [KxUtils.cacheDataPath() stringByAppendingPathComponent: @"texts"];
+        path = KX_RETAIN([KxUtils.cacheDataPath() stringByAppendingPathComponent: @"texts"]);
 #endif  
         KxUtils.ensureDirectory(path);                
     }
@@ -87,7 +87,7 @@ static NSString * commentsPath()
 #ifdef _DEVELOPMENT_MODE_            
         path = [@"~/tmp/samlib/comments/" stringByExpandingTildeInPath];
 #else
-        path = [KxUtils.cacheDataPath() stringByAppendingPathComponent: @"comments"];
+        path = KX_RETAIN([KxUtils.cacheDataPath() stringByAppendingPathComponent: @"comments"]);
 #endif      
         KxUtils.ensureDirectory(path);                
     }
@@ -104,7 +104,7 @@ static NSString * settingsPath()
 #ifdef _DEVELOPMENT_MODE_            
         path = [@"~/tmp/samlib/settings" stringByExpandingTildeInPath];
 #else
-        path = [KxUtils.privateDataPath() stringByAppendingPathComponent: @"settings"];
+        path = KX_RETAIN([KxUtils.privateDataPath() stringByAppendingPathComponent: @"settings"]);
 #endif        
     }
     
@@ -124,7 +124,8 @@ static NSMutableDictionary * _settings(BOOL save)
         
             if (![md5 isEqualToString: digest]) {
                 
-                digest = md5;
+                KX_RELEASE(digest);
+                digest = KX_RETAIN(md5);
                 saveDictionary(dict, settingsPath()); 
                 
                 DDLogCVerbose(@"save settings: %ld", dict.count);
@@ -134,17 +135,18 @@ static NSMutableDictionary * _settings(BOOL save)
     else {
         
         if (!dict) {
+                        
+            NSMutableDictionary *d;
+            d = (NSMutableDictionary *)loadDictionaryEx(settingsPath(), NO);
             
-            dict = (NSMutableDictionary *)loadDictionaryEx(settingsPath(), NO);
-            
-            if (dict) {
-                //dict = [d mutableCopy];
-                digest = [[dict description] md5];
-                DDLogCVerbose(@"load settings: %ld", dict.count);
+            if (d) {
+                digest = KX_RETAIN([[d description] md5]);
+                DDLogCVerbose(@"load settings: %ld", d.count);
             }
             else
-                dict = [NSMutableDictionary dictionary];
-               
+                d = [NSMutableDictionary dictionary];
+            
+            dict = KX_RETAIN(d);
         }
     }
     
@@ -333,59 +335,7 @@ static void cancelAll()
     [client cancelAll];
 }
 
-static NSArray* loadAuthors()
-{    
-    NSMutableArray * authors = [NSMutableArray array];
-    NSFileManager *fm = [[NSFileManager alloc] init];
-    
-    NSError *error;
-    NSArray * files = [fm contentsOfDirectoryAtPath:authorsPath() 
-                                              error:&error];
-    if (files) {
-        
-        for (NSString *filename in files) {
-            
-            if (filename.first != '.') {
-                
-                NSString * fullpath = [authorsPath() stringByAppendingPathComponent:filename];
-                NSDictionary *attr = [fm attributesOfItemAtPath:fullpath error:nil];
-                
-                if ([[attr get:NSFileType] isEqual: NSFileTypeRegular]) {
-                    
-                    SamLibAuthor *author = [SamLibAuthor fromFile: fullpath];
-                    if (author) {
-                        DDLogCVerbose(@"loaded author: %@", author.path);
-                        [authors push: author];
-                    }
-                    else {
-                        DDLogCWarn(@"unable load author: %@", filename);                        
-                    }
-                }
-            }
-        }
-    } else {
-        DDLogCError(locString(@"file error: %@"), 
-                    KxUtils.completeErrorMessage(error));        
-    }
-    
-    KX_RELEASE(fm);
-    return authors;
-}
-
-static void removeAuthor(NSString *path)
-{
-    NSError * error;    
-    NSString * fullpath = [authorsPath() stringByAppendingPathComponent:path];
-    NSFileManager *fm = [[NSFileManager alloc] init];
-    if (![fm removeItemAtPath:fullpath error:&error]) {
-        DDLogCError(locString(@"file error: %@"), 
-                   KxUtils.completeErrorMessage(error));                   
-    }    
-    KX_RELEASE(fm);
-}
-
 //
-
 
 static void initialize ()
 {   
@@ -412,8 +362,6 @@ SamLibAgent_t SamLibAgent = {
     
     fetchData,
     postData,
-    cancelAll,
-    
-    loadAuthors,
-    removeAuthor,
+    cancelAll,    
+  
 };

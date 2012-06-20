@@ -9,9 +9,6 @@
 //  this file is part of Samizdat
 //  Samizdat is licenced under the LGPL v3, see lgpl-3.0.txt
 
-
-
-#import "KxArc.h"
 #import "KxMacros.h"
 #import "KxUtils.h"
 #import "NSArray+Kolyvan.h"
@@ -32,7 +29,7 @@ extern int ddLogLevel;
     NSInteger _version;
 }
 
-@property (readwrite, nonatomic, ) NSArray * authors;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSArray * authors;
 @property (readwrite, nonatomic) NSInteger version;
 
 @end
@@ -74,7 +71,7 @@ extern int ddLogLevel;
 
 - (void) reload
 {
-    self.authors = SamLibAgent.loadAuthors();
+    self.authors = [self->isa loadAuthors];    
     self.version += 1;
     
     DDLogInfo(@"loaded authors: %ld", _authors.count);    
@@ -110,11 +107,21 @@ extern int ddLogLevel;
 
 - (void) deleteAuthor: (SamLibAuthor *) author
 {
+    // remove cached texts and comments
     for (SamLibText *text in author.texts)
         [text removeTextFiles:YES andComments:YES];
-        
-    SamLibAgent.removeAuthor(author.path); 
+
+    // remove file
+    NSError * error;    
+    NSString * fullpath = [SamLibAgent.authorsPath() stringByAppendingPathComponent:author.path];
+    NSFileManager *fm = [[NSFileManager alloc] init];
+    if (![fm removeItemAtPath:fullpath error:&error]) {
+        DDLogCError(locString(@"file error: %@"), 
+                    KxUtils.completeErrorMessage(error));                   
+    }    
+    KX_RELEASE(fm);
     
+    // remove from authors
     NSMutableArray *ma = [_authors mutableCopy];
     [ma removeObject:author];    
     self.authors = ma;
@@ -151,5 +158,45 @@ extern int ddLogLevel;
 }
 
 
++ (NSArray*) loadAuthors
+{    
+    NSMutableArray * authors = [NSMutableArray array];
+    NSFileManager *fm = [[NSFileManager alloc] init];
+    
+    NSError *error;
+    NSArray * files = [fm contentsOfDirectoryAtPath:SamLibAgent.authorsPath() 
+                                              error:&error];
+    if (files) {
+        
+        for (NSString *filename in files) {
+            
+            if (filename.first != '.') {
+                
+                NSString * fullpath = [SamLibAgent.authorsPath() stringByAppendingPathComponent:filename];
+                NSDictionary *attr = [fm attributesOfItemAtPath:fullpath error:nil];
+                
+                if ([[attr get:NSFileType] isEqual: NSFileTypeRegular]) {
+                    
+                    SamLibAuthor *author = [SamLibAuthor fromFile: fullpath];
+                    if (author) {
+                        DDLogCVerbose(@"loaded author: %@", author.path);
+                        [authors push: author];
+                    }
+                    else {
+                        DDLogCWarn(@"unable load author: %@", filename);                        
+                    }                     
+                }
+            }
+        }
+        
+        
+    } else {
+        DDLogCError(locString(@"file error: %@"), 
+                    KxUtils.completeErrorMessage(error));        
+    }
+    
+    KX_RELEASE(fm);
+    return authors;
+}
 
 @end
