@@ -121,10 +121,10 @@ static void setSettings(NSString *key, id value,  id defaultValue)
 {
     id current = getSettings(key, defaultValue);
     
-    if (![current isEqualTo: value]) {
+    if (![current isEqual: value]) {
         
         if (!value ||
-            [value isEqualTo: defaultValue]) {
+            [value isEqual: defaultValue]) {
             
             [settings() removeObjectForKey:key];
         }
