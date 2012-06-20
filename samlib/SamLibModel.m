@@ -22,7 +22,6 @@
 #import "SamLibAuthor.h"
 #import "SamLibText.h"
 #import "SamLibComments.h"
-//#import "KxTuple2.h"
 #import "DDLog.h"
 
 extern int ddLogLevel;
@@ -31,7 +30,6 @@ extern int ddLogLevel;
         
     NSArray * _authors;
     NSInteger _version;
-    //SamLibCacheNames * _cacheNames;
 }
 
 @property (readwrite, nonatomic, ) NSArray * authors;
@@ -63,16 +61,12 @@ extern int ddLogLevel;
 {
     self = [super init];
     if (self) {
-//        _cacheNames = [[SamLibCacheNames alloc] init];
     }
     return self;
 }
 
 - (void) dealloc
 {
-//    [_cacheNames close];
-//    KX_RELEASE(_cacheNames);
-//    _cacheNames = nil;    
     KX_RELEASE(_authors);
     _authors = nil;
     KX_SUPER_DEALLOC();

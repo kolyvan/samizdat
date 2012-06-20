@@ -213,18 +213,23 @@
     
     SamLibAuthor *author; 
     
+    AppDelegate *appDelegate = [NSApp delegate];
+    
     if ([from isEqualToString:@"local"]) {
     
         author = [model findAuthor:path];
+        if (author)
+            [appDelegate showAuthorView: author];         
+        else
+            [appDelegate showAuthorsView: nil];         
     
     } else {
         
         author = [SamLibAuthor fromDictionary:dict withPath:path];                        
         [model addAuthor:author];                          
+        [appDelegate showAuthorView: author];                 
+        [appDelegate reload: nil];
     }
-    
-    if (author)
-        [[NSApp delegate] showAuthorView: author]; 
 }
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView 
