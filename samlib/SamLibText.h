@@ -130,6 +130,7 @@ typedef enum {
 
 @property (readonly, nonatomic) NSString * htmlFile;
 @property (readonly, nonatomic) NSString * diffFile;
+@property (readonly, nonatomic) NSString * commentsFile;
 
 @property (readonly, nonatomic) BOOL canUpdate;
 @property (readonly, nonatomic) BOOL canMakeDiff;
