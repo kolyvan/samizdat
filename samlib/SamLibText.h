@@ -161,6 +161,7 @@ typedef enum {
 - (void) makeDiff: (TextFormatter) formatter;
 
 - (SamLibComments *) commentsObject: (BOOL) forceLoad;
+- (void) freeCommentsObject;
 
 - (NSString *) sizeWithDelta: (NSString *)sep;
 - (NSString *) commentsWithDelta: (NSString *)sep;;

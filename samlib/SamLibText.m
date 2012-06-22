@@ -770,6 +770,12 @@ static NSString * prettyHtml (NSMutableArray *diffs)
     return _commentsObject;
 }
 
+- (void) freeCommentsObject
+{
+    KX_RELEASE(_commentsObject);
+    _commentsObject = nil;
+}
+
 - (NSString *) sizeWithDelta: (NSString *)sep
 {
     if (self.changedSize && _deltaSize > 0)
