@@ -173,11 +173,9 @@ didFinishLoadingFromDataSource:(WebDataSource *)dataSource
     if (scrollView) {
         NSClipView * clipView = scrollView.documentView;
         NSRect rect = clipView.frame;
-        CGFloat y = rect.size.height * offset;    
+        CGFloat y = rect.size.height * offset;
         [clipView scrollPoint: NSMakePoint(0, y)];    
     }
 }
-
-
 
 @end

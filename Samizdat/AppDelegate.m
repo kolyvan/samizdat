@@ -107,7 +107,9 @@ int ddLogLevel = LOG_LEVEL_WARN;
 {     
     [SamLibUser setKeychainService: KxUtils.appBundleID()];
     
-    [_window setDelegate:self];    
+    [_window setDelegate:self];  
+    _window.title = locString(@"Samizdat");
+    
     [self initLogger];
     [self hudInit];
     restoreSamLibSessionCookies();
