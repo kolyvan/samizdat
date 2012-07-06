@@ -38,6 +38,7 @@
 #import "FavoritesViewController.h"
 #import "TextsGroupViewController.h"
 #import "SearchAuthorViewController.h"
+#import "BanViewController.h"
 #import "SamLibModel.h"
 
 #import "DDLog.h"
@@ -287,7 +288,15 @@ int ddLogLevel = LOG_LEVEL_WARN;
     [self selectControllerClass:[FavoritesViewController class] 
                         withArg:nil];              
 }
- 
+
+- (IBAction) showBanView: (id) sender
+{
+    
+    
+    [self selectControllerClass:[BanViewController class] 
+                        withArg:nil];              
+}
+
 - (IBAction) toggleHUD: (id) sender
 {
     _hudView.isToggled = !_hudView.isToggled;
@@ -506,6 +515,7 @@ int ddLogLevel = LOG_LEVEL_WARN;
     if ([item action] == @selector(showAddAuthorView:) ||
         [item action] == @selector(showAuthorsView:) ||
         [item action] == @selector(showFavoritesView:) ||
+        [item action] == @selector(showBanView:) ||
         [item action] == @selector(toggleHUD:) ||
         [item action] == @selector(clearCookie:))
     {

@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8708A8FA15A6D1C6008D1893 /* SamLibModerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 8708A8F915A6D1C6008D1893 /* SamLibModerator.m */; };
+		8708A8FC15A6D736008D1893 /* SamLibModerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 8708A8F915A6D1C6008D1893 /* SamLibModerator.m */; };
+		8708A90015A6EBA3008D1893 /* BanViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8708A8FE15A6EBA3008D1893 /* BanViewController.m */; };
+		8708A90115A6EBA3008D1893 /* BanView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8708A8FF15A6EBA3008D1893 /* BanView.xib */; };
 		87163EAA155D1889001D4818 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87F2966E155D16730006F982 /* Cocoa.framework */; };
 		87163EB0155D1889001D4818 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 87163EAE155D1889001D4818 /* InfoPlist.strings */; };
 		87163EB2155D1889001D4818 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 87163EB1155D1889001D4818 /* main.m */; };
@@ -202,6 +206,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		8708A8F815A6D1C6008D1893 /* SamLibModerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SamLibModerator.h; sourceTree = "<group>"; };
+		8708A8F915A6D1C6008D1893 /* SamLibModerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SamLibModerator.m; sourceTree = "<group>"; };
+		8708A8FD15A6EBA3008D1893 /* BanViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BanViewController.h; sourceTree = "<group>"; };
+		8708A8FE15A6EBA3008D1893 /* BanViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BanViewController.m; sourceTree = "<group>"; };
+		8708A8FF15A6EBA3008D1893 /* BanView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BanView.xib; sourceTree = "<group>"; };
 		87163EA8155D1889001D4818 /* Samizdat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Samizdat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		87163EAD155D1889001D4818 /* Samizdat-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Samizdat-Info.plist"; sourceTree = "<group>"; };
 		87163EAF155D1889001D4818 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -470,6 +479,8 @@
 				8787E58A155D408000A73F8E /* KxHUDLogger.m */,
 				8787E58F155D4A8B00A73F8E /* KxHistoryNav.h */,
 				8787E590155D4A8B00A73F8E /* KxHistoryNav.m */,
+				8708A8FD15A6EBA3008D1893 /* BanViewController.h */,
+				8708A8FE15A6EBA3008D1893 /* BanViewController.m */,
 			);
 			path = Samizdat;
 			sourceTree = "<group>";
@@ -577,6 +588,7 @@
 		8787E565155D1DF400A73F8E /* views */ = {
 			isa = PBXGroup;
 			children = (
+				8708A8FF15A6EBA3008D1893 /* BanView.xib */,
 				87163EBA155D1889001D4818 /* MainMenu.xib */,
 				871B5E76155E45F200FCAFB9 /* AuthorsView.xib */,
 				87D9BAFD1564BC65009E010F /* TextsView.xib */,
@@ -670,6 +682,8 @@
 				87F4C819158EDF7600ABB48A /* SamLibSearch.m */,
 				87F75D121591C5BF0046DA46 /* SamLibStorage.h */,
 				87F75D131591C5BF0046DA46 /* SamLibStorage.m */,
+				8708A8F815A6D1C6008D1893 /* SamLibModerator.h */,
+				8708A8F915A6D1C6008D1893 /* SamLibModerator.m */,
 			);
 			path = samlib;
 			sourceTree = "<group>";
@@ -877,6 +891,7 @@
 				87F2020B159059840083F879 /* asterisk.png in Resources */,
 				87F2020C159059840083F879 /* add.png in Resources */,
 				87F2020E159059C90083F879 /* samlib.png in Resources */,
+				8708A90115A6EBA3008D1893 /* BanView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -947,6 +962,8 @@
 				87F20201159023690083F879 /* SearchAuthorViewController.m in Sources */,
 				87F20204159041C10083F879 /* SamLibSearch.m in Sources */,
 				87F75D151591C5BF0046DA46 /* SamLibStorage.m in Sources */,
+				8708A8FC15A6D736008D1893 /* SamLibModerator.m in Sources */,
+				8708A90015A6EBA3008D1893 /* BanViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -994,6 +1011,7 @@
 				87F2F8AA158DD35300AF0BF1 /* SamLibCacheNames.m in Sources */,
 				87F4C81A158EDF7600ABB48A /* SamLibSearch.m in Sources */,
 				87F75D141591C5BF0046DA46 /* SamLibStorage.m in Sources */,
+				8708A8FA15A6D1C6008D1893 /* SamLibModerator.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

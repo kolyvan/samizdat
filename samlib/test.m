@@ -27,6 +27,7 @@
 #import "SamLibCacheNames.h"
 #import "SamLibSearch.h"
 #import "SamLibStorage.h"
+#import "SamLibModerator.h"
 #import "DDLog.h"
 
 extern int ddLogLevel;
@@ -602,3 +603,40 @@ void test_cache()
     KX_RELEASE(cache);
     
 }
+
+void test_for_ban()
+{    
+    SamLibBanSymptom *s1 = [[SamLibBanSymptom alloc] initFromPattern:@"turok" 
+                                                                category:SamLibBanCategoryName 
+                                                               threshold:1];
+    
+    SamLibBanSymptom *s2 = [[SamLibBanSymptom alloc] initFromPattern:@"fuck you" 
+                                                            category:SamLibBanCategoryWord 
+                                                           threshold:0.6];
+    SamLibBan * ban = [[SamLibBan alloc] initWithName:@""
+                                             symptoms: KxUtils.array(s1, s2, nil) 
+                                            tolerance:1.7 
+                                                 path:@""];
+    
+    NSDictionary *dict = KxUtils.dictionary(@"turok", @"name", 
+                                            @"fuck you op", @"message", 
+                                            nil);
+    
+    SamLibComment *comment = [SamLibComment fromDictionary:dict];
+   
+
+    KxConsole.printlnf(@"ban %d", [ban testForBan:comment withPath:@""]);        
+        
+    //SamLibModerator *moder = [SamLibModerator shared];
+    //[moder addBan:ban];
+    //[moder save];
+    
+    KX_RELEASE(s1);
+    KX_RELEASE(s2);
+    KX_RELEASE(ban);
+}
+
+
+
+
+

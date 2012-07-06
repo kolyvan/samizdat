@@ -1170,6 +1170,14 @@
 									<reference key="NSOnImage" ref="35465992"/>
 									<reference key="NSMixedImage" ref="502551668"/>
 								</object>
+								<object class="NSMenuItem" id="114054147">
+									<reference key="NSMenu" ref="466310130"/>
+									<string key="NSTitle">Добавить бан</string>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+								</object>
 								<object class="NSMenuItem" id="892447266">
 									<reference key="NSMenu" ref="466310130"/>
 									<bool key="NSIsDisabled">YES</bool>
@@ -2364,6 +2372,14 @@
 					</object>
 					<int key="connectionID">649</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">showBanView:</string>
+						<reference key="source" ref="976324537"/>
+						<reference key="destination" ref="114054147"/>
+					</object>
+					<int key="connectionID">651</int>
+				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<array key="orderedObjects">
@@ -2755,6 +2771,7 @@
 							<reference ref="894081810"/>
 							<reference ref="189883308"/>
 							<reference ref="627418139"/>
+							<reference ref="114054147"/>
 						</array>
 						<reference key="parent" ref="586577488"/>
 					</object>
@@ -3446,6 +3463,11 @@
 						<reference key="object" ref="627418139"/>
 						<reference key="parent" ref="466310130"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">650</int>
+						<reference key="object" ref="114054147"/>
+						<reference key="parent" ref="466310130"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -3612,6 +3634,7 @@
 				<string key="637.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="638.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="639.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="650.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="73.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="74.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="79.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -3624,7 +3647,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">649</int>
+			<int key="maxID">651</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -3641,6 +3664,7 @@
 						<string key="reload:">id</string>
 						<string key="showAddAuthorView:">id</string>
 						<string key="showAuthorsView:">id</string>
+						<string key="showBanView:">id</string>
 						<string key="showFavoritesView:">id</string>
 						<string key="toggleHUD:">id</string>
 					</dictionary>
@@ -3679,6 +3703,10 @@
 						</object>
 						<object class="IBActionInfo" key="showAuthorsView:">
 							<string key="name">showAuthorsView:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="showBanView:">
+							<string key="name">showBanView:</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="showFavoritesView:">
