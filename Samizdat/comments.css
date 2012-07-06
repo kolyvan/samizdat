@@ -101,6 +101,14 @@ a.replylink {
     float: right;    
 }
 
+a.email {
+	display: inline-block;
+    color:navy;
+    font-size: 0.8em;
+    padding: 2px 0px 2px 0px;
+    text-decoration: none;
+}
+
 span.new {
 	display: inline-block;
     background: url(new.png) 100% 100% no-repeat;

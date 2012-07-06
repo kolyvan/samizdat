@@ -66,7 +66,8 @@ static NSString * mkHTML(SamLibComments * comments)
             *link = nil, 
             *color = nil, 
             *name = nil,
-            *msgid = nil;
+            *msgid = nil,
+            *email = nil;
         
         if (!deleteMsg.nonEmpty) {
             
@@ -90,6 +91,7 @@ static NSString * mkHTML(SamLibComments * comments)
             color = comment.color;
             name = comment.name;
             msgid = comment.msgid;
+            email = comment.email;
         }
         
         if (!replyto) replyto = @"";
@@ -97,7 +99,8 @@ static NSString * mkHTML(SamLibComments * comments)
         if (!link) link = @"";        
         if (!color) color = @"";
         if (!name) name = @"";
-        if (!msgid) msgid = @"";     
+        if (!msgid) msgid = @"";  
+        if (!email) email = @"";
                
         [sb appendFormat:templateComment, 
          comment.number,
@@ -106,7 +109,9 @@ static NSString * mkHTML(SamLibComments * comments)
          link.nonEmpty ? color : @"hidden",
          name,
          link.nonEmpty ? @"hidden" : color,
-         name,         
+         name, 
+         email.nonEmpty ? email : @"",
+         email.nonEmpty ? @"email" : @"hidden",         
          comment.timestamp ? [comment.timestamp shortRelativeFormatted] : @"",
          deleteMsg.nonEmpty ? KxUtils.format(@"- Удалено %@", comment.deleteMsg) : @"",
          //numberOfNew-- > 0 ? @"new" : @"",
