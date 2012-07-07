@@ -138,6 +138,9 @@
 
 - (void) goBack
 {
+    if (!_prev.nonEmpty)
+        return;
+    
     KxProxy * p = [_prev pop];
     
     if (_now) {
@@ -153,6 +156,9 @@
 
 - (void) goForward
 {
+    if (!_next.nonEmpty)
+        return;
+    
     KxProxy * p = [_next pop];
     
     if (_now) {
