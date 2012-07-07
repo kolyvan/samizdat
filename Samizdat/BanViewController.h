@@ -20,4 +20,9 @@
 - (IBAction) insertRow:(id)sender;
 - (IBAction) deleteRow:(id)sender;
 
+- (IBAction) toleranceChanged: (id)sender;
+- (IBAction) nameFieldChanged: (id)sender;
+- (IBAction) pathFieldChanged: (id)sender;
+- (IBAction) enableButtonChanged: (id)sender;
+
 @end

@@ -29,6 +29,7 @@
 #import "SamLibAuthor.h"
 #import "SamLibText.h"
 #import "SamLibComments.h"
+#import "SamLibModerator.h"
 
 extern int ddLogLevel;
 
@@ -53,11 +54,16 @@ static NSString * mkHTML(SamLibComments * comments)
                                                         error:nil];
     });
     
+    SamLibModerator *moderator = [SamLibModerator shared];
+    NSString *banPath = [comments.text makeKey:@"/"];  
+        
     NSMutableString * sb = [NSMutableString string];
     
     //NSInteger numberOfNew = comments.numberOfNew;
     
     for (SamLibComment * comment in comments.all) {
+        
+        BOOL isBanned = NO;
         
         NSString 
             *deleteMsg = comment.deleteMsg,
@@ -71,21 +77,37 @@ static NSString * mkHTML(SamLibComments * comments)
         
         if (!deleteMsg.nonEmpty) {
             
-            replyto = comment.replyto;
-            if (replyto.nonEmpty) {
-                NSMutableString * sbx = [NSMutableString string];            
-                for (NSString * line in [replyto lines])
-                    [sbx appendFormat:@"<span>%@</span>", line];         
-                replyto = sbx;
-            }       
+            SamLibBan *ban = nil;
             
-            message = comment.message;
-            if (message.nonEmpty) {
-                NSMutableString * sbx = [NSMutableString string];            
-                for (NSString * line in [message lines])
-                    [sbx appendFormat:@"<span>%@</span>", line];         
-                message = sbx;
-            }       
+            if (!comment.canEdit && !comment.canDelete) {
+
+                // if can't edit or delete - so maybe i can ban it
+                ban = [moderator testForBan:comment 
+                                   withPath:banPath];
+            }
+            
+            if (ban) {
+                isBanned = YES;
+                message = KxUtils.format(locString(@"banned: %@"), ban.name);
+            
+            } else {
+            
+                replyto = comment.replyto;
+                if (replyto.nonEmpty) {
+                    NSMutableString * sbx = [NSMutableString string];            
+                    for (NSString * line in [replyto lines])
+                        [sbx appendFormat:@"<span>%@</span>", line];         
+                    replyto = sbx;
+                }       
+                
+                message = comment.message;
+                if (message.nonEmpty) {
+                    NSMutableString * sbx = [NSMutableString string];            
+                    for (NSString * line in [message lines])
+                        [sbx appendFormat:@"<span>%@</span>", line];         
+                    message = sbx;
+                }    
+            }
             
             link = comment.link;
             color = comment.color;
@@ -120,12 +142,13 @@ static NSString * mkHTML(SamLibComments * comments)
          comment.canDelete ? @"deletelink" : @"hidden",         
          msgid,
          comment.canEdit ? @"editlink" : @"hidden",
+         isBanned ? @"" : msgid,
+         (!comment.canEdit && !comment.canDelete && !deleteMsg.nonEmpty ) ? @"banlink" : @"hidden",         
          replyto,
          message,
          msgid,
          deleteMsg.nonEmpty ? @"hidden" : @"replylink"         
          ];
-
     }
     
     return [templateComments stringByReplacingOccurrencesOfString:@"<!-- COMMENTS -->" 
@@ -298,7 +321,11 @@ static NSString * mkHTML(SamLibComments * comments)
         [self editComment: [url lastPathComponent]];
         return NO;
     }
-
+    
+    if ([s hasPrefix:@"file://comments/ban"]) {
+        [self banComment: [url lastPathComponent]];
+        return NO;
+    }
     
     [[NSWorkspace sharedWorkspace] openURL:url];
     
@@ -373,25 +400,25 @@ static NSString * mkHTML(SamLibComments * comments)
     
     if (msgid) {
     
-        for (SamLibComment * comment in _comments.all) {
-            if ([comment.msgid isEqualToString:msgid]) {
-                
-                NSMutableString * ms = [NSMutableString string];
-                
-                [ms appendFormat: @"> > [%ld.%@]\n", comment.number, comment.name];
-                
-                for (NSString * s in [comment.message lines]) {
-                    if (s.nonEmpty) {
-                        [ms appendString:@">"];
-                        [ms appendString:s];
-                        [ms appendString:@"\n"];
-                    }
+        SamLibComment *comment = [_comments findCommentByMsgid:msgid];
+        
+        if (comment) {
+            
+            NSMutableString * ms = [NSMutableString string];
+            
+            [ms appendFormat: @"> > [%ld.%@]\n", comment.number, comment.name];
+            
+            for (NSString * s in [comment.message lines]) {
+                if (s.nonEmpty) {
+                    [ms appendString:@">"];
+                    [ms appendString:s];
+                    [ms appendString:@"\n"];
                 }
-
-                message = ms;
-                break;
             }
+            
+            message = ms;
         }
+
     } 
     
     _isReply = YES;
@@ -421,16 +448,32 @@ static NSString * mkHTML(SamLibComments * comments)
     if (!msgid.nonEmpty)
         return;
     
-    NSString *message = @"";
-    for (SamLibComment * comment in _comments.all)
-        if ([comment.msgid isEqualToString:msgid]) {
-            message = comment.message;
-            break;
-        }
+    NSString *message = [_comments findCommentByMsgid:msgid].message;
            
     _isReply = NO;
     [self showReply: msgid withMessage:message];
 }
+
+- (void) banComment: (NSString *) msgid
+{        
+    if (!msgid.nonEmpty) 
+        return;
+        
+    SamLibComment *comment = [_comments findCommentByMsgid:msgid];
+    if (comment) {
+        
+        NSMutableDictionary *d =  [comment.toDictionary mutableCopy];
+        [d update:@"path" value:[_comments.text makeKey:@"/"]];
+        [[NSApp delegate] showBanView:d]; 
+        
+    } else {
+    
+        [[NSApp delegate] showBansView:nil]; 
+    }
+        
+    
+}
+
 
 - (void) toggleReplyWithAnimation: (BOOL) animated
 {

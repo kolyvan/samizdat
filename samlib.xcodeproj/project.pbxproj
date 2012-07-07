@@ -121,6 +121,8 @@
 		87D33F911557C9A300784BB2 /* AFHTTPClient+Kolyvan.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D33F901557C9A300784BB2 /* AFHTTPClient+Kolyvan.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		87D9BAFB1564AF7F009E010F /* TableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D9BAFA1564AF7F009E010F /* TableViewController.m */; };
 		87D9BAFE1564BC65009E010F /* TextsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 87D9BAFD1564BC65009E010F /* TextsView.xib */; };
+		87E0FC5115A81DB300338A15 /* BansViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87E0FC4F15A81DB300338A15 /* BansViewController.m */; };
+		87E0FC5215A81DB300338A15 /* BansView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 87E0FC5015A81DB300338A15 /* BansView.xib */; };
 		87E2FECB155A2638009C4DA9 /* SamLib.m in Sources */ = {isa = PBXBuildFile; fileRef = 87E2FECA155A2638009C4DA9 /* SamLib.m */; };
 		87E2FED6155A6851009C4DA9 /* DiffMatchPatch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87E2FED5155A6851009C4DA9 /* DiffMatchPatch.framework */; };
 		87E2FED8155A6874009C4DA9 /* DiffMatchPatch.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 87E2FED5155A6851009C4DA9 /* DiffMatchPatch.framework */; };
@@ -340,6 +342,9 @@
 		87D9BAF91564AF7F009E010F /* TableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewController.h; sourceTree = "<group>"; };
 		87D9BAFA1564AF7F009E010F /* TableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewController.m; sourceTree = "<group>"; };
 		87D9BAFD1564BC65009E010F /* TextsView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextsView.xib; sourceTree = "<group>"; };
+		87E0FC4E15A81DB300338A15 /* BansViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BansViewController.h; sourceTree = "<group>"; };
+		87E0FC4F15A81DB300338A15 /* BansViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BansViewController.m; sourceTree = "<group>"; };
+		87E0FC5015A81DB300338A15 /* BansView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BansView.xib; sourceTree = "<group>"; };
 		87E2FECA155A2638009C4DA9 /* SamLib.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SamLib.m; sourceTree = "<group>"; };
 		87E2FED5155A6851009C4DA9 /* DiffMatchPatch.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DiffMatchPatch.framework; path = Frameworks/DiffMatchPatch.framework; sourceTree = "<group>"; };
 		87EA4D231564EF58000D5F41 /* HoverButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HoverButton.h; sourceTree = "<group>"; };
@@ -481,6 +486,8 @@
 				8787E590155D4A8B00A73F8E /* KxHistoryNav.m */,
 				8708A8FD15A6EBA3008D1893 /* BanViewController.h */,
 				8708A8FE15A6EBA3008D1893 /* BanViewController.m */,
+				87E0FC4E15A81DB300338A15 /* BansViewController.h */,
+				87E0FC4F15A81DB300338A15 /* BansViewController.m */,
 			);
 			path = Samizdat;
 			sourceTree = "<group>";
@@ -588,6 +595,7 @@
 		8787E565155D1DF400A73F8E /* views */ = {
 			isa = PBXGroup;
 			children = (
+				87E0FC5015A81DB300338A15 /* BansView.xib */,
 				8708A8FF15A6EBA3008D1893 /* BanView.xib */,
 				87163EBA155D1889001D4818 /* MainMenu.xib */,
 				871B5E76155E45F200FCAFB9 /* AuthorsView.xib */,
@@ -892,6 +900,7 @@
 				87F2020C159059840083F879 /* add.png in Resources */,
 				87F2020E159059C90083F879 /* samlib.png in Resources */,
 				8708A90115A6EBA3008D1893 /* BanView.xib in Resources */,
+				87E0FC5215A81DB300338A15 /* BansView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -964,6 +973,7 @@
 				87F75D151591C5BF0046DA46 /* SamLibStorage.m in Sources */,
 				8708A8FC15A6D736008D1893 /* SamLibModerator.m in Sources */,
 				8708A90015A6EBA3008D1893 /* BanViewController.m in Sources */,
+				87E0FC5115A81DB300338A15 /* BansViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -539,4 +539,12 @@ static NSDate* mkDateFromComment(NSString *dt)
     
 }
 
+- (SamLibComment *) findCommentByMsgid: (NSString *) msgid
+{
+    for (SamLibComment * comment in _all)
+        if ([comment.msgid isEqualToString:msgid])
+            return comment;
+    return nil;
+}
+
 @end

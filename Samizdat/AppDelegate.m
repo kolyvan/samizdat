@@ -39,7 +39,9 @@
 #import "TextsGroupViewController.h"
 #import "SearchAuthorViewController.h"
 #import "BanViewController.h"
+#import "BansViewController.h"
 #import "SamLibModel.h"
+#import "SamLibModerator.h"
 
 #import "DDLog.h"
 #import "DDTTYLogger.h"
@@ -139,7 +141,8 @@ int ddLogLevel = LOG_LEVEL_WARN;
     [_controllers removeAllObjects];
     KX_SAFE_RELEASE(_activeController);
     
-    [[SamLibModel shared] save];
+    [[SamLibModel shared] save];    
+    [[SamLibModerator shared] save];
     
     SamLibAgent.cleanup();
 }
@@ -289,11 +292,15 @@ int ddLogLevel = LOG_LEVEL_WARN;
                         withArg:nil];              
 }
 
-- (IBAction) showBanView: (id) sender
-{
-    
-    
+- (IBAction) showBanView: (id) ban
+{   
     [self selectControllerClass:[BanViewController class] 
+                        withArg:ban];              
+}
+
+- (IBAction) showBansView: (id) sender
+{
+    [self selectControllerClass:[BansViewController class] 
                         withArg:nil];              
 }
 
@@ -516,6 +523,7 @@ int ddLogLevel = LOG_LEVEL_WARN;
         [item action] == @selector(showAuthorsView:) ||
         [item action] == @selector(showFavoritesView:) ||
         [item action] == @selector(showBanView:) ||
+        [item action] == @selector(showBansView:) ||        
         [item action] == @selector(toggleHUD:) ||
         [item action] == @selector(clearCookie:))
     {

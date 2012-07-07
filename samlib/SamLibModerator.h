@@ -21,10 +21,13 @@ typedef enum {
     
 } SamLibBanCategory;
 
-@interface SamLibBanSymptom : NSObject
+@interface SamLibBanRule : NSObject<NSCopying>
 @property (readwrite, KX_PROP_STRONG) NSString *pattern;
 @property (readwrite) SamLibBanCategory category;
 @property (readwrite) CGFloat threshold;
+
+- (id) initFromPattern: (NSString *) pattern 
+              category: (SamLibBanCategory) category;
 
 - (id) initFromPattern: (NSString *) pattern 
               category: (SamLibBanCategory) category 
@@ -34,25 +37,26 @@ typedef enum {
 
 @end
 
-@interface SamLibBan : NSObject
+@interface SamLibBan : NSObject<NSCopying>
 @property (readwrite, KX_PROP_STRONG) NSString *name;
 @property (readwrite, KX_PROP_STRONG) NSString *path;
-@property (readonly, KX_PROP_STRONG) NSArray *symptoms;
+@property (readonly, KX_PROP_STRONG) NSArray *rules;
 @property (readwrite) CGFloat tolerance;
 @property (readwrite) BOOL enabled;
 
 - (id) initWithName: (NSString *) name 
-           symptoms: (NSArray *) symptoms 
+              rules: (NSArray *) rules 
           tolerance: (CGFloat) tolerance
                path: (NSString *) path;
 
 - (BOOL) checkPath: (NSString *) path;
+- (CGFloat) computeBan: (SamLibComment *) comment;
 - (BOOL) testForBan: (SamLibComment *) comment 
            withPath: (NSString *) path;
 
-- (void) addSymptom:(SamLibBanSymptom *)symptom;
-- (void) removeSymptom:(SamLibBanSymptom *)symptom;
-- (void) removeSymptomAtIndex:(NSUInteger)index;
+- (void) addRule:(SamLibBanRule *)rule;
+- (void) removeRule:(SamLibBanRule *)rule;
+- (void) removeRuleAtIndex:(NSUInteger)index;
 
 @end
 
@@ -67,6 +71,7 @@ typedef enum {
 
 - (void) addBan: (SamLibBan *) ban;
 - (void) removeBan: (SamLibBan *) ban;
+- (void) removeBanAtIndex:(NSUInteger)index;
 
 - (void) save;
 

@@ -118,7 +118,7 @@ span.new {
 
 a.deletelink {
 	display: inline-block;
-    background: url(cross.png) 100% 100% no-repeat;
+    background: url(cross-red.png) 100% 100% no-repeat;
     height: 16px;
     width: 16px;
     float: right;
@@ -128,6 +128,15 @@ a.deletelink {
 a.editlink {
 	display: inline-block;
     background: url(comment-edit.png) 100% 100% no-repeat;
+    height: 16px;
+    width: 16px;
+    float: right;
+    margin-right: 4px;    
+}
+
+a.banlink {
+	display: inline-block;
+    background: url(cross.png) 100% 100% no-repeat;
     height: 16px;
     width: 16px;
     float: right;

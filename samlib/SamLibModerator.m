@@ -16,14 +16,17 @@
 #import "SamLibComments.h"
 #import "SamLib.h"
 #import "SamLibStorage.h"
+#import "DDLog.h"
 
-@implementation SamLibBanSymptom
+extern int ddLogLevel;
+
+@implementation SamLibBanRule
 @synthesize pattern = _pattern, category = _category, threshold = _threshold;
 
 + (id) fromDictionary: (NSDictionary *) dict
 {
-    SamLibBanSymptom *p;
-    p = [[SamLibBanSymptom alloc] initFromPattern:[dict get:@"pattern"]  
+    SamLibBanRule *p;
+    p = [[SamLibBanRule alloc] initFromPattern:[dict get:@"pattern"]  
                                          category:[[dict get:@"category"] intValue] 
                                         threshold:[[dict get:@"threshold"] floatValue]];
     return p;
@@ -35,6 +38,12 @@
                               $int(_category), @"category",
                               $float(_threshold), @"threshold",
                               nil);
+}
+
+- (id) initFromPattern: (NSString *) pattern 
+              category: (SamLibBanCategory) category
+{
+    return [self initFromPattern:pattern category:category threshold:1];
 }
 
 - (id) initFromPattern: (NSString *) pattern 
@@ -51,6 +60,13 @@
         _threshold = threshold;
     }
     return self;
+}
+
+- (id) copyWithZone:(NSZone *)zone
+{
+    return [[SamLibBanRule allocWithZone:zone] initFromPattern:[_pattern copy]
+                                                         category:_category 
+                                                        threshold:_threshold];
 }
 
 - (CGFloat) testPatternAgainst: (NSString *) s
@@ -120,26 +136,26 @@
 ////
 
 @implementation SamLibBan {
-    NSMutableArray *_symptoms;
+    NSMutableArray *_rules;
 }
 
 @synthesize name = _name; 
-@synthesize symptoms = _symptoms; 
+@synthesize rules = _rules; 
 @synthesize tolerance = _tolerance; 
 @synthesize path = _path;
 @synthesize enabled = _enabled;
 
 + (id) fromDictionary: (NSDictionary *) dict
 {
-    NSArray *symptoms = [dict get:@"symptoms"];
+    NSArray *rules = [dict get:@"rules"];
     
-    symptoms = [symptoms map:^(id elem) {
-        return [SamLibBanSymptom fromDictionary: elem];
+    rules = [rules map:^(id elem) {
+        return [SamLibBanRule fromDictionary: elem];
     }];
     
     SamLibBan *p;
     p = [[SamLibBan alloc] initWithName: [dict get:@"name"]
-                               symptoms: symptoms
+                                  rules: rules
                               tolerance: [[dict get:@"tolerance"] floatValue]
                                    path: [dict get:@"path"]];
 
@@ -149,30 +165,30 @@
 
 - (NSDictionary *) toDictionary
 {
-    NSArray *symptoms = [_symptoms map:^(id elem) {
+    NSArray *rules = [_rules map:^(id elem) {
         return [elem toDictionary];
     }];
     
     return KxUtils.dictionary(_name.nonEmpty ? _name : @"", @"name",
                               _path.nonEmpty ? _path : @"", @"path",
-                              symptoms, @"symptoms",
+                              rules, @"rules",
                               $float(_tolerance), @"tolerance",
                               $bool(_enabled), @"enabled",
                               nil);
 }
 
 - (id) initWithName: (NSString *) name 
-           symptoms: (NSArray *) symptoms 
+              rules: (NSArray *) rules 
           tolerance: (CGFloat) tolerance
                path: (NSString *) path
 {
-    NSAssert(symptoms.nonEmpty, @"empty symptoms");
+    NSAssert(rules.nonEmpty, @"empty rules");
     NSAssert(tolerance > 0, @"tolerance out of range");    
     
     self = [super init];
     if (self) {
         
-        _symptoms = [symptoms mutableCopy];        
+        _rules = [rules mutableCopy];        
         self.name = name;
         self.path = path;
         _tolerance = tolerance;
@@ -181,19 +197,29 @@
     return self;
 }
 
-- (void) addSymptom:(SamLibBanSymptom *)symptom
+- (id) copyWithZone:(NSZone *)zone
 {
-    [_symptoms push:symptom];
+    SamLibBan *p = [[SamLibBan allocWithZone:zone] initWithName:[_name copy] 
+                                                          rules:[_rules map:^(id x) {return [x copy];}] 
+                                                      tolerance:_tolerance 
+                                                           path:[_path copy]];
+    p.enabled = _enabled;
+    return p;
 }
 
-- (void) removeSymptom:(SamLibBanSymptom *)symptom
+- (void) addRule:(SamLibBanRule *)rule
 {
-    [_symptoms removeObject:symptom];
+    [_rules push:rule];
 }
 
-- (void) removeSymptomAtIndex:(NSUInteger)index
+- (void) removeRule:(SamLibBanRule *)rule
 {
-    [_symptoms removeObjectAtIndex:index];
+    [_rules removeObject:rule];
+}
+
+- (void) removeRuleAtIndex:(NSUInteger)index
+{
+    [_rules removeObjectAtIndex:index];
 }
 
 - (BOOL) checkPath: (NSString *) path
@@ -204,6 +230,28 @@
     return [path hasPrefix:_path];
 }
 
+- (CGFloat) computeBan: (SamLibComment *) comment 
+{
+    CGFloat result = 0;
+    
+    for (SamLibBanRule *rule in _rules) {
+        
+        NSString *s = nil;
+        
+        switch (rule.category) {
+            case SamLibBanCategoryName:     s = comment.name;   break;
+            case SamLibBanCategoryEmail:    s = comment.email;  break;
+            case SamLibBanCategoryURL:      s = comment.link;   break;
+            case SamLibBanCategoryWord:     s = comment.message; break;
+        }
+        
+        if (s.nonEmpty)
+            result += [rule testPatternAgainst: s];        
+    }
+    
+    return result;
+}
+
 - (BOOL) testForBan: (SamLibComment *) comment 
            withPath:(NSString *)path
 {
@@ -212,11 +260,11 @@
     
     CGFloat total = 0;
         
-    for (SamLibBanSymptom *sym in _symptoms) {
+    for (SamLibBanRule *rule in _rules) {
     
         NSString *s = nil;
         
-        switch (sym.category) {
+        switch (rule.category) {
             case SamLibBanCategoryName:     s = comment.name;   break;
             case SamLibBanCategoryEmail:    s = comment.email;  break;
             case SamLibBanCategoryURL:      s = comment.link;   break;
@@ -224,7 +272,7 @@
         }
         
         if (s.nonEmpty)
-            total += [sym testPatternAgainst: s];
+            total += [rule testPatternAgainst: s];
             
         if (total >= _tolerance)
             return YES;        
@@ -298,6 +346,11 @@
     [_allBans removeObject:ban];
 }
 
+- (void) removeBanAtIndex:(NSUInteger)index
+{
+    [_allBans removeObjectAtIndex:index];
+}
+
 - (void) save
 {
     NSString *newHash = _allBans.description.md5;
@@ -311,6 +364,8 @@
         }];
         
         SamLibStorage.saveObject(a, SamLibStorage.bansPath());
+        
+        DDLogInfo(@"saved bans: %d", _allBans.count);
     }
 }
 

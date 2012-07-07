@@ -604,29 +604,38 @@ void test_cache()
     
 }
 
+
 void test_for_ban()
 {    
-    SamLibBanSymptom *s1 = [[SamLibBanSymptom alloc] initFromPattern:@"turok" 
-                                                                category:SamLibBanCategoryName 
-                                                               threshold:1];
+    SamLibBanRule *s1 = [[SamLibBanRule alloc] initFromPattern:@"turok" 
+                                                                 category:SamLibBanCategoryName 
+                                                                threshold:0.8];
     
-    SamLibBanSymptom *s2 = [[SamLibBanSymptom alloc] initFromPattern:@"fuck you" 
-                                                            category:SamLibBanCategoryWord 
-                                                           threshold:0.6];
+    SamLibBanRule *s2 = [[SamLibBanRule alloc] initFromPattern:@"fuck you" 
+                                                                 category:SamLibBanCategoryWord 
+                                                                threshold:0.6];
+    
+    SamLibBanRule *s3 = [[SamLibBanRule alloc] initFromPattern:@"turok@mail.ru" 
+                                                            category:SamLibBanCategoryEmail];
+    
     SamLibBan * ban = [[SamLibBan alloc] initWithName:@""
-                                             symptoms: KxUtils.array(s1, s2, nil) 
-                                            tolerance:1.7 
+                                                rules: KxUtils.array(s1, s2, s3, nil) 
+                                            tolerance:2
                                                  path:@""];
     
-    NSDictionary *dict = KxUtils.dictionary(@"turok", @"name", 
-                                            @"fuck you op", @"message", 
+    NSDictionary *dict = KxUtils.dictionary(@"turok1", @"name", 
+                                            @"turok@mail.ru", @"email", 
+                                            @"f*ck you op", @"message", 
                                             nil);
     
     SamLibComment *comment = [SamLibComment fromDictionary:dict];
-   
-
-    KxConsole.printlnf(@"ban %d", [ban testForBan:comment withPath:@""]);        
-        
+    
+    
+    KxConsole.printlnf(@"ban %.3f %d", 
+                       [ban computeBan: comment],
+                       [ban testForBan:comment withPath:@""]); 
+    
+    
     //SamLibModerator *moder = [SamLibModerator shared];
     //[moder addBan:ban];
     //[moder save];
@@ -635,7 +644,6 @@ void test_for_ban()
     KX_RELEASE(s2);
     KX_RELEASE(ban);
 }
-
 
 
 
