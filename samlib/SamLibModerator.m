@@ -24,7 +24,7 @@ extern int ddLogLevel;
     NSArray *_words;
 }
 
-@synthesize pattern = _pattern, category = _category, threshold = _threshold;
+@synthesize pattern = _pattern, category = _category, threshold = _threshold, option = _option;
 
 - (void) setPattern:(NSString *)pattern
 {
@@ -41,8 +41,10 @@ extern int ddLogLevel;
 {
     SamLibBanRule *p;
     p = [[SamLibBanRule alloc] initFromPattern:[dict get:@"pattern"]  
-                                         category:[[dict get:@"category"] intValue] 
-                                        threshold:[[dict get:@"threshold"] floatValue]];
+                                         category:[[dict get:@"category"] intValue]];
+    
+    p.threshold = [[dict get:@"threshold"] floatValue];
+    p.option = [[dict get:@"option"] integerValue];    
     return p;
 }
 
@@ -51,36 +53,32 @@ extern int ddLogLevel;
     return KxUtils.dictionary(_pattern, @"pattern",
                               $int(_category), @"category",
                               $float(_threshold), @"threshold",
+                              $int(_option), @"option",  
                               nil);
 }
 
 - (id) initFromPattern: (NSString *) pattern 
-              category: (SamLibBanCategory) category
-{
-    return [self initFromPattern:pattern category:category threshold:1];
-}
-
-- (id) initFromPattern: (NSString *) pattern 
-              category: (SamLibBanCategory) category 
-             threshold: (CGFloat) threshold
+              category: (SamLibBanCategory) category             
 {
     NSAssert(pattern.nonEmpty, @"empty pattern");
-    NSAssert(threshold > 0, @"threshold out of range");        
     
     self = [super init];
     if (self) {
         self.pattern = pattern.lowercaseString;
         _category = category;
-        _threshold = threshold;
+        _threshold = 1;
+        _option = SamLibBanRuleOptionNone;
     }
     return self;
 }
 
 - (id) copyWithZone:(NSZone *)zone
 {
-    return [[SamLibBanRule allocWithZone:zone] initFromPattern:[_pattern copy]
-                                                         category:_category 
-                                                        threshold:_threshold];
+    SamLibBanRule *p = [[SamLibBanRule allocWithZone:zone] initFromPattern:[_pattern copy]
+                                                                  category:_category];
+    p.threshold = _threshold;
+    p.option = _option;
+    return p;
 }
 
 - (NSArray *) patternAsArray
@@ -89,12 +87,9 @@ extern int ddLogLevel;
     
         static NSCharacterSet *separtors = nil;
         if (!separtors)
-            separtors = [NSCharacterSet characterSetWithCharactersInString:@",;|"];        
+            separtors = [NSCharacterSet characterSetWithCharactersInString:@";|"];        
         _words = [_pattern componentsSeparatedByCharactersInSet:separtors];
-        _words = [_words map:^(id elem) {
-            return ((NSString *)elem).trimmed;
-            
-        }];
+//        _words = [_words map:^(id elem) {return ((NSString *)elem).trimmed;}];
     }
     
     return  _words;
@@ -104,35 +99,32 @@ extern int ddLogLevel;
 {
     s = s.lowercaseString;
     
-    if (_category == SamLibBanCategoryWord)
-    {   
-        for (NSString *pattern in [self patternAsArray]) {
-                        
-            CGFloat r = [self->isa test: s 
-                                pattern: pattern
-                              threshold: _threshold];
-            if (r > 0)
-                return r;
-        }
+    for (NSString *pattern in [self patternAsArray]) {
         
-        
-    } else {
-                
-        return [self->isa testWord:s 
-                            pattern:_pattern 
-                          threshold:_threshold];
+        CGFloat r = [self->isa test:s 
+                            pattern:pattern
+                          threshold:_threshold 
+                             option:_option];
+        if (r > 0)
+            return r;
     }
-    
+        
     return 0;
 }
 
 + (CGFloat) test: (NSString *)s 
          pattern: (NSString *)pattern
-       threshold: (CGFloat) threshold
+       threshold: (CGFloat) threshold 
+          option: (SamLibBanRuleOption) option
 {
     CGFloat r = 0;
-    
-    if ([pattern contains:@" "]) {
+    if (option == SamLibBanRuleOptionRegex) {
+        
+        r  = [self testRegexp:s 
+                      pattern:pattern];
+        
+    } else if ([pattern contains:@" "] ||
+        option == SamLibBanRuleOptionSubs ) {
         
         r = [self testSentence:s 
                        pattern:pattern 
@@ -191,6 +183,22 @@ extern int ddLogLevel;
     }
     
     return 0;
+}
+
++ (CGFloat) testRegexp: (NSString *) w
+               pattern: (NSString *) pattern
+{
+    NSRegularExpression *regex;
+    regex = [NSRegularExpression regularExpressionWithPattern:pattern
+                                                      options:NSRegularExpressionCaseInsensitive
+                                                        error:nil];
+    
+    NSTextCheckingResult *match;
+    match = [regex firstMatchInString:w
+                              options:0
+                                range:NSMakeRange(0, w.length)];
+    
+    return match ? 1 : 0;
 }
 
 @end
@@ -304,7 +312,7 @@ extern int ddLogLevel;
             case SamLibBanCategoryName:     s = comment.name;   break;
             case SamLibBanCategoryEmail:    s = comment.email;  break;
             case SamLibBanCategoryURL:      s = comment.link;   break;
-            case SamLibBanCategoryWord:     s = comment.message; break;
+            case SamLibBanCategoryText:     s = comment.message; break;
         }
         
         if (s.nonEmpty)
@@ -330,7 +338,7 @@ extern int ddLogLevel;
             case SamLibBanCategoryName:     s = comment.name;   break;
             case SamLibBanCategoryEmail:    s = comment.email;  break;
             case SamLibBanCategoryURL:      s = comment.link;   break;
-            case SamLibBanCategoryWord:     s = comment.message; break;
+            case SamLibBanCategoryText:     s = comment.message; break;
         }
         
         if (s.nonEmpty)

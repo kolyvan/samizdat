@@ -609,31 +609,39 @@ void test_for_ban()
 {    
     /*
     SamLibBanRule *s1 = [[SamLibBanRule alloc] initFromPattern:@"turok" 
-                                                                 category:SamLibBanCategoryName 
-                                                                threshold:0.8];
+                                                                 category:SamLibBanCategoryName];
+     
+    s1.threshold = 0.8;     
     
-    SamLibBanRule *s2 = [[SamLibBanRule alloc] initFromPattern:@"fuck you" 
-                                                                 category:SamLibBanCategoryWord 
-                                                                threshold:0.6];
+    SamLibBanRule *s2 = [[SamLibBanRule alloc] initFromPattern:@"red color" 
+                                                                 category:SamLibBanCategoryText];
+     
+    s2.threshold = 0.6;
     
     SamLibBanRule *s3 = [[SamLibBanRule alloc] initFromPattern:@"turok@mail.ru" 
                                                             category:SamLibBanCategoryEmail];
     
-    */
-    SamLibBanRule *s4 = [[SamLibBanRule alloc] initFromPattern:@"allah, mega; fuck; fuck off" 
-                                                      category:SamLibBanCategoryWord 
-                                                     threshold:0.7];
+  
+    SamLibBanRule *s4 = [[SamLibBanRule alloc] initFromPattern:@"car|train|plain|green" 
+                                                      category:SamLibBanCategoryText];
+    s4.threshold = 0.7;
+       */
+    
+    SamLibBanRule *s5 = [[SamLibBanRule alloc] initFromPattern:@"\\bfly|\\bxxx\\b" 
+                                                      category:SamLibBanCategoryText];
+    s5.option = SamLibBanRuleOptionRegex;
 
+    //
     
     SamLibBan * ban = [[SamLibBan alloc] initWithName:@""
 //                                                rules: KxUtils.array(s1, s2, s3, nil) 
-                                                rules: KxUtils.array(s4, nil) 
+                                                rules: KxUtils.array(s5, nil) 
                                             tolerance:2
                                                  path:@""];
     
     NSDictionary *dict = KxUtils.dictionary(@"turok1", @"name", 
                                             @"turok@mail.ru", @"email", 
-                                            @"all**h fuck! off! ", @"message", 
+                                            @"op go fly xxxxx! ", @"message", 
                                             nil);
     
     SamLibComment *comment = [SamLibComment fromDictionary:dict];

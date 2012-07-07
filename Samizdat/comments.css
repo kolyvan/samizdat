@@ -64,6 +64,12 @@
 	display: block;
 }
 
+.comment .message .banned {
+    color: gray;
+    font-weight: bold;	
+    text-align: center;	
+}
+
 .info .title {
 	text-align:center;
 	padding: 0em 1em 0em 1em;		

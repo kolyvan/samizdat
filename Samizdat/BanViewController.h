@@ -14,7 +14,6 @@
 
 @interface BanViewController : KxViewController<NSTableViewDataSource, NSTableViewDelegate>
 
-- (IBAction) doneBan :(id)sender;
 - (IBAction) cancel :(id)sender;
 
 - (IBAction) insertRow:(id)sender;

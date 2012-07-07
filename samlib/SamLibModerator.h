@@ -17,21 +17,26 @@ typedef enum {
     SamLibBanCategoryName,
     SamLibBanCategoryEmail, 
     SamLibBanCategoryURL,     
-    SamLibBanCategoryWord,    
+    SamLibBanCategoryText,    
     
 } SamLibBanCategory;
+
+typedef enum {
+
+    SamLibBanRuleOptionNone,
+    SamLibBanRuleOptionSubs,
+    SamLibBanRuleOptionRegex,  
+    
+} SamLibBanRuleOption;
 
 @interface SamLibBanRule : NSObject<NSCopying>
 @property (readwrite, nonatomic, KX_PROP_STRONG) NSString *pattern;
 @property (readwrite, nonatomic) SamLibBanCategory category;
 @property (readwrite, nonatomic) CGFloat threshold;
+@property (readwrite, nonatomic) SamLibBanRuleOption option;
 
 - (id) initFromPattern: (NSString *) pattern 
               category: (SamLibBanCategory) category;
-
-- (id) initFromPattern: (NSString *) pattern 
-              category: (SamLibBanCategory) category 
-             threshold: (CGFloat) threshold;
 
 - (CGFloat) testPatternAgainst: (NSString *) s;
 

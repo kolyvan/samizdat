@@ -88,7 +88,7 @@ static NSString * mkHTML(SamLibComments * comments)
             
             if (ban) {
                 isBanned = YES;
-                message = KxUtils.format(locString(@"banned: %@"), ban.name);
+                message = KxUtils.format(locString(@"<span class='banned'>banned: %@</span>"), ban.name);
             
             } else {
             

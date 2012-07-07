@@ -22,7 +22,7 @@
     IBOutlet NSButton * _banEnabled;    
     IBOutlet NSTableView * _tableView;
     IBOutlet NSTextField *_labelTolerance;
-    IBOutlet NSButton *_buttonDone;    
+    IBOutlet NSButton *_cancelButton;    
     
 }
 
@@ -37,7 +37,7 @@
 
 - (void) flagDirty
 {       
-    [_buttonDone setEnabled:YES];
+    [_cancelButton setEnabled:YES];
 }
 
 - (id) init
@@ -125,23 +125,28 @@
     
     [_tableView reloadData];
     
-    [_buttonDone setEnabled:self.resetBan == nil];
+    [_cancelButton setEnabled:self.resetBan == nil];
 }
 
-- (IBAction) doneBan :(id)sender
+- (void) deactivate
 {
-    SamLibModerator *moder = [SamLibModerator shared];
+    [super deactivate];
     
-    if (self.resetBan)
-        [moder removeBan:self.resetBan];
-    [moder addBan:self.ban];
+    if (self.ban) {
         
-    AppDelegate *appDelegate = [NSApp delegate];
-    [appDelegate goBack:nil];
+        SamLibModerator *moder = [SamLibModerator shared];
+        
+        if (self.resetBan)
+            [moder removeBan:self.resetBan];
+        [moder addBan:self.ban];
+    }    
 }
 
 - (IBAction) cancel :(id)sender
 {
+    self.ban = nil;
+    self.resetBan = nil;
+    
     AppDelegate *appDelegate = [NSApp delegate];
     [appDelegate goBack:nil];
 }
@@ -269,7 +274,8 @@ dataCellForTableColumn:(NSTableColumn *)tableColumn
             SamLibBanRule *rule = [self getRuleForRow:row];
             
             if (rule.category == SamLibBanCategoryURL || 
-                rule.category == SamLibBanCategoryEmail) {
+                rule.category == SamLibBanCategoryEmail ||
+                rule.option == SamLibBanRuleOptionRegex) {
                 
                 static NSCell *cell = nil; // empty cell (no value)
                 if (!cell)
@@ -309,8 +315,16 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
             case SamLibBanCategoryName:     return @"Name";
             case SamLibBanCategoryEmail:    return @"Email";
             case SamLibBanCategoryURL:      return @"URL";
-            case SamLibBanCategoryWord:     return @"Word";                
+            case SamLibBanCategoryText:     return @"Text";                
         }
+        
+    } else if ([tableColumn.identifier isEqualToString:@"option"]) {
+        
+        switch (rule.option) {
+            case SamLibBanRuleOptionNone:    return @"None";
+            case SamLibBanRuleOptionSubs:    return @"Subs";
+            case SamLibBanRuleOptionRegex:   return @"Regex";
+        }            
         
     } else if ([tableColumn.identifier isEqualToString:@"pattern"]) {
 
@@ -343,8 +357,23 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
             rule.category = SamLibBanCategoryEmail;
         else if ([value isEqualToString:@"URL"])
             rule.category = SamLibBanCategoryURL;
-        else if ([value isEqualToString:@"Word"])
-            rule.category = SamLibBanCategoryWord;        
+        else if ([value isEqualToString:@"Text"])
+            rule.category = SamLibBanCategoryText;    
+        else {
+            NSAssert(false, @"unknown SamLibBanCategory");
+        }
+        
+    } else if ([tableColumn.identifier isEqualToString:@"option"]) {
+        
+        if ([value isEqualToString:@"None"])
+            rule.option = SamLibBanRuleOptionNone;
+        else if ([value isEqualToString:@"Subs"])
+            rule.option = SamLibBanRuleOptionSubs;
+        else if ([value isEqualToString:@"Regex"])
+            rule.option = SamLibBanRuleOptionRegex;
+        else {
+            NSAssert(false, @"unknown SamLibBanRuleOption");
+        }    
         
     } else if ([tableColumn.identifier isEqualToString:@"pattern"]) {
         
