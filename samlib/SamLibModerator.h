@@ -22,9 +22,9 @@ typedef enum {
 } SamLibBanCategory;
 
 @interface SamLibBanRule : NSObject<NSCopying>
-@property (readwrite, KX_PROP_STRONG) NSString *pattern;
-@property (readwrite) SamLibBanCategory category;
-@property (readwrite) CGFloat threshold;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSString *pattern;
+@property (readwrite, nonatomic) SamLibBanCategory category;
+@property (readwrite, nonatomic) CGFloat threshold;
 
 - (id) initFromPattern: (NSString *) pattern 
               category: (SamLibBanCategory) category;
@@ -38,11 +38,11 @@ typedef enum {
 @end
 
 @interface SamLibBan : NSObject<NSCopying>
-@property (readwrite, KX_PROP_STRONG) NSString *name;
-@property (readwrite, KX_PROP_STRONG) NSString *path;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSString *name;
+@property (readwrite, nonatomic, KX_PROP_STRONG) NSString *path;
 @property (readonly, KX_PROP_STRONG) NSArray *rules;
-@property (readwrite) CGFloat tolerance;
-@property (readwrite) BOOL enabled;
+@property (readwrite, nonatomic) CGFloat tolerance;
+@property (readwrite, nonatomic) BOOL enabled;
 
 - (id) initWithName: (NSString *) name 
               rules: (NSArray *) rules 

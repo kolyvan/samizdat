@@ -20,8 +20,22 @@
 
 extern int ddLogLevel;
 
-@implementation SamLibBanRule
+@implementation SamLibBanRule {
+    NSArray *_words;
+}
+
 @synthesize pattern = _pattern, category = _category, threshold = _threshold;
+
+- (void) setPattern:(NSString *)pattern
+{
+    NSAssert(pattern, @"pattern is nil");
+    
+    if (![_pattern isEqualToString: pattern]) {
+        
+        _words = nil;
+        _pattern = pattern;
+    }
+}
 
 + (id) fromDictionary: (NSDictionary *) dict
 {
@@ -69,61 +83,109 @@ extern int ddLogLevel;
                                                         threshold:_threshold];
 }
 
+- (NSArray *) patternAsArray
+{
+    if (!_words) {
+    
+        static NSCharacterSet *separtors = nil;
+        if (!separtors)
+            separtors = [NSCharacterSet characterSetWithCharactersInString:@",;|"];        
+        _words = [_pattern componentsSeparatedByCharactersInSet:separtors];
+        _words = [_words map:^(id elem) {
+            return ((NSString *)elem).trimmed;
+            
+        }];
+    }
+    
+    return  _words;
+}
+
 - (CGFloat) testPatternAgainst: (NSString *) s
 {
     s = s.lowercaseString;
     
     if (_category == SamLibBanCategoryWord)
-    {
-        BOOL sentence= [_pattern contains:@" "];
-        
-        if (sentence) {
-            
-            return [self testSentence: s];
+    {   
+        for (NSString *pattern in [self patternAsArray]) {
                         
-        } else {
-            for (NSString * w in [s split]) {
-                CGFloat r = [self testWord: w];
-                if (r > 0)
-                    return r;             
-            }
+            CGFloat r = [self->isa test: s 
+                                pattern: pattern
+                              threshold: _threshold];
+            if (r > 0)
+                return r;
         }
+        
         
     } else {
                 
-        return [self testWord: s];
+        return [self->isa testWord:s 
+                            pattern:_pattern 
+                          threshold:_threshold];
     }
     
     return 0;
 }
 
-- (CGFloat) test: (NSString *) s
++ (CGFloat) test: (NSString *)s 
+         pattern: (NSString *)pattern
+       threshold: (CGFloat) threshold
 {
-    float distance = levenshteinDistanceNS2(_pattern, s);
-    distance = 1.0 - (distance / MAX(_pattern.length, s.length));
-    return _threshold < distance ? distance : 0;
-}
-
-- (CGFloat) testWord: (NSString *) s
-{
-    if (_threshold > 0.999)        
-        return [s isEqualToString:_pattern] ? 1 : 0;    
-    return [self test: s];
-}
-
-- (CGFloat) testSentence: (NSString *) s
-{
-    if (_threshold > 0.999)        
-        return [s rangeOfString:_pattern].location != NSNotFound ? 1 : 0;
+    CGFloat r = 0;
     
-    if (_pattern.length >= s.length)        
-        return [self test: s];
+    if ([pattern contains:@" "]) {
+        
+        r = [self testSentence:s 
+                       pattern:pattern 
+                     threshold:threshold];
+        
+    } else {
+        
+        for (NSString * w in [s split]) {
+            
+            r = [self testWord:w 
+                       pattern:pattern 
+                     threshold:threshold];
+            if (r > 0) 
+                break;
+        }            
+    }
 
-    NSInteger n = s.length - _pattern.length;
+    return r;
+}
+
++ (CGFloat) fuzzyTest: (NSString *)w 
+              pattern: (NSString *)pattern
+            threshold: (CGFloat) threshold
+{
+    float distance = levenshteinDistanceNS2(pattern, w);
+    distance = 1.0 - (distance / MAX(pattern.length, w.length));
+    return threshold < distance ? distance : 0;
+}
+
++ (CGFloat) testWord: (NSString *) w
+             pattern: (NSString *) pattern
+           threshold: (CGFloat) threshold
+{
+    if (threshold > 0.999)        
+        return [w isEqualToString:pattern] ? 1 : 0;    
+    return [self fuzzyTest:w pattern:pattern threshold:threshold];
+}
+
++ (CGFloat) testSentence: (NSString *) s 
+                 pattern: (NSString *) pattern
+                threshold: (CGFloat) threshold
+
+{    if (threshold > 0.999)        
+        return [s rangeOfString:pattern].location != NSNotFound ? 1 : 0;
+    
+    if (pattern.length >= s.length)        
+        return [self fuzzyTest:s pattern:pattern threshold:threshold];
+
+    NSInteger n = s.length - pattern.length;
     for (int i = 0; i < n; ++i) {
         
-        NSString *subs = [s substringWithRange:NSMakeRange(i, _pattern.length)];
-        CGFloat r = [self test: subs];
+        NSString *subs = [s substringWithRange:NSMakeRange(i, pattern.length)];
+        CGFloat r = [self fuzzyTest:subs pattern:pattern threshold:threshold];
         if (r > 0)
             return r;        
     }

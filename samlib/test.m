@@ -607,6 +607,7 @@ void test_cache()
 
 void test_for_ban()
 {    
+    /*
     SamLibBanRule *s1 = [[SamLibBanRule alloc] initFromPattern:@"turok" 
                                                                  category:SamLibBanCategoryName 
                                                                 threshold:0.8];
@@ -618,21 +619,28 @@ void test_for_ban()
     SamLibBanRule *s3 = [[SamLibBanRule alloc] initFromPattern:@"turok@mail.ru" 
                                                             category:SamLibBanCategoryEmail];
     
+    */
+    SamLibBanRule *s4 = [[SamLibBanRule alloc] initFromPattern:@"allah, mega; fuck; fuck off" 
+                                                      category:SamLibBanCategoryWord 
+                                                     threshold:0.7];
+
+    
     SamLibBan * ban = [[SamLibBan alloc] initWithName:@""
-                                                rules: KxUtils.array(s1, s2, s3, nil) 
+//                                                rules: KxUtils.array(s1, s2, s3, nil) 
+                                                rules: KxUtils.array(s4, nil) 
                                             tolerance:2
                                                  path:@""];
     
     NSDictionary *dict = KxUtils.dictionary(@"turok1", @"name", 
                                             @"turok@mail.ru", @"email", 
-                                            @"f*ck you op", @"message", 
+                                            @"all**h fuck! off! ", @"message", 
                                             nil);
     
     SamLibComment *comment = [SamLibComment fromDictionary:dict];
     
     
     KxConsole.printlnf(@"ban %.3f %d", 
-                       [ban computeBan: comment],
+                       [ban computeBan:comment],
                        [ban testForBan:comment withPath:@""]); 
     
     
