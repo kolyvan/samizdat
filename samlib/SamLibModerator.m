@@ -286,11 +286,18 @@ extern int ddLogLevel;
 @implementation SamLibModerator {
     
     NSMutableArray *_allBans;
-    NSString * _hash;
+    id _hash;
 
 }
 
 @synthesize allBans = _allBans;
+
+- (id) version
+{
+    return [[_allBans map:^id(id elem) {
+        return [elem toDictionary]; 
+    }] description].md5;
+}
 
 + (SamLibModerator *) shared
 {
@@ -321,7 +328,7 @@ extern int ddLogLevel;
         for (NSDictionary *d in array)
             [_allBans push:[SamLibBan fromDictionary:d]];                
         
-        _hash = _allBans.description.md5;
+        _hash = self.version;
     }
     return self;
 }
@@ -330,7 +337,8 @@ extern int ddLogLevel;
                   withPath:(NSString *)path
 {
     for (SamLibBan *ban in _allBans) {
-        if ([ban testForBan:comment withPath:path])
+        if (ban.enabled &&
+            [ban testForBan:comment withPath:path])
             return ban;    
     }
     return nil;
@@ -353,9 +361,9 @@ extern int ddLogLevel;
 
 - (void) save
 {
-    NSString *newHash = _allBans.description.md5;
+    id newHash = self.version;
     
-    if (![_hash isEqualToString:newHash]) {
+    if (![_hash isEqual:newHash]) {
 
         _hash = newHash;
         

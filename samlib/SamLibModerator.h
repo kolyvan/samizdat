@@ -63,6 +63,7 @@ typedef enum {
 @interface SamLibModerator : NSObject
 
 @property (readonly, KX_PROP_STRONG) NSArray * allBans;
+@property (readonly) id version;
 
 + (SamLibModerator *) shared;
 

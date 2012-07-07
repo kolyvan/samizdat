@@ -172,10 +172,12 @@ static NSString * mkHTML(SamLibComments * comments)
     BOOL _isReply;
     
     id _version;
+    id _modVersion;
 }
 
 @property (readonly, nonatomic) NSTextField * nameField;
 @property (readwrite, nonatomic, copy) id version;
+@property (readwrite, nonatomic, copy) id modVersion;
 
 @end
 
@@ -184,6 +186,7 @@ static NSString * mkHTML(SamLibComments * comments)
 
 @synthesize nameField = _nameField;
 @synthesize version = _version;
+@synthesize modVersion = _modVersion;
  
 - (id)init
 {
@@ -206,12 +209,16 @@ static NSString * mkHTML(SamLibComments * comments)
     NSAssert([obj isKindOfClass: [SamLibComments class]], @"invalid class");
     SamLibComments * comments = obj;    
     
+    id modVersion = [SamLibModerator shared].version;
+    
     if (_comments == comments &&
-        [comments.version isEqualTo:_version]) {            
+        [comments.version isEqualTo:_version] &&
+        [modVersion isEqualToString:_modVersion]) {            
 
             return;  
     }
 
+    self.modVersion = modVersion;
     self.version = comments.version;    
     _needReloadWebView = YES;        
     KX_RELEASE(_comments);
