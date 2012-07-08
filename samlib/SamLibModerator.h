@@ -25,9 +25,18 @@ typedef enum {
 
     SamLibBanRuleOptionNone,
     SamLibBanRuleOptionSubs,
-    SamLibBanRuleOptionRegex,  
+    SamLibBanRuleOptionRegex,
+    SamLibBanRuleOptionLink,    
     
 } SamLibBanRuleOption;
+
+typedef enum {
+    
+    SamLibBanTestOptionAll,
+    SamLibBanTestOptionGuests,         
+    SamLibBanTestOptionSamizdat,
+    
+} SamLibBanTestOption;
 
 @interface SamLibBanRule : NSObject<NSCopying>
 @property (readwrite, nonatomic, KX_PROP_STRONG) NSString *pattern;
@@ -48,16 +57,17 @@ typedef enum {
 @property (readonly, KX_PROP_STRONG) NSArray *rules;
 @property (readwrite, nonatomic) CGFloat tolerance;
 @property (readwrite, nonatomic) BOOL enabled;
+@property (readwrite, nonatomic) SamLibBanTestOption option;
 
 - (id) initWithName: (NSString *) name 
               rules: (NSArray *) rules 
           tolerance: (CGFloat) tolerance
                path: (NSString *) path;
 
+
 - (BOOL) checkPath: (NSString *) path;
 - (CGFloat) computeBan: (SamLibComment *) comment;
-- (BOOL) testForBan: (SamLibComment *) comment 
-           withPath: (NSString *) path;
+- (BOOL) testForBan: (SamLibComment *) comment;
 
 - (void) addRule:(SamLibBanRule *)rule;
 - (void) removeRule:(SamLibBanRule *)rule;
@@ -80,5 +90,8 @@ typedef enum {
 - (void) removeBanAtIndex:(NSUInteger)index;
 
 - (void) save;
+
+- (void) registerLinkToPattern: (NSString *) name pattern: (NSArray *) pattern;
+- (NSArray *) lookupPatternByLink: (NSString *) name;
 
 @end

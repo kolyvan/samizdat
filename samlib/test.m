@@ -20,6 +20,7 @@
 #import "NSDictionary+Kolyvan.h"
 #import "NSArray+Kolyvan.h"
 #import "NSDate+Kolyvan.h"
+#import "NSData+Kolyvan.h"
 #import "NSString+Kolyvan.h"
 #import "SamLibUser.h"
 #import "JSONKit.h"
@@ -627,29 +628,35 @@ void test_for_ban()
     s4.threshold = 0.7;
        */
     
-    SamLibBanRule *s5 = [[SamLibBanRule alloc] initFromPattern:@"\\bfly|\\bxxx\\b" 
+    SamLibBanRule *s5 = [[SamLibBanRule alloc] initFromPattern:@"colors" 
                                                       category:SamLibBanCategoryText];
-    s5.option = SamLibBanRuleOptionRegex;
-
+    s5.option = SamLibBanRuleOptionLink;
+    
     //
     
     SamLibBan * ban = [[SamLibBan alloc] initWithName:@""
 //                                                rules: KxUtils.array(s1, s2, s3, nil) 
                                                 rules: KxUtils.array(s5, nil) 
-                                            tolerance:2
+                                            tolerance:1
                                                  path:@""];
     
     NSDictionary *dict = KxUtils.dictionary(@"turok1", @"name", 
                                             @"turok@mail.ru", @"email", 
-                                            @"op go fly xxxxx! ", @"message", 
+                                            @"op is green! troll", @"message", 
                                             nil);
     
     SamLibComment *comment = [SamLibComment fromDictionary:dict];
     
+
+    SamLibModerator *moder = [SamLibModerator shared];
+   
+    [moder registerLinkToPattern:@"colors" 
+                         pattern:KxUtils.array(@"red", @"green", nil)];
+    
     
     KxConsole.printlnf(@"ban %.3f %d", 
                        [ban computeBan:comment],
-                       [ban testForBan:comment withPath:@""]); 
+                       [ban testForBan:comment]); 
     
     
     //SamLibModerator *moder = [SamLibModerator shared];

@@ -324,6 +324,7 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
             case SamLibBanRuleOptionNone:    return @"None";
             case SamLibBanRuleOptionSubs:    return @"Subs";
             case SamLibBanRuleOptionRegex:   return @"Regex";
+            case SamLibBanRuleOptionLink:    return @"Link";                
         }            
         
     } else if ([tableColumn.identifier isEqualToString:@"pattern"]) {

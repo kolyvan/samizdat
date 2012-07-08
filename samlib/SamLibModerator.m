@@ -21,7 +21,7 @@
 extern int ddLogLevel;
 
 @implementation SamLibBanRule {
-    NSArray *_words;
+    NSArray *_patternAsArray;
 }
 
 @synthesize pattern = _pattern, category = _category, threshold = _threshold, option = _option;
@@ -32,7 +32,7 @@ extern int ddLogLevel;
     
     if (![_pattern isEqualToString: pattern]) {
         
-        _words = nil;
+        _patternAsArray = nil;
         _pattern = pattern;
     }
 }
@@ -83,66 +83,71 @@ extern int ddLogLevel;
 
 - (NSArray *) patternAsArray
 {
-    if (!_words) {
+    if (!_patternAsArray) {
     
-        static NSCharacterSet *separtors = nil;
-        if (!separtors)
-            separtors = [NSCharacterSet characterSetWithCharactersInString:@";|"];        
-        _words = [_pattern componentsSeparatedByCharactersInSet:separtors];
-//        _words = [_words map:^(id elem) {return ((NSString *)elem).trimmed;}];
+        if (_option == SamLibBanRuleOptionLink) {
+            
+            _patternAsArray = [[SamLibModerator shared] lookupPatternByLink: _pattern];
+        }
+        else {
+            static NSCharacterSet *separtors = nil;
+            if (!separtors)
+                separtors = [NSCharacterSet characterSetWithCharactersInString:@";|"];        
+            _patternAsArray = [_pattern componentsSeparatedByCharactersInSet:separtors];         
+        }
     }
     
-    return  _words;
+    return _patternAsArray;
 }
 
 - (CGFloat) testPatternAgainst: (NSString *) s
 {
     s = s.lowercaseString;
     
-    for (NSString *pattern in [self patternAsArray]) {
+    if (_option == SamLibBanRuleOptionRegex) {
         
-        CGFloat r = [self->isa test:s 
-                            pattern:pattern
-                          threshold:_threshold 
-                             option:_option];
-        if (r > 0)
-            return r;
+        return [self->isa testRegexp:s pattern:_pattern];
+        
+    } else {
+    
+        NSArray *words = nil;
+        
+        for (NSString *pattern in self.patternAsArray) {
+                                    
+            if ([pattern contains:@" "] ||
+                _option == SamLibBanRuleOptionSubs ) {
+                
+                CGFloat r = [self->isa testSentence:s 
+                                            pattern:pattern 
+                                          threshold:_threshold];
+                
+                if (r > 0)
+                    return r;
+                
+            } else {
+                                
+                if (!words) {
+                    static NSCharacterSet *separtors = nil;
+                    if (!separtors)
+                        separtors = [NSCharacterSet characterSetWithCharactersInString:@" \n\r\t.,;:\"!?"];
+                    words = [[s componentsSeparatedByCharactersInSet: separtors] filter:^(id elem) {
+                        return [elem nonEmpty];
+                    }];
+                }
+                
+                for (NSString *w in words) {
+                    
+                    CGFloat r = [self->isa testWord:w
+                                            pattern:pattern 
+                                          threshold:_threshold];
+                    if (r > 0) 
+                        return r;;
+                }            
+            }
+        }
     }
         
     return 0;
-}
-
-+ (CGFloat) test: (NSString *)s 
-         pattern: (NSString *)pattern
-       threshold: (CGFloat) threshold 
-          option: (SamLibBanRuleOption) option
-{
-    CGFloat r = 0;
-    if (option == SamLibBanRuleOptionRegex) {
-        
-        r  = [self testRegexp:s 
-                      pattern:pattern];
-        
-    } else if ([pattern contains:@" "] ||
-        option == SamLibBanRuleOptionSubs ) {
-        
-        r = [self testSentence:s 
-                       pattern:pattern 
-                     threshold:threshold];
-        
-    } else {
-        
-        for (NSString * w in [s split]) {
-            
-            r = [self testWord:w 
-                       pattern:pattern 
-                     threshold:threshold];
-            if (r > 0) 
-                break;
-        }            
-    }
-
-    return r;
 }
 
 + (CGFloat) fuzzyTest: (NSString *)w 
@@ -214,6 +219,7 @@ extern int ddLogLevel;
 @synthesize tolerance = _tolerance; 
 @synthesize path = _path;
 @synthesize enabled = _enabled;
+@synthesize option = _option;
 
 + (id) fromDictionary: (NSDictionary *) dict
 {
@@ -230,6 +236,7 @@ extern int ddLogLevel;
                                    path: [dict get:@"path"]];
 
     p.enabled = [[dict get:@"enabled"] boolValue];
+    p.option =  [[dict get:@"option"] integerValue];
     return p;
 }
 
@@ -244,6 +251,7 @@ extern int ddLogLevel;
                               rules, @"rules",
                               $float(_tolerance), @"tolerance",
                               $bool(_enabled), @"enabled",
+                              $int(_option), @"option",                              
                               nil);
 }
 
@@ -263,6 +271,7 @@ extern int ddLogLevel;
         self.path = path;
         _tolerance = tolerance;
         _enabled = YES;
+        _option = SamLibBanTestOptionAll;
     }
     return self;
 }
@@ -274,6 +283,7 @@ extern int ddLogLevel;
                                                       tolerance:_tolerance 
                                                            path:[_path copy]];
     p.enabled = _enabled;
+    p.option = _option;
     return p;
 }
 
@@ -322,12 +332,14 @@ extern int ddLogLevel;
     return result;
 }
 
-- (BOOL) testForBan: (SamLibComment *) comment 
-           withPath:(NSString *)path
-{
-    if (![self checkPath: path])
-        return NO;
-    
+- (BOOL) testForBan: (SamLibComment *) comment
+{   
+    if (_option != SamLibBanTestOptionAll) {
+        BOOL isSamizdat = _option == SamLibBanTestOptionSamizdat;
+        if (isSamizdat != comment.isSamizdat)
+            return NO;
+    }
+        
     CGFloat total = 0;
         
     for (SamLibBanRule *rule in _rules) {
@@ -354,9 +366,10 @@ extern int ddLogLevel;
 @end
 
 @implementation SamLibModerator {
-    
-    NSMutableArray *_allBans;
+
     id _hash;
+    NSMutableArray *_allBans;
+    NSMutableDictionary *_links;
 
 }
 
@@ -407,8 +420,9 @@ extern int ddLogLevel;
                   withPath:(NSString *)path
 {
     for (SamLibBan *ban in _allBans) {
-        if (ban.enabled &&
-            [ban testForBan:comment withPath:path])
+        if ([ban enabled] &&
+            [ban checkPath: path] &&
+            [ban testForBan:comment])
             return ban;    
     }
     return nil;
@@ -445,6 +459,18 @@ extern int ddLogLevel;
         
         DDLogInfo(@"saved bans: %d", _allBans.count);
     }
+}
+
+- (void) registerLinkToPattern: (NSString *) name pattern: (NSArray *) pattern
+{
+    if (!_links)
+        _links = [NSMutableDictionary dictionary];
+    [_links update:name value:pattern];
+}
+
+- (NSArray *) lookupPatternByLink: (NSString *) name
+{
+    return [_links get:name orElse:[NSArray array]];
 }
 
 @end

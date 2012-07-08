@@ -109,6 +109,9 @@
 		87B3C8C615612621005BEC19 /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87B3C8C515612621005BEC19 /* WebViewController.m */; };
 		87B3C8C8156133F4005BEC19 /* comments.html in Resources */ = {isa = PBXBuildFile; fileRef = 87B3C8C7156133F4005BEC19 /* comments.html */; };
 		87B3C8CA156150AB005BEC19 /* reply.png in Resources */ = {isa = PBXBuildFile; fileRef = 87B3C8C9156150AB005BEC19 /* reply.png */; };
+		87CFB1FE15A9A89A008CCD1D /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 87CFB1FD15A9A89A008CCD1D /* libz.dylib */; };
+		87CFB20015A9A8A4008CCD1D /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 87CFB1FD15A9A89A008CCD1D /* libz.dylib */; };
+		87CFB20C15A9D11C008CCD1D /* censored.bin in Resources */ = {isa = PBXBuildFile; fileRef = 87CFB20915A9C8D3008CCD1D /* censored.bin */; };
 		87D33F621557C3C300784BB2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87D33F611557C3C300784BB2 /* Foundation.framework */; };
 		87D33F651557C3C300784BB2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 87D33F641557C3C300784BB2 /* main.m */; };
 		87D33F791557C5E000784BB2 /* samlib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 87D33F5D1557C3C300784BB2 /* samlib */; };
@@ -318,8 +321,10 @@
 		87B3C8C0156124B4005BEC19 /* CommentsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentsViewController.m; sourceTree = "<group>"; };
 		87B3C8C415612621005BEC19 /* WebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewController.h; sourceTree = "<group>"; };
 		87B3C8C515612621005BEC19 /* WebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewController.m; sourceTree = "<group>"; };
-		87B3C8C7156133F4005BEC19 /* comments.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = comments.html; sourceTree = "<group>"; };
+		87B3C8C7156133F4005BEC19 /* comments.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = comments.html; path = Samizdat/comments.html; sourceTree = "<group>"; };
 		87B3C8C9156150AB005BEC19 /* reply.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = reply.png; path = images/reply.png; sourceTree = "<group>"; };
+		87CFB1FD15A9A89A008CCD1D /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		87CFB20915A9C8D3008CCD1D /* censored.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = censored.bin; path = Samizdat/censored.bin; sourceTree = "<group>"; };
 		87D33F5D1557C3C300784BB2 /* samlib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = samlib; sourceTree = BUILT_PRODUCTS_DIR; };
 		87D33F611557C3C300784BB2 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		87D33F641557C3C300784BB2 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -365,7 +370,7 @@
 		87EFB8C81563A9C600494047 /* new-red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "new-red.png"; path = "images/new-red.png"; sourceTree = "<group>"; };
 		87EFB8D11563C6D200494047 /* TableCellViewEx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableCellViewEx.h; sourceTree = "<group>"; };
 		87EFB8D21563C6D300494047 /* TableCellViewEx.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableCellViewEx.m; sourceTree = "<group>"; };
-		87F0CD2B1562188D008E96D8 /* comment.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = comment.html; sourceTree = "<group>"; };
+		87F0CD2B1562188D008E96D8 /* comment.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = comment.html; path = Samizdat/comment.html; sourceTree = "<group>"; };
 		87F201FE159023690083F879 /* SearchAuthorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchAuthorViewController.h; sourceTree = "<group>"; };
 		87F201FF159023690083F879 /* SearchAuthorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchAuthorViewController.m; sourceTree = "<group>"; };
 		87F20200159023690083F879 /* SearchAuthorView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SearchAuthorView.xib; sourceTree = "<group>"; };
@@ -408,9 +413,9 @@
 		87FA5A2C1560BB6800E8DDBD /* TextViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextViewController.m; sourceTree = "<group>"; };
 		87FA5A2D1560BB6800E8DDBD /* TextView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TextView.xib; sourceTree = "<group>"; };
 		87FA5A311560BD9800E8DDBD /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
-		87FA5A3A1560C3A500E8DDBD /* comments.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = comments.css; sourceTree = "<group>"; };
-		87FA5A3C1560E07400E8DDBD /* text.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = text.css; sourceTree = "<group>"; };
-		87FA5A3D1560E07400E8DDBD /* text.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = text.html; sourceTree = "<group>"; };
+		87FA5A3A1560C3A500E8DDBD /* comments.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = comments.css; path = Samizdat/comments.css; sourceTree = "<group>"; };
+		87FA5A3C1560E07400E8DDBD /* text.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = text.css; path = Samizdat/text.css; sourceTree = "<group>"; };
+		87FA5A3D1560E07400E8DDBD /* text.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = text.html; path = Samizdat/text.html; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -418,6 +423,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				87CFB1FE15A9A89A008CCD1D /* libz.dylib in Frameworks */,
 				87F2F8A6158DC63700AF0BF1 /* libsqlite3.dylib in Frameworks */,
 				87FA5A321560BD9800E8DDBD /* WebKit.framework in Frameworks */,
 				87163EAA155D1889001D4818 /* Cocoa.framework in Frameworks */,
@@ -430,6 +436,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				87CFB20015A9A8A4008CCD1D /* libz.dylib in Frameworks */,
 				87F2F8A7158DC65C00AF0BF1 /* libsqlite3.dylib in Frameworks */,
 				87F29667155CDA9A0006F982 /* Security.framework in Frameworks */,
 				87D33F621557C3C300784BB2 /* Foundation.framework in Frameworks */,
@@ -500,11 +507,6 @@
 				87B2E54B156698D100A3113C /* MainMenu.strings */,
 				87B2E5411566969400A3113C /* AddAuthorView.strings */,
 				87B2E52D156668FD00A3113C /* Localizable.strings */,
-				87FA5A3A1560C3A500E8DDBD /* comments.css */,
-				87FA5A3C1560E07400E8DDBD /* text.css */,
-				87FA5A3D1560E07400E8DDBD /* text.html */,
-				87B3C8C7156133F4005BEC19 /* comments.html */,
-				87F0CD2B1562188D008E96D8 /* comment.html */,
 				87163EAD155D1889001D4818 /* Samizdat-Info.plist */,
 				87163EAE155D1889001D4818 /* InfoPlist.strings */,
 				87163EB1155D1889001D4818 /* main.m */,
@@ -623,11 +625,26 @@
 			path = logger;
 			sourceTree = "<group>";
 		};
+		87CFB20B15A9D0E3008CCD1D /* resources */ = {
+			isa = PBXGroup;
+			children = (
+				87CFB20915A9C8D3008CCD1D /* censored.bin */,
+				87FA5A3A1560C3A500E8DDBD /* comments.css */,
+				87FA5A3C1560E07400E8DDBD /* text.css */,
+				87FA5A3D1560E07400E8DDBD /* text.html */,
+				87B3C8C7156133F4005BEC19 /* comments.html */,
+				87F0CD2B1562188D008E96D8 /* comment.html */,
+			);
+			name = resources;
+			sourceTree = "<group>";
+		};
 		87D33F521557C3C300784BB2 = {
 			isa = PBXGroup;
 			children = (
+				87CFB1FD15A9A89A008CCD1D /* libz.dylib */,
 				87F2F8A5158DC63700AF0BF1 /* libsqlite3.dylib */,
 				87EA4D3F15653003000D5F41 /* icon.icns */,
+				87CFB20B15A9D0E3008CCD1D /* resources */,
 				871B5E8D155E841500FCAFB9 /* images */,
 				8771A6841558FAA2001BB718 /* kxtools */,
 				87D33F7A1557C68100784BB2 /* vendors */,
@@ -901,6 +918,7 @@
 				87F2020E159059C90083F879 /* samlib.png in Resources */,
 				8708A90115A6EBA3008D1893 /* BanView.xib in Resources */,
 				87E0FC5215A81DB300338A15 /* BansView.xib in Resources */,
+				87CFB20C15A9D11C008CCD1D /* censored.bin in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
