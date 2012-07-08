@@ -150,7 +150,16 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
         } else if ([tableColumn.identifier isEqualToString:@"path"]) {
             
             return ban.path;
-        } 
+            
+        }  else if ([tableColumn.identifier isEqualToString:@"test"]) {
+            
+            switch (ban.option) {
+                    
+                case SamLibBanTestOptionAll:     return @"All";
+                case SamLibBanTestOptionGuests:  return @"Guests";
+                case SamLibBanTestOptionSamizdat:return @"Samlib";
+            }               
+        }
     }
     
     return nil;
@@ -180,7 +189,20 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
         } else if ([tableColumn.identifier isEqualToString:@"path"]) {
             
             ban.path = value;
-        }   
+            
+        } else if ([tableColumn.identifier isEqualToString:@"test"]) {
+            
+            if ([value isEqualToString:@"All"])
+                ban.option = SamLibBanTestOptionAll;
+            else if ([value isEqualToString:@"Guests"])
+                ban.option = SamLibBanTestOptionGuests;
+            else if ([value isEqualToString:@"Samlib"])
+                ban.option = SamLibBanTestOptionSamizdat;     
+            else {
+                NSAssert(false, @"unknown SamLibBanTestOption");
+            }   
+        }
+            
     }
 }
 

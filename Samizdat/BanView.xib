@@ -262,7 +262,7 @@
 													</object>
 												</object>
 												<object class="NSComboBoxCell" key="NSDataCell" id="971437672">
-													<int key="NSCellFlags">338820672</int>
+													<int key="NSCellFlags">70385217</int>
 													<int key="NSCellFlags2">272630784</int>
 													<string key="NSContents"/>
 													<reference key="NSSupport" ref="694703597"/>
@@ -374,7 +374,7 @@
 													<reference key="NSTextColor" ref="422919886"/>
 												</object>
 												<object class="NSComboBoxCell" key="NSDataCell" id="28924266">
-													<int key="NSCellFlags">338820672</int>
+													<int key="NSCellFlags">70385217</int>
 													<int key="NSCellFlags2">272630784</int>
 													<string key="NSContents"/>
 													<reference key="NSSupport" ref="694703597"/>
@@ -388,11 +388,12 @@
 														<string>None</string>
 														<string>Subs</string>
 														<string>Regex</string>
+														<string>Link</string>
 													</array>
 													<object class="NSComboTableView" key="NSTableView" id="767601272">
 														<reference key="NSNextResponder"/>
 														<int key="NSvFlags">274</int>
-														<string key="NSFrameSize">{13, 21}</string>
+														<string key="NSFrameSize">{13, 63}</string>
 														<reference key="NSSuperview"/>
 														<reference key="NSWindow"/>
 														<string key="NSReuseIdentifierKey">_NS:24</string>
@@ -1131,6 +1132,7 @@
 					<string>None</string>
 					<string>Subs</string>
 					<string>Regex</string>
+					<string>Link</string>
 				</array>
 				<string key="251.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="3.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>

@@ -17,7 +17,9 @@
 #import "KxUtils.h"
 #import "NSString+Kolyvan.h"
 #import "NSDictionary+Kolyvan.h"
+#import "NSArray+Kolyvan.h"
 #import "NSDate+Kolyvan.h"
+#import "NSData+Kolyvan.h"
 
 #import "DDLog.h"
 
@@ -192,6 +194,19 @@ static NSString * mkHTML(SamLibComments * comments)
 {
     self = [super initWithNibName:@"CommentsView"];
     if (self) {
+        
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            
+            NSData *d = [NSData dataWithContentsOfFile:KxUtils.pathForResource(@"censored.bin")];
+            NSString *s = [NSString stringWithUTF8String:d.gunzip.bytes];
+            NSArray *a = s.split;
+            if (a.nonEmpty) {
+                SamLibModerator *moderator = [SamLibModerator shared];       
+                [moderator registerLinkToPattern:@"censored" pattern:a];
+            }            
+        });
+        
     }    
     return self;
 }
@@ -221,9 +236,9 @@ static NSString * mkHTML(SamLibComments * comments)
     self.modVersion = modVersion;
     self.version = comments.version;    
     _needReloadWebView = YES;        
-    KX_RELEASE(_comments);
+    KX_RELEASE(_comments);    
     _comments = KX_RETAIN(comments);        
-    
+        
     DDLogInfo(@"reload comments view %@", _comments.text.path);        
 }
 

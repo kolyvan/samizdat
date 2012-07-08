@@ -359,7 +359,7 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
         else if ([value isEqualToString:@"URL"])
             rule.category = SamLibBanCategoryURL;
         else if ([value isEqualToString:@"Text"])
-            rule.category = SamLibBanCategoryText;    
+            rule.category = SamLibBanCategoryText;
         else {
             NSAssert(false, @"unknown SamLibBanCategory");
         }
@@ -372,6 +372,8 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn
             rule.option = SamLibBanRuleOptionSubs;
         else if ([value isEqualToString:@"Regex"])
             rule.option = SamLibBanRuleOptionRegex;
+        else if ([value isEqualToString:@"Link"])
+            rule.option = SamLibBanRuleOptionLink;        
         else {
             NSAssert(false, @"unknown SamLibBanRuleOption");
         }    
