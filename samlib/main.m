@@ -92,7 +92,8 @@ int main(int argc, const char * argv[])
         //test_vote();       
         //test_cache();
         //test_search();  
-        test_for_ban();
+        test_search_text();  
+        //test_for_ban();
         
         SamLibAgent.cleanup();        
         

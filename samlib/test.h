@@ -28,5 +28,6 @@ extern void test_vote();
 
 extern void test_search();
 extern void test_cache();
+extern void test_search_text();
 
 extern void test_for_ban();

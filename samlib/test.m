@@ -570,6 +570,25 @@ void test_search()
     });
 }
 
+void test_search_text() 
+{
+    [SamLibSearch searchText: @"политика" 
+                         block:^(NSArray *result) {
+                             
+                             if (result.nonEmpty) {
+                                 
+                                 for (NSDictionary *d in result)
+                                     KxConsole.printlnf(@"%@ %@ %@", 
+                                                        [d get:@"name"], 
+                                                        [d get:@"key"],
+                                                        [d get:@"info"]);    
+                             } else {                                   
+                                 
+                                 KxConsole.println(@"finish searching");                                       
+                             }
+                         }];
+}
+
 
 void test_cache()
 {   
