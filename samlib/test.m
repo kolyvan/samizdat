@@ -621,38 +621,40 @@ void test_for_ban()
     
     SamLibBanRule *s3 = [[SamLibBanRule alloc] initFromPattern:@"turok@mail.ru" 
                                                             category:SamLibBanCategoryEmail];
+     
+     
+     SamLibBanRule *s5 = [[SamLibBanRule alloc] initFromPattern:@"colors" 
+     category:SamLibBanCategoryText];
+     s5.option = SamLibBanRuleOptionLink;
+     
+     SamLibModerator *moder = [SamLibModerator shared];
+     
+     [moder registerLinkToPattern:@"colors" 
+     pattern:KxUtils.array(@"red", @"green", nil)];
+ 
     
-  
-    SamLibBanRule *s4 = [[SamLibBanRule alloc] initFromPattern:@"car|train|plain|green" 
+       */
+        
+    SamLibBanRule *s4 = [[SamLibBanRule alloc] initFromPattern:@"troll|green" 
                                                       category:SamLibBanCategoryText];
     s4.threshold = 0.7;
-       */
-    
-    SamLibBanRule *s5 = [[SamLibBanRule alloc] initFromPattern:@"colors" 
-                                                      category:SamLibBanCategoryText];
-    s5.option = SamLibBanRuleOptionLink;
     
     //
     
     SamLibBan * ban = [[SamLibBan alloc] initWithName:@""
-//                                                rules: KxUtils.array(s1, s2, s3, nil) 
-                                                rules: KxUtils.array(s5, nil) 
+                                                rules: KxUtils.array(s4, nil) 
                                             tolerance:1
                                                  path:@""];
     
     NSDictionary *dict = KxUtils.dictionary(@"turok1", @"name", 
                                             @"turok@mail.ru", @"email", 
-                                            @"op is green! troll", @"message", 
+                                            @"op is gr**n troll!", @"message", 
                                             nil);
     
     SamLibComment *comment = [SamLibComment fromDictionary:dict];
     
 
-    SamLibModerator *moder = [SamLibModerator shared];
-   
-    [moder registerLinkToPattern:@"colors" 
-                         pattern:KxUtils.array(@"red", @"green", nil)];
-    
+       
     
     KxConsole.printlnf(@"ban %.3f %d", 
                        [ban computeBan:comment],

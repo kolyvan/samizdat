@@ -92,7 +92,7 @@ extern int ddLogLevel;
         else {
             static NSCharacterSet *separtors = nil;
             if (!separtors)
-                separtors = [NSCharacterSet characterSetWithCharactersInString:@";|"];        
+                separtors = [NSCharacterSet characterSetWithCharactersInString:@"|"];        
             _patternAsArray = [_pattern componentsSeparatedByCharactersInSet:separtors];         
         }
     }
@@ -109,27 +109,28 @@ extern int ddLogLevel;
         return [self->isa testRegexp:s pattern:_pattern];
         
     } else {
+        
+        static NSCharacterSet *separtors = nil;
+        if (!separtors)
+            separtors = [NSCharacterSet characterSetWithCharactersInString:@" \n\r\t.,;:\"!?"];
     
         NSArray *words = nil;
         
         for (NSString *pattern in self.patternAsArray) {
-                                    
-            if ([pattern contains:@" "] ||
+            
+            if ([pattern rangeOfCharacterFromSet:separtors].location != NSNotFound ||
                 _option == SamLibBanRuleOptionSubs ) {
                 
-                CGFloat r = [self->isa testSentence:s 
-                                            pattern:pattern 
-                                          threshold:_threshold];
+                CGFloat r = [self->isa testSubs:s 
+                                        pattern:pattern 
+                                      threshold:_threshold];
                 
                 if (r > 0)
                     return r;
                 
             } else {
                                 
-                if (!words) {
-                    static NSCharacterSet *separtors = nil;
-                    if (!separtors)
-                        separtors = [NSCharacterSet characterSetWithCharactersInString:@" \n\r\t.,;:\"!?"];
+                if (!words) {                    
                     words = [[s componentsSeparatedByCharactersInSet: separtors] filter:^(id elem) {
                         return [elem nonEmpty];
                     }];
@@ -168,9 +169,9 @@ extern int ddLogLevel;
     return [self fuzzyTest:w pattern:pattern threshold:threshold];
 }
 
-+ (CGFloat) testSentence: (NSString *) s 
-                 pattern: (NSString *) pattern
-                threshold: (CGFloat) threshold
++ (CGFloat) testSubs: (NSString *) s 
+             pattern: (NSString *) pattern
+           threshold: (CGFloat) threshold
 
 {    if (threshold > 0.999)        
         return [s rangeOfString:pattern].location != NSNotFound ? 1 : 0;
