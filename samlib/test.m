@@ -572,7 +572,8 @@ void test_search()
 
 void test_search_text() 
 {
-    [SamLibSearch searchText: @"политика" 
+    [SamLibSearch searchText: @"реально удивило" 
+                      byName:NO
                          block:^(NSArray *result) {
                              
                              if (result.nonEmpty) {
