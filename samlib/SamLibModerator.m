@@ -22,6 +22,7 @@ extern int ddLogLevel;
 
 @implementation SamLibBanRule {
     NSArray *_patternAsArray;
+    NSInteger _version;
 }
 
 @synthesize pattern = _pattern, category = _category, threshold = _threshold, option = _option;
@@ -33,8 +34,38 @@ extern int ddLogLevel;
     if (![_pattern isEqualToString: pattern]) {
         
         _patternAsArray = nil;
-        _pattern = pattern;
+        _pattern = pattern.lowercaseString;
+        _version++;
     }
+}
+
+- (void) setCategory:(SamLibBanCategory)category
+{
+    if (_category != category) {
+        _category = category;
+        _version++;
+    }
+}
+
+- (void) setThreshold:(CGFloat)threshold
+{
+    if (_threshold != threshold) {
+        _threshold = threshold;
+        _version++;
+    }    
+}
+
+- (void) setOption:(SamLibBanRuleOption)option
+{
+    if (_option != option) {
+        _option = option;
+        _version++;
+    }
+}
+
+- (NSInteger) version
+{
+    return _version;
 }
 
 + (id) fromDictionary: (NSDictionary *) dict
@@ -64,7 +95,7 @@ extern int ddLogLevel;
     
     self = [super init];
     if (self) {
-        self.pattern = pattern.lowercaseString;
+        self.pattern = pattern;
         _category = category;
         _threshold = 1;
         _option = SamLibBanRuleOptionNone;
@@ -213,6 +244,7 @@ extern int ddLogLevel;
 
 @implementation SamLibBan {
     NSMutableArray *_rules;
+    NSInteger _version;
 }
 
 @synthesize name = _name; 
@@ -221,6 +253,60 @@ extern int ddLogLevel;
 @synthesize path = _path;
 @synthesize enabled = _enabled;
 @synthesize option = _option;
+
+- (NSInteger) version
+{
+    NSInteger version = _version;
+    for (SamLibBanRule *rule in _rules)
+        version += rule.version;
+    return version;
+}
+
+- (void) setName:(NSString *)name
+{    
+    NSAssert(name, @"name is nil");
+    
+    if (![_name isEqualToString: name]) {
+
+        _name = name;
+        _version++;
+    }
+}
+
+- (void) setTolerance:(CGFloat)tolerance
+{
+    if (_tolerance != tolerance) {
+        _tolerance = tolerance;
+        _version++;
+    }
+}
+
+- (void) setPath:(NSString *)path
+{
+    NSAssert(path, @"path is nil");
+    
+    if (![_path isEqualToString: path]) {
+        
+        _path = path;
+        _version++;
+    }
+}
+
+- (void) setEnabled:(BOOL)enabled
+{
+    if (_enabled != enabled) {
+        _enabled = enabled;
+        _version++;
+    }
+}
+
+- (void) setOption:(SamLibBanTestOption)option
+{
+    if (_option != option) {
+        _option = option;
+        _version++;
+    }
+}
 
 + (id) fromDictionary: (NSDictionary *) dict
 {
@@ -369,6 +455,7 @@ extern int ddLogLevel;
 @implementation SamLibModerator {
 
     id _hash;
+    NSInteger _version;
     NSMutableArray *_allBans;
     NSMutableDictionary *_links;
 
@@ -378,9 +465,10 @@ extern int ddLogLevel;
 
 - (id) version
 {
-    return [[_allBans map:^id(id elem) {
-        return [elem toDictionary]; 
-    }] description].md5;
+    NSInteger version = _version;
+    for (SamLibBan *ban in _allBans)
+        version += ban.version;
+    return [NSNumber numberWithInteger:version];
 }
 
 + (SamLibModerator *) shared
@@ -432,11 +520,13 @@ extern int ddLogLevel;
 - (void) addBan: (SamLibBan *) ban
 {
     [_allBans push:ban];
+    ++_version;
 }
 
 - (void) removeBan: (SamLibBan *) ban
 {
     [_allBans removeObject:ban];
+    ++_version;
 }
 
 - (void) removeBanAtIndex:(NSUInteger)index
