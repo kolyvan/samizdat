@@ -387,9 +387,14 @@
 						<object class="WebPreferences" key="Preferences">
 							<string key="Identifier"/>
 							<dictionary class="NSMutableDictionary" key="Values">
+								<boolean value="NO" key="WebKitAllowAnimatedImageLoopingPreferenceKey"/>
+								<boolean value="NO" key="WebKitAllowAnimatedImagesPreferenceKey"/>
 								<integer value="12" key="WebKitDefaultFixedFontSize"/>
 								<integer value="12" key="WebKitDefaultFontSize"/>
+								<boolean value="NO" key="WebKitJavaEnabled"/>
+								<boolean value="NO" key="WebKitJavaScriptCanOpenWindowsAutomatically"/>
 								<integer value="1" key="WebKitMinimumFontSize"/>
+								<boolean value="NO" key="WebKitPluginsEnabled"/>
 							</dictionary>
 						</object>
 						<bool key="UseBackForwardList">NO</bool>
