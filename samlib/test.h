@@ -31,3 +31,5 @@ extern void test_cache();
 extern void test_search_text();
 
 extern void test_for_ban();
+
+extern void make_censored_bin();

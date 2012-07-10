@@ -691,5 +691,30 @@ void test_for_ban()
 }
 
 
+void make_censored_bin()
+{
+    // sort
+    NSString * ss = [NSString stringWithContentsOfFile:[@"~/tmp/censored" stringByExpandingTildeInPath]
+                                              encoding:NSUTF8StringEncoding 
+                                                 error:nil];
 
+    NSMutableArray *ma = [NSMutableArray array];
+    for (NSString *s in [NSSet setWithArray:ss.split]) 
+        [ma push:s];
+    
+    ss = [ma.sorted mkString:@"\n"];
+    
+    [ss writeToFile:[@"~/tmp/censored" stringByExpandingTildeInPath] 
+         atomically:NO 
+           encoding:NSUTF8StringEncoding 
+              error:nil];
+    // and zip
+    NSData *d = [NSData dataWithContentsOfFile:[@"~/tmp/censored" stringByExpandingTildeInPath]];
+    [d.gzip writeToFile:[@"~/tmp/censored.bin" stringByExpandingTildeInPath]
+             atomically:YES];
+    
+    //d = [NSData dataWithContentsOfFile:[@"~/tmp/censored.bin" stringByExpandingTildeInPath]];    
+    //NSString *s = [NSString stringWithUTF8String:d.gunzip.bytes];
+    //[s log];
+}
 
