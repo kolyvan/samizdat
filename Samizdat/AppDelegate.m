@@ -296,7 +296,7 @@ int ddLogLevel = LOG_LEVEL_WARN;
 
 - (IBAction) showBansView: (id) sender
 {
-    [self selectControllerClass:[HistoryViewController class] 
+    [self selectControllerClass:[BansViewController class] 
                         withArg:nil];              
 }
 
@@ -527,6 +527,7 @@ int ddLogLevel = LOG_LEVEL_WARN;
         [item action] == @selector(showFavoritesView:) ||
         [item action] == @selector(showBanView:) ||
         [item action] == @selector(showBansView:) ||        
+        [item action] == @selector(showHistoryView:) ||
         [item action] == @selector(toggleHUD:) ||
         [item action] == @selector(clearCookie:))
     {
