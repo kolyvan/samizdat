@@ -59,7 +59,7 @@ extern int ddLogLevel;
     for (SamLibAuthor *author in authors) {            
         [ma push:author];    
         for (SamLibText *text in author.texts)
-            if (text.changedSize)
+            if (text.changedSize || (text.isNew && text.flagNew != nil))
                 [ma push:text];
     }    
     return ma;
@@ -95,7 +95,10 @@ extern int ddLogLevel;
         SamLibText * text = obj;        
         TableCellViewEx * cellView = x;
         cellView.textField.stringValue = text.title;
-        cellView.sizeField.stringValue = KxUtils.format(@"%+ldk", text.deltaSize);
+        if (text.changedSize)
+            cellView.sizeField.stringValue = KxUtils.format(@"%+ldk", text.deltaSize);
+        else
+            cellView.sizeField.stringValue = locString(@"new");
         cellView.goButton.target = self;
         cellView.goButton.action = @selector(select:);
         cellView.goButton.tag = row;
