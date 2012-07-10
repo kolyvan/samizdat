@@ -17,6 +17,7 @@
 #import "NSString+Kolyvan.h"
 #import "NSDate+Kolyvan.h"
 #import "SamLibModel.h"
+#import "SamLibHistory.h"
 #import "SamLibAuthor.h"
 #import "SamLibText.h"
 #import "DDLog.h"
@@ -107,6 +108,8 @@ static NSString * mkHTML(SamLibText * text, NSString *html)
     _needReloadWebView = YES;        
     KX_RELEASE(_text);
     _text = KX_RETAIN(text);        
+    
+    [[SamLibHistory shared] addText:_text];
     
     DDLogInfo(@"reload text view %@", _text.path);
     

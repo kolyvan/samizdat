@@ -88,8 +88,6 @@
 		8787E58B155D408000A73F8E /* KxHUDLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 8787E58A155D408000A73F8E /* KxHUDLogger.m */; };
 		8787E58E155D492000A73F8E /* KxViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8787E58D155D492000A73F8E /* KxViewController.m */; };
 		8787E591155D4A8B00A73F8E /* KxHistoryNav.m in Sources */ = {isa = PBXBuildFile; fileRef = 8787E590155D4A8B00A73F8E /* KxHistoryNav.m */; };
-		8787E594155D51D800A73F8E /* TestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8787E593155D51D800A73F8E /* TestViewController.m */; };
-		8787E596155D522700A73F8E /* TestView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8787E595155D522700A73F8E /* TestView.xib */; };
 		8796C2DC158E28C400331767 /* SamLibCacheNames.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F2F8A9158DD35300AF0BF1 /* SamLibCacheNames.m */; };
 		8796C2DE158E28CD00331767 /* GoogleSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F2F881158DAC3C00AF0BF1 /* GoogleSearch.m */; };
 		8796C2DF158E28E100331767 /* FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 87F2F890158DC58C00AF0BF1 /* FMDatabase.m */; };
@@ -129,6 +127,12 @@
 		87E2FECB155A2638009C4DA9 /* SamLib.m in Sources */ = {isa = PBXBuildFile; fileRef = 87E2FECA155A2638009C4DA9 /* SamLib.m */; };
 		87E2FED6155A6851009C4DA9 /* DiffMatchPatch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87E2FED5155A6851009C4DA9 /* DiffMatchPatch.framework */; };
 		87E2FED8155A6874009C4DA9 /* DiffMatchPatch.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 87E2FED5155A6851009C4DA9 /* DiffMatchPatch.framework */; };
+		87E37DD915ABF84F0009B377 /* SamLibHistory.m in Sources */ = {isa = PBXBuildFile; fileRef = 87E37DD815ABF84F0009B377 /* SamLibHistory.m */; };
+		87E37DDA15ABF84F0009B377 /* SamLibHistory.m in Sources */ = {isa = PBXBuildFile; fileRef = 87E37DD815ABF84F0009B377 /* SamLibHistory.m */; };
+		87E37DDF15AC09DD0009B377 /* HistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 87E37DDD15AC09DD0009B377 /* HistoryViewController.m */; };
+		87E37DE015AC09DD0009B377 /* HistoryView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 87E37DDE15AC09DD0009B377 /* HistoryView.xib */; };
+		87E37DE315AC1A260009B377 /* book.png in Resources */ = {isa = PBXBuildFile; fileRef = 87E37DE115AC1A260009B377 /* book.png */; };
+		87E37DE415AC1A260009B377 /* comments3.png in Resources */ = {isa = PBXBuildFile; fileRef = 87E37DE215AC1A260009B377 /* comments3.png */; };
 		87EA4D251564EF58000D5F41 /* HoverButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 87EA4D241564EF58000D5F41 /* HoverButton.m */; };
 		87EA4D2D1564F55D000D5F41 /* bookmarks.png in Resources */ = {isa = PBXBuildFile; fileRef = 87EA4D281564F55D000D5F41 /* bookmarks.png */; };
 		87EA4D2F1564F55D000D5F41 /* right1.png in Resources */ = {isa = PBXBuildFile; fileRef = 87EA4D2A1564F55D000D5F41 /* right1.png */; };
@@ -293,9 +297,6 @@
 		8787E58D155D492000A73F8E /* KxViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KxViewController.m; sourceTree = "<group>"; };
 		8787E58F155D4A8B00A73F8E /* KxHistoryNav.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KxHistoryNav.h; sourceTree = "<group>"; };
 		8787E590155D4A8B00A73F8E /* KxHistoryNav.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KxHistoryNav.m; sourceTree = "<group>"; };
-		8787E592155D51D800A73F8E /* TestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestViewController.h; sourceTree = "<group>"; };
-		8787E593155D51D800A73F8E /* TestViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestViewController.m; sourceTree = "<group>"; };
-		8787E595155D522700A73F8E /* TestView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TestView.xib; sourceTree = "<group>"; };
 		87B1269D1557DB6C00966B08 /* SamLibAgent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SamLibAgent.h; sourceTree = "<group>"; };
 		87B1269E1557DB6C00966B08 /* SamLibAgent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SamLibAgent.m; sourceTree = "<group>"; };
 		87B126CD1557F3E800966B08 /* DDFileLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDFileLogger.h; sourceTree = "<group>"; };
@@ -352,6 +353,13 @@
 		87E0FC5015A81DB300338A15 /* BansView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BansView.xib; sourceTree = "<group>"; };
 		87E2FECA155A2638009C4DA9 /* SamLib.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SamLib.m; sourceTree = "<group>"; };
 		87E2FED5155A6851009C4DA9 /* DiffMatchPatch.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DiffMatchPatch.framework; path = Frameworks/DiffMatchPatch.framework; sourceTree = "<group>"; };
+		87E37DD715ABF84F0009B377 /* SamLibHistory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SamLibHistory.h; sourceTree = "<group>"; };
+		87E37DD815ABF84F0009B377 /* SamLibHistory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SamLibHistory.m; sourceTree = "<group>"; };
+		87E37DDC15AC09DD0009B377 /* HistoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryViewController.h; sourceTree = "<group>"; };
+		87E37DDD15AC09DD0009B377 /* HistoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HistoryViewController.m; sourceTree = "<group>"; };
+		87E37DDE15AC09DD0009B377 /* HistoryView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HistoryView.xib; sourceTree = "<group>"; };
+		87E37DE115AC1A260009B377 /* book.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = book.png; path = images/book.png; sourceTree = "<group>"; };
+		87E37DE215AC1A260009B377 /* comments3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = comments3.png; path = images/comments3.png; sourceTree = "<group>"; };
 		87EA4D231564EF58000D5F41 /* HoverButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HoverButton.h; sourceTree = "<group>"; };
 		87EA4D241564EF58000D5F41 /* HoverButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HoverButton.m; sourceTree = "<group>"; };
 		87EA4D281564F55D000D5F41 /* bookmarks.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bookmarks.png; path = images/bookmarks.png; sourceTree = "<group>"; };
@@ -455,8 +463,6 @@
 				8787E565155D1DF400A73F8E /* views */,
 				87163EB7155D1889001D4818 /* AppDelegate.h */,
 				87163EB8155D1889001D4818 /* AppDelegate.m */,
-				8787E592155D51D800A73F8E /* TestViewController.h */,
-				8787E593155D51D800A73F8E /* TestViewController.m */,
 				871B5E74155E45F200FCAFB9 /* AuthorsViewController.h */,
 				871B5E75155E45F200FCAFB9 /* AuthorsViewController.m */,
 				871B5E83155E6CFA00FCAFB9 /* AuthorViewController.h */,
@@ -495,6 +501,8 @@
 				8708A8FE15A6EBA3008D1893 /* BanViewController.m */,
 				87E0FC4E15A81DB300338A15 /* BansViewController.h */,
 				87E0FC4F15A81DB300338A15 /* BansViewController.m */,
+				87E37DDC15AC09DD0009B377 /* HistoryViewController.h */,
+				87E37DDD15AC09DD0009B377 /* HistoryViewController.m */,
 			);
 			path = Samizdat;
 			sourceTree = "<group>";
@@ -519,6 +527,8 @@
 		871B5E8D155E841500FCAFB9 /* images */ = {
 			isa = PBXGroup;
 			children = (
+				87E37DE115AC1A260009B377 /* book.png */,
+				87E37DE215AC1A260009B377 /* comments3.png */,
 				87F2020D159059C90083F879 /* samlib.png */,
 				87F20205159059840083F879 /* ok-green.png */,
 				87F20206159059840083F879 /* google.png */,
@@ -597,6 +607,7 @@
 		8787E565155D1DF400A73F8E /* views */ = {
 			isa = PBXGroup;
 			children = (
+				87E37DDE15AC09DD0009B377 /* HistoryView.xib */,
 				87E0FC5015A81DB300338A15 /* BansView.xib */,
 				8708A8FF15A6EBA3008D1893 /* BanView.xib */,
 				87163EBA155D1889001D4818 /* MainMenu.xib */,
@@ -606,7 +617,6 @@
 				87B2E53A156686EE00A3113C /* AddAuthorView.xib */,
 				87B2E545156697D100A3113C /* CommentsView.xib */,
 				87FA5A2D1560BB6800E8DDBD /* TextView.xib */,
-				8787E595155D522700A73F8E /* TestView.xib */,
 				87F20200159023690083F879 /* SearchAuthorView.xib */,
 			);
 			name = views;
@@ -709,6 +719,8 @@
 				87F75D131591C5BF0046DA46 /* SamLibStorage.m */,
 				8708A8F815A6D1C6008D1893 /* SamLibModerator.h */,
 				8708A8F915A6D1C6008D1893 /* SamLibModerator.m */,
+				87E37DD715ABF84F0009B377 /* SamLibHistory.h */,
+				87E37DD815ABF84F0009B377 /* SamLibHistory.m */,
 			);
 			path = samlib;
 			sourceTree = "<group>";
@@ -872,7 +884,6 @@
 				87163EB0155D1889001D4818 /* InfoPlist.strings in Resources */,
 				87163EB6155D1889001D4818 /* Credits.rtf in Resources */,
 				87163EBC155D1889001D4818 /* MainMenu.xib in Resources */,
-				8787E596155D522700A73F8E /* TestView.xib in Resources */,
 				871B5E78155E45F200FCAFB9 /* AuthorsView.xib in Resources */,
 				871B5E9D155E873000FCAFB9 /* bookmark-on.png in Resources */,
 				871B5E9F155E873000FCAFB9 /* comments.png in Resources */,
@@ -919,6 +930,9 @@
 				8708A90115A6EBA3008D1893 /* BanView.xib in Resources */,
 				87E0FC5215A81DB300338A15 /* BansView.xib in Resources */,
 				87CFB20C15A9D11C008CCD1D /* censored.bin in Resources */,
+				87E37DE015AC09DD0009B377 /* HistoryView.xib in Resources */,
+				87E37DE315AC1A260009B377 /* book.png in Resources */,
+				87E37DE415AC1A260009B377 /* comments3.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -963,7 +977,6 @@
 				8787E58B155D408000A73F8E /* KxHUDLogger.m in Sources */,
 				8787E58E155D492000A73F8E /* KxViewController.m in Sources */,
 				8787E591155D4A8B00A73F8E /* KxHistoryNav.m in Sources */,
-				8787E594155D51D800A73F8E /* TestViewController.m in Sources */,
 				871B5E77155E45F200FCAFB9 /* AuthorsViewController.m in Sources */,
 				871B5E86155E6CFA00FCAFB9 /* AuthorViewController.m in Sources */,
 				87FA5A2E1560BB6800E8DDBD /* TextViewController.m in Sources */,
@@ -992,6 +1005,8 @@
 				8708A8FC15A6D736008D1893 /* SamLibModerator.m in Sources */,
 				8708A90015A6EBA3008D1893 /* BanViewController.m in Sources */,
 				87E0FC5115A81DB300338A15 /* BansViewController.m in Sources */,
+				87E37DDA15ABF84F0009B377 /* SamLibHistory.m in Sources */,
+				87E37DDF15AC09DD0009B377 /* HistoryViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1040,6 +1055,7 @@
 				87F4C81A158EDF7600ABB48A /* SamLibSearch.m in Sources */,
 				87F75D141591C5BF0046DA46 /* SamLibStorage.m in Sources */,
 				8708A8FA15A6D1C6008D1893 /* SamLibModerator.m in Sources */,
+				87E37DD915ABF84F0009B377 /* SamLibHistory.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -27,6 +27,7 @@
 - (IBAction) showFavoritesView: (id) sender;
 - (IBAction) showBanView: (id) ban;
 - (IBAction) showBansView: (id) sender;
+- (IBAction) showHistoryView: (id) sender;
 
 - (void) showAuthorView:(id)author;
 - (void) showAuthorInfoView:(id)author;

@@ -1178,6 +1178,14 @@
 									<reference key="NSOnImage" ref="35465992"/>
 									<reference key="NSMixedImage" ref="502551668"/>
 								</object>
+								<object class="NSMenuItem" id="521017942">
+									<reference key="NSMenu" ref="466310130"/>
+									<string key="NSTitle">History</string>
+									<string key="NSKeyEquiv"/>
+									<int key="NSMnemonicLoc">2147483647</int>
+									<reference key="NSOnImage" ref="35465992"/>
+									<reference key="NSMixedImage" ref="502551668"/>
+								</object>
 								<object class="NSMenuItem" id="138578433">
 									<reference key="NSMenu" ref="466310130"/>
 									<string key="NSTitle">Moderation</string>
@@ -1473,6 +1481,28 @@
 							<bool key="NSToolbarIsUserRemovable">YES</bool>
 							<int key="NSToolbarItemVisibilityPriority">0</int>
 						</object>
+						<object class="NSToolbarItem" key="A8D57A6E-EFA8-455D-8759-84EEA4519E64" id="972344755">
+							<object class="NSMutableString" key="NSToolbarItemIdentifier">
+								<characters key="NS.bytes">A8D57A6E-EFA8-455D-8759-84EEA4519E64</characters>
+							</object>
+							<string key="NSToolbarItemLabel">History</string>
+							<string key="NSToolbarItemPaletteLabel">History</string>
+							<string key="NSToolbarItemToolTip"/>
+							<nil key="NSToolbarItemView"/>
+							<object class="NSCustomResource" key="NSToolbarItemImage">
+								<string key="NSClassName">NSImage</string>
+								<string key="NSResourceName">NSListViewTemplate</string>
+							</object>
+							<nil key="NSToolbarItemTarget"/>
+							<nil key="NSToolbarItemAction"/>
+							<string key="NSToolbarItemMinSize">{0, 0}</string>
+							<string key="NSToolbarItemMaxSize">{0, 0}</string>
+							<bool key="NSToolbarItemEnabled">YES</bool>
+							<bool key="NSToolbarItemAutovalidates">YES</bool>
+							<int key="NSToolbarItemTag">-1</int>
+							<bool key="NSToolbarIsUserRemovable">YES</bool>
+							<int key="NSToolbarItemVisibilityPriority">0</int>
+						</object>
 						<object class="NSToolbarItem" key="B30A4BD0-4840-40A0-9D44-7AB6007C9C8F" id="980455089">
 							<object class="NSMutableString" key="NSToolbarItemIdentifier">
 								<characters key="NS.bytes">B30A4BD0-4840-40A0-9D44-7AB6007C9C8F</characters>
@@ -1577,7 +1607,7 @@
 							</object>
 						</object>
 					</dictionary>
-					<array key="NSToolbarIBAllowedItems">
+					<array class="NSMutableArray" key="NSToolbarIBAllowedItems">
 						<reference ref="831200980"/>
 						<reference ref="378023891"/>
 						<reference ref="26572173"/>
@@ -1587,8 +1617,9 @@
 						<reference ref="509051306"/>
 						<reference ref="980455089"/>
 						<reference ref="116643484"/>
+						<reference ref="972344755"/>
 					</array>
-					<array key="NSToolbarIBDefaultItems">
+					<array class="NSMutableArray" key="NSToolbarIBDefaultItems">
 						<reference ref="26572173"/>
 						<reference ref="649654761"/>
 						<reference ref="928234641"/>
@@ -1596,6 +1627,7 @@
 						<reference ref="928234641"/>
 						<reference ref="291030182"/>
 						<reference ref="509051306"/>
+						<reference ref="972344755"/>
 					</array>
 					<array key="NSToolbarIBSelectableItems" id="0"/>
 				</object>
@@ -2396,6 +2428,22 @@
 					</object>
 					<int key="connectionID">655</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">showHistoryView:</string>
+						<reference key="source" ref="976324537"/>
+						<reference key="destination" ref="972344755"/>
+					</object>
+					<int key="connectionID">657</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">showHistoryView:</string>
+						<reference key="source" ref="976324537"/>
+						<reference key="destination" ref="521017942"/>
+					</object>
+					<int key="connectionID">659</int>
+				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<array key="orderedObjects">
@@ -2789,6 +2837,7 @@
 							<reference ref="189883308"/>
 							<reference ref="627418139"/>
 							<reference ref="138578433"/>
+							<reference ref="521017942"/>
 						</array>
 						<reference key="parent" ref="586577488"/>
 					</object>
@@ -3372,6 +3421,7 @@
 							<reference ref="980455089"/>
 							<reference ref="509051306"/>
 							<reference ref="116643484"/>
+							<reference ref="972344755"/>
 						</array>
 						<reference key="parent" ref="972006081"/>
 					</object>
@@ -3488,6 +3538,16 @@
 					<object class="IBObjectRecord">
 						<int key="objectID">654</int>
 						<reference key="object" ref="138578433"/>
+						<reference key="parent" ref="466310130"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">656</int>
+						<reference key="object" ref="972344755"/>
+						<reference key="parent" ref="519896233"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">658</int>
+						<reference key="object" ref="521017942"/>
 						<reference key="parent" ref="466310130"/>
 					</object>
 				</array>
@@ -3658,6 +3718,8 @@
 				<string key="639.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="652.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="654.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="656.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
+				<string key="658.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="73.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="74.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
 				<string key="79.IBPluginDependency">com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -3670,7 +3732,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">655</int>
+			<int key="maxID">659</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -3690,6 +3752,7 @@
 						<string key="showBanView:">id</string>
 						<string key="showBansView:">id</string>
 						<string key="showFavoritesView:">id</string>
+						<string key="showHistoryView:">id</string>
 						<string key="toggleHUD:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
@@ -3741,6 +3804,10 @@
 							<string key="name">showFavoritesView:</string>
 							<string key="candidateClassName">id</string>
 						</object>
+						<object class="IBActionInfo" key="showHistoryView:">
+							<string key="name">showHistoryView:</string>
+							<string key="candidateClassName">id</string>
+						</object>
 						<object class="IBActionInfo" key="toggleHUD:">
 							<string key="name">toggleHUD:</string>
 							<string key="candidateClassName">id</string>
@@ -3779,6 +3846,7 @@
 			<string key="NSAddTemplate">{8, 8}</string>
 			<string key="NSEveryone">{32, 32}</string>
 			<string key="NSGoLeftTemplate">{9, 9}</string>
+			<string key="NSListViewTemplate">{11, 10}</string>
 			<string key="NSMenuCheckmark">{11, 11}</string>
 			<string key="NSMenuMixedState">{10, 3}</string>
 			<string key="NSMultipleDocuments">{32, 32}</string>

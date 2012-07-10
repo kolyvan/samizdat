@@ -12,7 +12,6 @@
 
 #import "CommentsViewController.h"
 #import <WebKit/WebKit.h>
-
 #import "KxMacros.h"
 #import "KxUtils.h"
 #import "NSString+Kolyvan.h"
@@ -20,18 +19,16 @@
 #import "NSArray+Kolyvan.h"
 #import "NSDate+Kolyvan.h"
 #import "NSData+Kolyvan.h"
-
-#import "DDLog.h"
-
-#import "SamLibModel.h"
-#import "AppDelegate.h"
 #import "KxHUD.h"
-
+#import "AppDelegate.h"
+#import "SamLibModel.h"
 #import "SamLibUser.h"
 #import "SamLibAuthor.h"
 #import "SamLibText.h"
 #import "SamLibComments.h"
 #import "SamLibModerator.h"
+#import "SamLibHistory.h"
+#import "DDLog.h"
 
 extern int ddLogLevel;
 
@@ -228,7 +225,7 @@ static NSString * mkHTML(SamLibComments * comments)
     
     if (_comments == comments &&
         [comments.version isEqualTo:_version] &&
-        [modVersion isEqualToString:_modVersion]) {            
+        [modVersion isEqualTo:_modVersion]) {            
 
             return;  
     }
@@ -237,7 +234,9 @@ static NSString * mkHTML(SamLibComments * comments)
     self.version = comments.version;    
     _needReloadWebView = YES;        
     KX_RELEASE(_comments);    
-    _comments = KX_RETAIN(comments);        
+    _comments = KX_RETAIN(comments);
+    
+    [[SamLibHistory shared] addComments:_comments];
         
     DDLogInfo(@"reload comments view %@", _comments.text.path);        
 }

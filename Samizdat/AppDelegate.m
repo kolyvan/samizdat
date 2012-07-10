@@ -29,7 +29,6 @@
 #import "SamLibUser.h"
 #import "SamLibAuthor.h"
 
-#import "TestViewController.h"
 #import "AuthorsViewController.h"
 #import "AuthorViewController.h"
 #import "AuthorInfoViewController.h"
@@ -42,6 +41,8 @@
 #import "BansViewController.h"
 #import "SamLibModel.h"
 #import "SamLibModerator.h"
+#import "SamLibHistory.h"
+#import "HistoryViewController.h"
 
 #import "DDLog.h"
 #import "DDTTYLogger.h"
@@ -143,6 +144,7 @@ int ddLogLevel = LOG_LEVEL_WARN;
     
     [[SamLibModel shared] save];    
     [[SamLibModerator shared] save];
+    [[SamLibHistory shared] save];
     
     SamLibAgent.cleanup();
 }
@@ -239,12 +241,6 @@ int ddLogLevel = LOG_LEVEL_WARN;
     [_hudView message: message color: [NSColor yellowColor] interval: 8];
 }
 
-- (IBAction) showTestView: (id) sender
-{
-    [self selectControllerClass:[TestViewController class] 
-                        withArg:nil];    
-}
-
 - (IBAction) showAuthorsView: (id) sender
 {
     [self selectControllerClass:[AuthorsViewController class] 
@@ -300,8 +296,15 @@ int ddLogLevel = LOG_LEVEL_WARN;
 
 - (IBAction) showBansView: (id) sender
 {
-    [self selectControllerClass:[BansViewController class] 
+    [self selectControllerClass:[HistoryViewController class] 
                         withArg:nil];              
+}
+
+- (IBAction) showHistoryView: (id) sender
+{
+    [self selectControllerClass:[HistoryViewController class] 
+                        withArg:nil];              
+    
 }
 
 - (IBAction) toggleHUD: (id) sender
