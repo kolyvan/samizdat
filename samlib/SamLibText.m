@@ -28,6 +28,10 @@
 #import <DiffMatchPatch/DiffMatchPatch.h>
 #endif
 
+#ifndef __IPHONE_OS_VERSION_MAX_ALLOWED 
+#define MAKEDIFF_IMPLEMETED
+#endif
+
 ////
 
 extern int ddLogLevel;
@@ -520,24 +524,6 @@ static NSString * prettyHtml (NSMutableArray *diffs)
     return [s stringByAppendingPathExtension:@"html"];
 }
 
-- (NSString *) diffPath
-{
-    NSString *s = [SamLibStorage.textsPath() stringByAppendingPathComponent:self.key];
-    return [s stringByAppendingPathExtension:@"diff.html"];
-}
-
-- (NSString *) rawPath
-{
-    NSString *s = [SamLibStorage.textsPath() stringByAppendingPathComponent:self.key];
-    return [s stringByAppendingPathExtension:@"raw"];    
-}
-
-- (NSString *) oldPath
-{
-    NSString *s = [SamLibStorage.textsPath() stringByAppendingPathComponent:self.key];
-    return [s stringByAppendingPathExtension:@"old"];    
-}
-
 - (NSString *) commentsPath
 {
     NSString *s = [SamLibStorage.commentsPath() stringByAppendingPathComponent: self.key];
@@ -577,6 +563,14 @@ static NSString * prettyHtml (NSMutableArray *diffs)
     return _cachedFileSize;
 }
 
+#ifdef MAKEDIFF_IMPLEMETED
+
+- (NSString *) diffPath
+{
+    NSString *s = [SamLibStorage.textsPath() stringByAppendingPathComponent:self.key];
+    return [s stringByAppendingPathExtension:@"diff.html"];
+}
+
 - (NSString *) diffFile
 {
     NSFileManager * fm = [[NSFileManager alloc] init];    
@@ -589,14 +583,26 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 {
     NSFileManager * fm = [[NSFileManager alloc] init];    
     BOOL r = [fm isReadableFileAtPath:self.oldPath] &&
-             [fm isReadableFileAtPath:self.rawPath];    
+    [fm isReadableFileAtPath:self.rawPath];    
     KX_RELEASE(fm);     
     return r;
 }
 
+- (NSString *) rawPath
+{
+    NSString *s = [SamLibStorage.textsPath() stringByAppendingPathComponent:self.key];
+    return [s stringByAppendingPathExtension:@"raw"];    
+}
+
+- (NSString *) oldPath
+{
+    NSString *s = [SamLibStorage.textsPath() stringByAppendingPathComponent:self.key];
+    return [s stringByAppendingPathExtension:@"old"];    
+}
+
 - (void) makeDiff: (TextFormatter) formatter
 { 
-#ifndef __IPHONE_OS_VERSION_MAX_ALLOWED    
+ 
     NSString *old = [NSString stringWithContentsOfFile:self.oldPath
                                               encoding:NSUTF8StringEncoding                                                    
                                                  error:nil]; 
@@ -656,7 +662,7 @@ static NSString * prettyHtml (NSMutableArray *diffs)
         
     DDLogInfo(@"Diff elapsed time: %.4lf count: %ld dels: %ld ins: %ld", 
                (double)duration, result.count, delDiffs, insDiffs);
-#endif    
+ 
 }
 
 - (void) saveHTML: (NSString *) data
@@ -732,6 +738,66 @@ static NSString * prettyHtml (NSMutableArray *diffs)
     
     KX_RELEASE(fm);
 }
+
+#else
+    
+- (NSString *) diffFile
+{
+    return nil;    
+}
+
+- (BOOL) canMakeDiff
+{
+    return NO;
+}
+
+- (void) makeDiff: (TextFormatter) formatter
+{
+    NSAssert(false, @"not implemeted");
+}
+
+- (void) saveHTML: (NSString *) data
+        formatter: (TextFormatter) formatter
+{           
+    _cachedFileSize = 0;
+    
+    NSError *error;
+    
+    NSFileManager *fm = [[NSFileManager alloc] init];
+
+    BOOL htmlExists = [fm fileExistsAtPath:self.htmlPath];     
+    
+    // delete .html
+    if (htmlExists &&
+        ![fm removeItemAtPath:self.htmlPath error:&error]) {
+        DDLogCError(locString(@"file error: %@"), 
+                    KxUtils.completeErrorMessage(error));                   
+    }  
+    
+    data = SamLibParser.scanTextData(data);
+    data = prepareText(data);  
+       
+    // save .html
+    NSString *html = formatter ? formatter(self, data) : data;
+    if ([html writeToFile:self.htmlPath
+               atomically:NO 
+                 encoding:NSUTF8StringEncoding
+                    error:&error]) {
+        
+        
+        ++_version;
+        self.filetime = [NSDate date];
+        
+    } else {
+        
+        DDLogError(locString(@"file error: %@"), 
+                   KxUtils.completeErrorMessage(error));                
+    } 
+    
+    KX_RELEASE(fm);
+}
+
+#endif   
 
 - (void) update: (UpdateTextBlock) block 
        progress: (AsyncProgressBlock) progress
@@ -855,9 +921,11 @@ static NSString * prettyHtml (NSMutableArray *diffs)
     NSFileManager * fm = [[NSFileManager alloc] init];    
     if (texts) {
         [fm removeItemAtPath:self.htmlPath error:nil];
+#ifdef MAKEDIFF_IMPLEMETED
         [fm removeItemAtPath:self.diffPath error:nil];    
         [fm removeItemAtPath:self.oldPath error:nil]; 
         [fm removeItemAtPath:self.rawPath error:nil];     
+#endif        
     }
     if (comments)
         [fm removeItemAtPath:self.commentsPath error:nil];            
