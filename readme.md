@@ -11,7 +11,7 @@ Visit the [forum](http://samlib.ru/comment/k/kolywan/samizdat_osx) for feedback.
 
 Screenshots:
 
-![main view](http://dl.dropbox.com/u/80472203/samizdat-main.png "Main View")
+![main view](http://dl.dropbox.com/u/80472203/osx/authors.png "Main View")
 
 
 Download [.dmg](http://dl.dropbox.com/u/80472203/samizdat.dmg)
