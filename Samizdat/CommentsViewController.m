@@ -65,8 +65,7 @@ static NSString * mkHTML(SamLibComments * comments)
         BOOL isBanned = NO;
         
         NSString 
-            *deleteMsg = comment.deleteMsg,
-            *replyto = nil, 
+            *deleteMsg = comment.deleteMsg,            
             *message = nil, 
             *link = nil, 
             *color = nil, 
@@ -90,21 +89,22 @@ static NSString * mkHTML(SamLibComments * comments)
                 message = KxUtils.format(locString(@"<span class='banned'>banned: %@</span>"), ban.name);
             
             } else {
-            
-                replyto = comment.replyto;
-                if (replyto.nonEmpty) {
-                    NSMutableString * sbx = [NSMutableString string];            
-                    for (NSString * line in [replyto lines])
-                        [sbx appendFormat:@"<span>%@</span>", line];         
-                    replyto = sbx;
-                }       
+               
                 
                 message = comment.message;
                 if (message.nonEmpty) {
+                    
                     NSMutableString * sbx = [NSMutableString string];            
-                    for (NSString * line in [message lines])
-                        [sbx appendFormat:@"<span>%@</span>", line];         
+                    
+                    for (NSString * line in message.lines) {
+                        if ([line hasPrefix:@"> "])                            
+                            [sbx appendFormat:@"<span class='msgto'>%@</span>", line];         
+                        else
+                            [sbx appendFormat:@"<span>%@</span>", line];                                     
+                    }
+                    
                     message = sbx;
+                                        
                 }    
             }
             
@@ -114,8 +114,7 @@ static NSString * mkHTML(SamLibComments * comments)
             msgid = comment.msgid;
             email = comment.email;
         }
-        
-        if (!replyto) replyto = @"";
+
         if (!message) message = @"";
         if (!link) link = @"";        
         if (!color) color = @"";
@@ -143,7 +142,6 @@ static NSString * mkHTML(SamLibComments * comments)
          comment.canEdit ? @"editlink" : @"hidden",
          isBanned ? @"" : msgid,
          (!comment.canEdit && !comment.canDelete && !deleteMsg.nonEmpty ) ? @"banlink" : @"hidden",         
-         replyto,
          message,
          msgid,
          deleteMsg.nonEmpty ? @"hidden" : @"replylink"         

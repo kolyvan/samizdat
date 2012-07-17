@@ -43,24 +43,23 @@
 	font-style: italic;    
 }
 
-.comment .replyto {
-	font-style: italic;
-	font-size: 0.9em;	
-	color: gray;
-	padding-left: 1em;
-	margin-top: 1em;		
-}
-
-.comment .replyto span {
-	display: block;
-}
-
 .comment .message {
 	margin-top: 1em;		
 	font-size: 1.1em;		    
 }
 
 .comment .message span {
+	display: block;
+}
+
+.comment .message .msgto {
+	font-style: italic;
+	font-size: 0.9em;	
+	color: gray;
+	padding-left: 0.5em;
+}
+
+.comment .message .msgto span {
 	display: block;
 }
 
