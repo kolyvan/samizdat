@@ -54,7 +54,7 @@ static NSString * mkHTML(SamLibComments * comments)
     });
     
     SamLibModerator *moderator = [SamLibModerator shared];
-    NSString *banPath = [comments.text makeKey:@"/"];  
+    NSString *banPath = comments.text.key;  
         
     NSMutableString * sb = [NSMutableString string];
     
@@ -482,17 +482,14 @@ static NSString * mkHTML(SamLibComments * comments)
     if (comment) {
         
         NSMutableDictionary *d =  [comment.toDictionary mutableCopy];
-        [d update:@"path" value:[_comments.text makeKey:@"/"]];
+        [d update:@"path" value:_comments.text.key];
         [[NSApp delegate] showBanView:d]; 
         
     } else {
     
         [[NSApp delegate] showBansView:nil]; 
     }
-        
-    
 }
-
 
 - (void) toggleReplyWithAnimation: (BOOL) animated
 {

@@ -326,8 +326,8 @@ void test_fetch_comments2()
         if (status == SamLibStatusSuccess) {
             
             KxConsole.printlnf(@"fetched new comments: %ld", comments.numberOfNew);                        
-            if (comments.isDirty)
-                [comments save:SamLibStorage.commentsPath()];
+            //if (comments.isDirty)
+            //    [comments save:SamLibStorage.commentsPath()];
             
         } else if (status == SamLibStatusNotModifed) {
             
@@ -368,8 +368,8 @@ void test_post_comment()
         if (status == SamLibStatusSuccess) {
             
             KxConsole.printlnf(@"fetched new comments: %ld", comments.numberOfNew);                        
-            if (comments.isDirty)
-                [comments save:SamLibStorage.commentsPath()];
+            //if (comments.isDirty)
+            //    [comments save:SamLibStorage.commentsPath()];
             
         } else if (status == SamLibStatusNotModifed) {
             
@@ -446,8 +446,8 @@ void test_post_comment_with_login()
                  if (status == SamLibStatusSuccess) {
                      
                      KxConsole.printlnf(@"fetched new comments: %ld", comments.numberOfNew);                        
-                     if (comments.isDirty)
-                         [comments save:SamLibStorage.commentsPath()];
+                     //if (comments.isDirty)
+                     //    [comments save:SamLibStorage.commentsPath()];
                      
                  } else if (status == SamLibStatusNotModifed) {
                      
