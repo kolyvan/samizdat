@@ -336,7 +336,9 @@ static NSDate* mkDateFromComment(NSString *dt)
         
     } else {        
 
-        _numberOfNew = result.count;          
+        _numberOfNew = result.count; 
+        for (SamLibComment * p in result)
+            p.isNew = YES;
         self.all = result;        
         //_isDirty = YES;        
     }    
