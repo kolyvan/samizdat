@@ -495,7 +495,7 @@ static NSString * mkHTML(SamLibComments * comments)
 {
     NSRect rc = [_webView frame];      
     
-    const int DMOVE = 220;
+    const int DMOVE = 300;
     
     if (_toggleReply) { 
         
