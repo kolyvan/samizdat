@@ -99,7 +99,7 @@ static NSArray * fuzzySearch(NSString * pattern,
             if (ignorecase)
                 value = value.lowercaseString;
             
-            float distance = levenshteinDistanceNS(value, patternChars, patternLengtn);
+            float distance = levenshteinDistanceNS(value, patternChars, (int)patternLengtn);
             distance = 1.0 - (distance / MAX(value.length, patternLengtn));
             
             if (patternLengtn <= value.length &&                
@@ -274,7 +274,7 @@ static NSString * mkPathFromName(NSString *name)
         
     NSArray *section = [_cacheNames selectBySection:sectionChar];
     NSArray *result = [self->isa unionArray:section withArray: like]; 
-    DDLogInfo(@"loaded from cache: %d", result.count);    
+    DDLogInfo(@"loaded from cache: %lu", result.count);
     if (result.nonEmpty)
         return fuzzySearch(pattern, key, result);    
     return nil;
@@ -308,7 +308,7 @@ static NSString * mkPathFromName(NSString *name)
                        
                        if (status == GoogleSearchStatusSuccess) {
                            
-                           DDLogInfo(@"loaded from google: %d", googleResult.count);
+                           DDLogInfo(@"loaded from google: %ld", googleResult.count);
                            
                            NSString *baseURL = KxUtils.format(@"http://samlib.ru/%c/", section); 
                            
@@ -324,8 +324,8 @@ static NSString * mkPathFromName(NSString *name)
                                
                                [_cacheNames addBatch:authors];
                                result = fuzzySearch(pattern, key, authors);                             
-                               DDLogInfo(@"found in google: %d", result.count);               
-                           }                         
+                               DDLogInfo(@"found in google: %ld", result.count);               
+                           }
                        } 
                        
                        block(result);                     
@@ -348,13 +348,13 @@ static NSString * mkPathFromName(NSString *name)
                                   
                                   NSArray *authors = SamLibParser.scanAuthors(data); 
                                   
-                                  DDLogInfo(@"loaded from samlib: %d", authors.count);
+                                  DDLogInfo(@"loaded froamlib: %ld", authors.count);
                                   
                                   if (authors.nonEmpty) {
                                       
                                       [_cacheNames addBatch:authors];                                      
                                       result = fuzzySearch(pattern, key, authors);
-                                      DDLogInfo(@"found in samlib: %d", result.count);                                      
+                                      DDLogInfo(@"found in samlib: %ld", result.count);                                      
                                   }
                               }
                               
@@ -427,7 +427,7 @@ static NSString * mkPathFromName(NSString *name)
         
         NSArray *found = [self localSearchAuthor:pattern 
                                              key:key];    
-        DDLogInfo(@"found local: %d", found.count);    
+        DDLogInfo(@"found local: %ld", found.count);    
         if (found.nonEmpty)
             block(found);
     }   
@@ -440,7 +440,7 @@ static NSString * mkPathFromName(NSString *name)
                                              key:key
                                          section:section];
         
-        DDLogInfo(@"found in cache: %d", found.count);     
+        DDLogInfo(@"found in cache: %ld", found.count);
         
         if (found.nonEmpty) {
             

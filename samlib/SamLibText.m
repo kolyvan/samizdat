@@ -96,6 +96,8 @@ static NSString * prepareText(NSString * text, NSString* format) {
         
         if ([s hasPrefix:@"<dd>&nbsp;&nbsp;"])
             return [[s substringFromIndex:16] stringByAppendingString:@"<br />"];
+        if ([s hasPrefix:@"<dd>"])
+            return [[s substringFromIndex:4] stringByAppendingString:@"<br />"];        
         return s;
     }] mkString: @"\n"];
 }
@@ -219,7 +221,7 @@ static NSString * prettyHtml (NSMutableArray *diffs)
     NSInteger r =_version;
     if (_commentsObject)
         r += [_commentsObject.version integerValue];
-    return [NSNumber numberWithInt:r];
+    return [NSNumber numberWithInteger:r];
 }
 
 - (NSString *) relativeUrl
@@ -229,7 +231,8 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 
 - (NSString *) key 
 {
-    return KxUtils.format(@"%@/%@", _author.path, [_path stringByDeletingPathExtension]);    
+//    return KxUtils.format(@"%@/%@", _author.path, [_path stringByDeletingPathExtension]);    
+    return [self->isa keyAuthor:_author.path text:_path];
 }
 
  - (NSInteger) sizeInt
@@ -506,21 +509,6 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 - (void) updateFromDictionary: (NSDictionary *) dict
 {
     [self updateFromDictionary: dict setChanged: YES allowNil:NO];
-}
-
-- (void) flagAsRemoved
-{
-    self.changedFlag = SamLibTextChangedRemoved;
-}
-
-- (void) flagAsNew
-{
-    self.changedFlag = SamLibTextChangedNew;
-}
-
-- (void) flagAsChangedNone
-{
-    self.changedFlag = SamLibTextChangedNone;
 }
 
 - (NSDictionary *) toDictionary
@@ -935,8 +923,8 @@ static NSString * prettyHtml (NSMutableArray *diffs)
 - (NSString *) ratingWithDelta: (NSString *)sep
 {
     float f = self.ratingFloat;
-    if (self.changedRating && _deltaRating > 0)
-        return KxUtils.format(@"%.2f%@%+.2f", f, sep, _deltaComments);    
+    if (self.changedRating && _deltaRating > 0.009)
+        return KxUtils.format(@"%.2f%@%+.2f", f, sep, _deltaRating);    
     if (f > 0)
         return KxUtils.format(@"%.2f", f);
     return @"";
@@ -1005,9 +993,9 @@ static NSString * prettyHtml (NSMutableArray *diffs)
     }
 }
 
-- (NSString *) makeKey: (NSString *) sep;
++ (NSString *) keyAuthor: (NSString *) author text: (NSString *) text;  
 {
-    return KxUtils.format(@"%@%@%@", _author.path, sep, [_path stringByDeletingPathExtension]);    
+    return KxUtils.format(@"%@/%@", author, [text stringByDeletingPathExtension]);    
 }
 
 + (KxTuple2 *) splitKey: (NSString *) key

@@ -63,6 +63,15 @@ extern int ddLogLevel;
                               nil);
 }
 
+- (NSString *) description
+{
+    return KxUtils.format(@"<%@: %p %@ %@>", 
+                          [self class], 
+                          self, 
+                          self.key, 
+                          self.category == SamLibHistoryCategoryText ? @"text" : @"comm"
+                          );
+}
 
 @end
 
@@ -175,7 +184,7 @@ extern int ddLogLevel;
         
         NSArray *a = [_history map:^(id elem) { return [elem toDictionary]; }];        
         SamLibStorage.saveObject(a, SamLibStorage.historyPath());
-        DDLogInfo(@"saved history: %d", _history.count);    
+        DDLogInfo(@"saved history: %ld", _history.count);
     }
 }
 

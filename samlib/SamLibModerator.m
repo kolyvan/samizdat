@@ -556,7 +556,7 @@ extern int ddLogLevel;
         
         SamLibStorage.saveObject(a, SamLibStorage.bansPath());
         
-        DDLogInfo(@"saved bans: %d", _allBans.count);
+        DDLogInfo(@"saved bans: %li", _allBans.count);
     }
 }
 
