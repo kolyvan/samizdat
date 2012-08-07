@@ -490,15 +490,13 @@ int ddLogLevel = LOG_LEVEL_WARN;
     } else {
         return;
     }
-    
-    NSAlert * alert = [NSAlert alertWithMessageText:locString(@"Delete Author") 
-                                      defaultButton:locString(@"Yes") 
+        
+    NSAlert * alert = [NSAlert alertWithMessageText:locString(@"Delete Author")
+                                      defaultButton:locString(@"Yes")
                                     alternateButton:locString(@"No")
                                         otherButton:nil
-                          informativeTextWithFormat:KxUtils.format(locString(@"Are you sure?\n%@\n%@\n%@"), 
-                                                                   author.name,
-                                                                   author.title,
-                                                                   author.url)];
+                          informativeTextWithFormat:locString(@"Are you sure?\n%@\n%@\n%@"),
+                       author.name,author.title,author.url];
     
     [alert setIcon: [NSImage imageNamed:NSImageNameCaution]];
     
