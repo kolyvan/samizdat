@@ -144,7 +144,8 @@ static NSArray * sortTexts(NSArray * array) {
             currentGroup = KX_RETAIN(group);            
         }        
         
-        if (text.group.first != '@')        
+        if (text.group.isEmpty ||
+            text.group.first != '@')
             [ma push:text];
     }
     
